@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from core.taskbar import Taskbar
+from core.window_manager import WindowManager
 
 
 class Desktop(ctk.CTk):
@@ -14,7 +15,7 @@ class Desktop(ctk.CTk):
 
         self.configure(fg_color="#0D1117")
 
-        # Desktop background
+        # Desktop
         self.desktop = ctk.CTkFrame(
             self,
             fg_color="#0D1117",
@@ -22,14 +23,13 @@ class Desktop(ctk.CTk):
         )
         self.desktop.pack(fill="both", expand=True)
 
-        # Desktop title
+        # Title
         title = ctk.CTkLabel(
             self.desktop,
             text="NovaOS",
             font=("Segoe UI", 32, "bold"),
             text_color="#00E5FF"
         )
-
         title.place(x=30, y=20)
 
         subtitle = ctk.CTkLabel(
@@ -38,8 +38,16 @@ class Desktop(ctk.CTk):
             font=("Segoe UI", 14),
             text_color="#BBBBBB"
         )
-
         subtitle.place(x=35, y=65)
+
+        # Window Manager
+        self.window_manager = WindowManager(self.desktop)
 
         # Taskbar
         self.taskbar = Taskbar(self)
+
+        # -----------------------------
+        # Temporary test windows
+        # -----------------------------
+        self.window_manager.create_window("Browser")
+        self.window_manager.create_window("Notes")
