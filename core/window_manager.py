@@ -177,9 +177,10 @@ class AppWindow(ctk.CTkFrame):
 
 class WindowManager:
 
-    def __init__(self, desktop):
+    def __init__(self, desktop, taskbar):
 
         self.desktop = desktop
+        self.taskbar = taskbar
 
         self.windows = []
 
@@ -207,6 +208,7 @@ class WindowManager:
         )
 
         self.windows.append(window)
+        self.taskbar.add_app(window)
 
         self.focus_window(window)
 
@@ -235,6 +237,7 @@ class WindowManager:
 
             self.windows.remove(window)
 
+        self.taskbar.remove_app(window)
         window.destroy()
 
         if self.windows:

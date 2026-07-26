@@ -40,11 +40,13 @@ class Desktop(ctk.CTk):
         )
         subtitle.place(x=35, y=65)
 
-        # Window Manager
-        self.window_manager = WindowManager(self.desktop)
-
         # Taskbar
         self.taskbar = Taskbar(self)
+
+        # Window Manager
+        self.window_manager = WindowManager(self.desktop,
+                                            self.taskbar)
+
 
         # -----------------------------
         # Temporary test windows
