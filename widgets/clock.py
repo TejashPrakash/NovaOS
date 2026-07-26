@@ -1,29 +1,32 @@
 import customtkinter as ctk
+
 from datetime import datetime
 
 
-class Clock(ctk.CTkLabel):
+class Clock:
 
-    def __init__(self, master):
+    def __init__(self, parent):
 
-        super().__init__(
-            master,
-            text="",
-            font=("Segoe UI", 14, "bold"),
-            text_color="white"
+        self.label = ctk.CTkLabel(
+            parent,
+            font=("Segoe UI", 15, "bold")
         )
 
-        self.update_clock()
-
-    def update_clock(self):
-
-        current_time = datetime.now().strftime("%I:%M:%S %p")
-
-        self.configure(
-            text=current_time
+        self.label.pack(
+            pady=22
         )
 
-        self.after(
+        self.update()
+
+    def update(self):
+
+        current = datetime.now().strftime("%I:%M %p")
+
+        self.label.configure(
+            text=current
+        )
+
+        self.label.after(
             1000,
-            self.update_clock
+            self.update
         )

@@ -1,0 +1,144 @@
+import customtkinter as ctk
+
+from widgets.clock import Clock
+
+
+class Dock:
+
+    def __init__(self, root):
+
+        self.root = root
+
+        # ==========================================
+        # Floating Dock Container
+        # ==========================================
+
+        self.frame = ctk.CTkFrame(
+            self.root,
+            width=700,
+            height=70,
+            fg_color="#1A1F2B",
+            corner_radius=35,
+            border_width=1,
+            border_color="#2F3545"
+        )
+
+        self.frame.place(
+            relx=0.5,
+            rely=0.96,
+            anchor="s"
+        )
+
+        self.frame.pack_propagate(False)
+
+        # ==========================================
+        # Left Side (Launcher)
+        # ==========================================
+
+        self.left_frame = ctk.CTkFrame(
+            self.frame,
+            fg_color="transparent"
+        )
+
+        self.left_frame.pack(
+            side="left",
+            padx=15,
+            fill="y"
+        )
+
+        self.launcher_btn = ctk.CTkButton(
+            self.left_frame,
+            text="✦",
+            width=45,
+            height=45,
+            corner_radius=22,
+            fg_color="#00E5FF",
+            hover_color="#00BCD4",
+            font=("Segoe UI", 22, "bold"),
+            command=self.open_launcher
+        )
+
+        self.launcher_btn.pack(
+            pady=12
+        )
+
+        # ==========================================
+        # Center (Running Apps)
+        # ==========================================
+
+        self.apps_frame = ctk.CTkFrame(
+            self.frame,
+            fg_color="transparent"
+        )
+
+        self.apps_frame.pack(
+            side="left",
+            expand=True,
+            fill="both"
+        )
+
+        # ==========================================
+        # Right Side (Clock)
+        # ==========================================
+
+        self.right_frame = ctk.CTkFrame(
+            self.frame,
+            fg_color="transparent"
+        )
+
+        self.right_frame.pack(
+            side="right",
+            padx=15,
+            fill="y"
+        )
+
+        self.clock = Clock(self.right_frame)
+
+        # ==========================================
+        # Running Apps
+        # ==========================================
+
+        self.running_apps = {}
+
+    # =========================================================
+
+    def add_app(self, name, callback):
+
+        if name in self.running_apps:
+            return
+
+        button = ctk.CTkButton(
+            self.apps_frame,
+            text=name,
+            width=110,
+            height=42,
+            corner_radius=20,
+            fg_color="#252B3B",
+            hover_color="#3A4256",
+            command=callback
+        )
+
+        button.pack(
+            side="left",
+            padx=8,
+            pady=14
+        )
+
+        self.running_apps[name] = button
+
+    # =========================================================
+
+    def remove_app(self, name):
+
+        if name not in self.running_apps:
+            return
+
+        self.running_apps[name].destroy()
+
+        del self.running_apps[name]
+
+    # =========================================================
+
+    def open_launcher(self):
+
+        print("Launcher will open here...")

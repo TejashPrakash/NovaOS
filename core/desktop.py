@@ -1,55 +1,82 @@
 import customtkinter as ctk
 
-from core.taskbar import Taskbar
-from core.window_manager import WindowManager
 
+class Desktop:
 
-class Desktop(ctk.CTk):
+    def __init__(self, root):
 
-    def __init__(self):
-        super().__init__()
+        self.root = root
 
-        self.title("NovaOS")
-        self.geometry("1600x900")
-        self.minsize(1200, 700)
+        # -----------------------------
+        # Main Desktop Area
+        # -----------------------------
 
-        self.configure(fg_color="#0D1117")
-
-        # Desktop
-        self.desktop = ctk.CTkFrame(
-            self,
+        self.frame = ctk.CTkFrame(
+            self.root,
             fg_color="#0D1117",
             corner_radius=0
         )
-        self.desktop.pack(fill="both", expand=True)
 
-        # Title
-        title = ctk.CTkLabel(
-            self.desktop,
-            text="NovaOS",
-            font=("Segoe UI", 32, "bold"),
-            text_color="#00E5FF"
+        self.frame.pack(
+            fill="both",
+            expand=True
         )
-        title.place(x=30, y=20)
-
-        subtitle = ctk.CTkLabel(
-            self.desktop,
-            text="The Future of Personal Computing",
-            font=("Segoe UI", 14),
-            text_color="#BBBBBB"
-        )
-        subtitle.place(x=35, y=65)
-
-        # Taskbar
-        self.taskbar = Taskbar(self)
-
-        # Window Manager
-        self.window_manager = WindowManager(self.desktop,
-                                            self.taskbar)
-
 
         # -----------------------------
-        # Temporary test windows
+        # Wallpaper Layer
         # -----------------------------
-        self.window_manager.create_window("Browser")
-        self.window_manager.create_window("Notes")
+
+        self.wallpaper = ctk.CTkLabel(
+            self.frame,
+            text="",
+            fg_color="transparent"
+        )
+
+        self.wallpaper.place(
+            relwidth=1,
+            relheight=1
+        )
+
+        # -----------------------------
+        # Desktop Widgets Layer
+        # -----------------------------
+
+        self.widget_layer = ctk.CTkFrame(
+            self.frame,
+            fg_color="transparent"
+        )
+
+        self.widget_layer.place(
+            relwidth=1,
+            relheight=1
+        )
+
+        # -----------------------------
+        # Desktop Icons Layer
+        # -----------------------------
+
+        self.icon_layer = ctk.CTkFrame(
+            self.frame,
+            fg_color="transparent"
+        )
+
+        self.icon_layer.place(
+            relwidth=1,
+            relheight=1
+        )
+
+    # ==========================================
+    # Public API
+    # ==========================================
+
+    def get_canvas(self):
+
+        return self.frame
+
+    def get_widget_layer(self):
+
+        return self.widget_layer
+
+    def get_icon_layer(self):
+
+        return self.icon_layer

@@ -1,14 +1,11 @@
-import customtkinter as ctk
-
-from core.desktop import Desktop
-
-ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("blue")
+from core.app import NovaOS
 
 
 def main():
-    app = Desktop()
-    app.mainloop()
+
+    os = NovaOS()
+
+    os.run()
 
 
 if __name__ == "__main__":
