@@ -1,4 +1,4 @@
-from apps.browser import BrowserApp
+from apps.browser.browser import BrowserApp
 from apps.notes import NotesApp
 from apps.calculator import CalculatorApp
 from apps.file_manager import FileManagerApp

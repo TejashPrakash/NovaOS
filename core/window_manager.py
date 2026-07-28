@@ -1,6 +1,6 @@
 import customtkinter as ctk
 
-
+from apps.registry import APP_REGISTRY
 class AppWindow(ctk.CTkFrame):
 
     def __init__(
@@ -215,6 +215,10 @@ class WindowManager:
             width,
             height
         )
+
+        if title in APP_REGISTRY:
+
+            APP_REGISTRY[title].build(window)
 
         self.windows.append(window)
 
