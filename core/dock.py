@@ -141,4 +141,10 @@ class Dock:
 
     def open_launcher(self):
 
-        print("Launcher will open here...")
+        if self.launcher:
+
+            self.launcher.toggle()
+
+    def set_launcher(self, launcher):
+
+        self.launcher = launcher

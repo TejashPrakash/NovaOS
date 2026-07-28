@@ -131,6 +131,8 @@ class AppWindow(ctk.CTkFrame):
 
         self.lift()
 
+        self.focus_force()
+        
     # =====================================================
 
     def close(self):
@@ -190,6 +192,22 @@ class WindowManager:
         width=520,
         height=360
     ):
+
+        # ----------------------------------
+        # Already running?
+        # ----------------------------------
+
+        for window in self.windows:
+
+            if window.title == title:
+
+                window.focus_window()
+
+                return window
+
+        # ----------------------------------
+        # Create new window
+        # ----------------------------------
 
         window = AppWindow(
             self,
