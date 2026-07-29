@@ -1,6 +1,8 @@
 import customtkinter as ctk
 
 from apps.registry import APP_REGISTRY
+
+
 class AppWindow(ctk.CTkFrame):
 
     def __init__(
@@ -23,6 +25,7 @@ class AppWindow(ctk.CTkFrame):
 
         self.manager = manager
         self.title = title
+        self.app = None
 
         self.place(
             x=manager.next_x,
@@ -51,10 +54,7 @@ class AppWindow(ctk.CTkFrame):
             corner_radius=16
         )
 
-        self.titlebar.pack(
-            fill="x"
-        )
-
+        self.titlebar.pack(fill="x")
         self.titlebar.pack_propagate(False)
 
         self.title_label = ctk.CTkLabel(
@@ -68,9 +68,9 @@ class AppWindow(ctk.CTkFrame):
             padx=15
         )
 
-        # -----------------------------
-        # Close
-        # -----------------------------
+        # ======================================
+        # Close Button
+        # ======================================
 
         self.close_btn = ctk.CTkButton(
             self.titlebar,
@@ -87,9 +87,9 @@ class AppWindow(ctk.CTkFrame):
             pady=5
         )
 
-        # -----------------------------
+        # ======================================
         # Content
-        # -----------------------------
+        # ======================================
 
         self.content = ctk.CTkFrame(
             self,
@@ -101,9 +101,9 @@ class AppWindow(ctk.CTkFrame):
             expand=True
         )
 
-        # -----------------------------
-        # Dragging
-        # -----------------------------
+        # ======================================
+        # Window Dragging
+        # ======================================
 
         self.titlebar.bind(
             "<Button-1>",
@@ -130,9 +130,8 @@ class AppWindow(ctk.CTkFrame):
     def focus_window(self):
 
         self.lift()
-
         self.focus_force()
-        
+
     # =====================================================
 
     def close(self):
@@ -146,7 +145,6 @@ class AppWindow(ctk.CTkFrame):
         self.focus_window()
 
         self._x = event.x
-
         self._y = event.y
 
     # =====================================================
@@ -154,7 +152,6 @@ class AppWindow(ctk.CTkFrame):
     def do_move(self, event):
 
         x = self.winfo_x() + event.x - self._x
-
         y = self.winfo_y() + event.y - self._y
 
         self.place(
@@ -175,13 +172,11 @@ class WindowManager:
     ):
 
         self.desktop = desktop
-
         self.dock = dock
 
         self.windows = []
 
         self.next_x = 150
-
         self.next_y = 80
 
     # =====================================================
@@ -194,7 +189,7 @@ class WindowManager:
     ):
 
         # ----------------------------------
-        # Already running?
+        # Already Open?
         # ----------------------------------
 
         for window in self.windows:
@@ -206,7 +201,7 @@ class WindowManager:
                 return window
 
         # ----------------------------------
-        # Create new window
+        # Create Window
         # ----------------------------------
 
         window = AppWindow(
@@ -216,9 +211,17 @@ class WindowManager:
             height
         )
 
+        # ----------------------------------
+        # Create Application
+        # ----------------------------------
+
         if title in APP_REGISTRY:
 
-            APP_REGISTRY[title].build(window)
+            app = APP_REGISTRY[title](window)
+
+            window.app = app
+
+            app.build()
 
         self.windows.append(window)
 
@@ -236,12 +239,13 @@ class WindowManager:
         window
     ):
 
-        if window in self.windows:
+        if window not in self.windows:
+            return
 
-            self.windows.remove(window)
+        self.windows.remove(window)
 
-            self.dock.remove_app(
-                window.title
-            )
+        self.dock.remove_app(
+            window.title
+        )
 
-            window.destroy()
+        window.destroy()

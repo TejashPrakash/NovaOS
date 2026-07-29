@@ -1,7 +1,7 @@
 import customtkinter as ctk
 
 
-class BrowserToolbar(ctk.CTkFrame):
+class FileToolbar(ctk.CTkFrame):
 
     def __init__(self, parent):
 
@@ -14,9 +14,9 @@ class BrowserToolbar(ctk.CTkFrame):
 
         self.pack_propagate(False)
 
-        # =====================================
+        # ======================================
         # Back
-        # =====================================
+        # ======================================
 
         self.back_btn = ctk.CTkButton(
             self,
@@ -30,9 +30,9 @@ class BrowserToolbar(ctk.CTkFrame):
             pady=10
         )
 
-        # =====================================
+        # ======================================
         # Forward
-        # =====================================
+        # ======================================
 
         self.forward_btn = ctk.CTkButton(
             self,
@@ -46,9 +46,25 @@ class BrowserToolbar(ctk.CTkFrame):
             pady=10
         )
 
-        # =====================================
+        # ======================================
+        # Up
+        # ======================================
+
+        self.up_btn = ctk.CTkButton(
+            self,
+            text="↑",
+            width=40
+        )
+
+        self.up_btn.pack(
+            side="left",
+            padx=5,
+            pady=10
+        )
+
+        # ======================================
         # Refresh
-        # =====================================
+        # ======================================
 
         self.refresh_btn = ctk.CTkButton(
             self,
@@ -62,16 +78,18 @@ class BrowserToolbar(ctk.CTkFrame):
             pady=10
         )
 
-        # =====================================
-        # Address Bar
-        # =====================================
+        # ======================================
+        # Path Bar
+        # ======================================
 
-        self.address = ctk.CTkEntry(
+        self.path_var = ctk.StringVar()
+
+        self.path_entry = ctk.CTkEntry(
             self,
-            placeholder_text="Search or enter a website..."
+            textvariable=self.path_var
         )
 
-        self.address.pack(
+        self.path_entry.pack(
             side="left",
             fill="x",
             expand=True,
@@ -79,18 +97,8 @@ class BrowserToolbar(ctk.CTkFrame):
             pady=10
         )
 
-        # =====================================
-        # Go
-        # =====================================
+    # ======================================
 
-        self.go_btn = ctk.CTkButton(
-            self,
-            text="Go",
-            width=60
-        )
+    def set_path(self, path):
 
-        self.go_btn.pack(
-            side="right",
-            padx=10,
-            pady=10
-        )
+        self.path_var.set(str(path))

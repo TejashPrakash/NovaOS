@@ -1,7 +1,7 @@
 from apps.browser.browser import BrowserApp
-from apps.notes import NotesApp
-from apps.calculator import CalculatorApp
-from apps.file_manager import FileManagerApp
+from apps.notes.notes import NotesApp
+from apps.calculator.calculator import CalculatorApp
+from apps.file_manager.file_manager import FileManagerApp
 from apps.settings import SettingsApp
 from apps.music_player import MusicPlayerApp
 

@@ -1,20 +1,21 @@
-import customtkinter as ctk
+from core.base_app import BaseApp
 
 from apps.browser.ui.toolbar import BrowserToolbar
-from apps.browser.engine.webview import BrowserWebView
+from apps.browser.ui.homepage import BrowserHome
 
 
-class BrowserApp:
+class BrowserApp(BaseApp):
 
-    @staticmethod
-    def build(window):
+    APP_NAME = "Browser"
+    APP_ICON = "🌐"
 
-        browser = BrowserWebView(window.content)
+    def __init__(self, window):
 
-        toolbar = BrowserToolbar(
-            window.content,
-            browser
-        )
+        super().__init__(window)
+
+    def build(self):
+
+        toolbar = BrowserToolbar(self.content)
 
         toolbar.pack(
             fill="x",
@@ -22,7 +23,9 @@ class BrowserApp:
             pady=(8, 0)
         )
 
-        browser.pack(
+        homepage = BrowserHome(self.content)
+
+        homepage.pack(
             fill="both",
             expand=True,
             padx=8,
