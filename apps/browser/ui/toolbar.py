@@ -14,9 +14,9 @@ class BrowserToolbar(ctk.CTkFrame):
 
         self.pack_propagate(False)
 
-        # =====================================
+        # ==========================================
         # Back
-        # =====================================
+        # ==========================================
 
         self.back_btn = ctk.CTkButton(
             self,
@@ -30,9 +30,9 @@ class BrowserToolbar(ctk.CTkFrame):
             pady=10
         )
 
-        # =====================================
+        # ==========================================
         # Forward
-        # =====================================
+        # ==========================================
 
         self.forward_btn = ctk.CTkButton(
             self,
@@ -46,9 +46,9 @@ class BrowserToolbar(ctk.CTkFrame):
             pady=10
         )
 
-        # =====================================
+        # ==========================================
         # Refresh
-        # =====================================
+        # ==========================================
 
         self.refresh_btn = ctk.CTkButton(
             self,
@@ -62,16 +62,34 @@ class BrowserToolbar(ctk.CTkFrame):
             pady=10
         )
 
-        # =====================================
-        # Address Bar
-        # =====================================
+        # ==========================================
+        # Home
+        # ==========================================
 
-        self.address = ctk.CTkEntry(
+        self.home_btn = ctk.CTkButton(
             self,
-            placeholder_text="Search or enter a website..."
+            text="🏠",
+            width=40
         )
 
-        self.address.pack(
+        self.home_btn.pack(
+            side="left",
+            padx=5,
+            pady=10
+        )
+
+        # ==========================================
+        # Address Bar
+        # ==========================================
+
+        self.url_var = ctk.StringVar()
+
+        self.url_entry = ctk.CTkEntry(
+            self,
+            textvariable=self.url_var
+        )
+
+        self.url_entry.pack(
             side="left",
             fill="x",
             expand=True,
@@ -79,9 +97,9 @@ class BrowserToolbar(ctk.CTkFrame):
             pady=10
         )
 
-        # =====================================
-        # Go
-        # =====================================
+        # ==========================================
+        # Go Button
+        # ==========================================
 
         self.go_btn = ctk.CTkButton(
             self,
@@ -94,3 +112,13 @@ class BrowserToolbar(ctk.CTkFrame):
             padx=10,
             pady=10
         )
+
+    # ==========================================
+
+    def set_url(self, url):
+
+        self.url_var.set(url)
+
+    def get_url(self):
+
+        return self.url_var.get()
