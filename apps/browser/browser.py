@@ -5,6 +5,7 @@ from apps.browser.services.browser_engine import BrowserEngine
 from apps.browser.ui.statusbar import BrowserStatusBar
 from apps.browser.ui.toolbar import BrowserToolbar
 from apps.browser.ui.homepage import BrowserHomepage
+from apps.browser.ui.tabs import BrowserTabs
 
 
 class BrowserApp(BaseApp):
@@ -24,6 +25,73 @@ class BrowserApp(BaseApp):
         self.engine = BrowserEngine()
 
         self.bookmarks = BookmarkService()
+
+        self.tabs = []
+
+        self.current_tab = None
+
+        self.next_tab_id = 1
+
+        self.create_new_tab()
+
+        self.refresh_tabs()
+
+    # =====================================================
+
+    def create_new_tab(self):
+
+        from apps.browser.models.tab import BrowserTab
+
+        tab = BrowserTab(
+            id=self.next_tab_id
+        )
+
+        self.next_tab_id += 1
+
+        self.tabs.append(tab)
+
+        self.current_tab = tab
+
+        return tab
+
+    # =====================================================
+
+    def new_tab(self):
+
+        self.create_new_tab()
+
+        self.refresh_tabs()
+
+    # =====================================================
+
+    def switch_tab(self, tab):
+
+        self.current_tab = tab
+
+        self.refresh_tabs()
+
+    # =====================================================
+
+    def close_tab(self, tab):
+
+        if len(self.tabs) == 1:
+            return
+
+        self.tabs.remove(tab)
+
+        if self.current_tab == tab:
+            self.current_tab = self.tabs[-1]
+
+        self.refresh_tabs()
+
+    # =====================================================
+
+    def refresh_tabs(self):
+
+        self.tabs_bar.refresh(
+            self.tabs,
+            self.current_tab
+        )
 
     # =====================================================
 
@@ -55,6 +123,20 @@ class BrowserApp(BaseApp):
             fill="x",
             padx=8,
             pady=(8, 0)
+        )
+
+        self.tabs_bar = BrowserTabs(self.content)
+
+        self.tabs_bar.pack(
+            fill="x",
+            padx=8,
+            pady=(8, 0)
+        )
+
+        self.tabs_bar.set_callbacks(
+            self.switch_tab,
+            self.close_tab,
+            self.new_tab
         )
 
         # ---------------------------------------
