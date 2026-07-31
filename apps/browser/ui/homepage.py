@@ -10,6 +10,10 @@ class BrowserHomepage(ctk.CTkFrame):
             fg_color="transparent"
         )
 
+        # ==========================================
+        # Title
+        # ==========================================
+
         title = ctk.CTkLabel(
             self,
             text="Nova Browser",
@@ -29,6 +33,10 @@ class BrowserHomepage(ctk.CTkFrame):
 
         subtitle.pack()
 
+        # ==========================================
+        # Search Box
+        # ==========================================
+
         self.search = ctk.CTkEntry(
             self,
             width=500,
@@ -37,8 +45,26 @@ class BrowserHomepage(ctk.CTkFrame):
         )
 
         self.search.pack(
-            pady=40
+            pady=(40, 15)
         )
+
+        # ==========================================
+        # Search Button
+        # ==========================================
+
+        self.search_btn = ctk.CTkButton(
+            self,
+            text="Search",
+            width=140
+        )
+
+        self.search_btn.pack(
+            pady=(0, 30)
+        )
+
+        # ==========================================
+        # Bookmarks
+        # ==========================================
 
         self.bookmarks_frame = ctk.CTkFrame(
             self,
@@ -46,8 +72,10 @@ class BrowserHomepage(ctk.CTkFrame):
         )
 
         self.bookmarks_frame.pack(
-            pady=30
+            pady=10
         )
+
+    # =====================================================
 
     def load_bookmarks(self, bookmarks, callback):
 
@@ -57,11 +85,8 @@ class BrowserHomepage(ctk.CTkFrame):
         for bookmark in bookmarks:
 
             button = ctk.CTkButton(
-
                 self.bookmarks_frame,
-
                 text=bookmark["title"],
-
                 width=130,
                 command=lambda b=bookmark: callback(b)
             )

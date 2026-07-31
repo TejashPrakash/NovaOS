@@ -2,7 +2,7 @@ from core.base_app import BaseApp
 from apps.browser.services.bookmarks import BookmarkService
 from apps.browser.controller.browser_controller import BrowserController
 from apps.browser.services.browser_engine import BrowserEngine
-
+from apps.browser.ui.statusbar import BrowserStatusBar
 from apps.browser.ui.toolbar import BrowserToolbar
 from apps.browser.ui.homepage import BrowserHomepage
 
@@ -77,6 +77,14 @@ class BrowserApp(BaseApp):
             self.open_bookmark
         )
 
+        self.statusbar = BrowserStatusBar(self.content)
+
+        self.statusbar.pack(
+            fill="x",
+            padx=8,
+            pady=(0, 8)
+        )
+
         # ---------------------------------------
         # Initial URL
         # ---------------------------------------
@@ -135,7 +143,15 @@ class BrowserApp(BaseApp):
 
         self.toolbar.set_url(url)
 
+        self.statusbar.set_status(
+            f"Opening {bookmark['title']}..."
+        )
+
         self.engine.load(url)
+
+        self.statusbar.set_status(
+            f"Loaded {bookmark['title']}"
+        )
 
         self.update_navigation()
 
@@ -149,7 +165,15 @@ class BrowserApp(BaseApp):
 
         self.toolbar.set_url(url)
 
+        self.statusbar.set_status(
+            "Loading..."
+        )
+
         self.engine.load(url)
+
+        self.statusbar.set_status(
+            f"Loaded {url}"
+        )
 
         self.update_navigation()
 
@@ -185,7 +209,11 @@ class BrowserApp(BaseApp):
 
         self.toolbar.set_url(url)
 
+        self.statusbar.set_status("Loading Home...")
+
         self.engine.load(url)
+
+        self.statusbar.set_status("Home Loaded")
 
         self.update_navigation()
 
@@ -193,7 +221,11 @@ class BrowserApp(BaseApp):
 
     def refresh(self):
 
+        self.statusbar.set_status("Refreshing...")
+
         self.engine.reload()
+
+        self.statusbar.set_status("Ready")
 
     # =====================================================
 
