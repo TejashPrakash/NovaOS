@@ -1,4 +1,4 @@
-from core.base_app import BaseApp
+from sdk.app import NovaApp
 from apps.browser.services.bookmarks import BookmarkService
 from apps.browser.controller.browser_controller import BrowserController
 from apps.browser.services.browser_engine import BrowserEngine
@@ -8,7 +8,7 @@ from apps.browser.ui.homepage import BrowserHomepage
 from apps.browser.ui.tabs import BrowserTabs
 
 
-class BrowserApp(BaseApp):
+class BrowserApp(NovaApp):
 
     APP_NAME = "Browser"
 
@@ -31,10 +31,6 @@ class BrowserApp(BaseApp):
         self.current_tab = None
 
         self.next_tab_id = 1
-
-        self.create_new_tab()
-
-        self.refresh_tabs()
 
     # =====================================================
 
@@ -92,6 +88,18 @@ class BrowserApp(BaseApp):
             self.tabs,
             self.current_tab
         )
+
+    # =====================================================
+
+    def update_current_tab(self, url, title):
+
+        if self.current_tab is None:
+            return
+
+        self.current_tab.url = url
+        self.current_tab.title = title
+
+        self.refresh_tabs()
 
     # =====================================================
 
@@ -215,6 +223,9 @@ class BrowserApp(BaseApp):
 
         self.update_navigation()
 
+        self.create_new_tab()
+        self.refresh_tabs()
+
     # =====================================================
 
     def open_bookmark(self, bookmark):
@@ -230,6 +241,8 @@ class BrowserApp(BaseApp):
         )
 
         self.engine.load(url)
+
+        self.update_current_tab(url, bookmark["title"])
 
         self.statusbar.set_status(
             f"Loaded {bookmark['title']}"
@@ -253,6 +266,8 @@ class BrowserApp(BaseApp):
 
         self.engine.load(url)
 
+        self.update_current_tab(url, url)
+
         self.statusbar.set_status(
             f"Loaded {url}"
         )
@@ -268,7 +283,7 @@ class BrowserApp(BaseApp):
         self.toolbar.set_url(url)
 
         self.engine.load(url)
-
+        self.update_current_tab(url, url)
         self.update_navigation()
 
     # =====================================================
@@ -280,6 +295,8 @@ class BrowserApp(BaseApp):
         self.toolbar.set_url(url)
 
         self.engine.load(url)
+
+        self.update_current_tab(url, url)
 
         self.update_navigation()
 
@@ -294,6 +311,8 @@ class BrowserApp(BaseApp):
         self.statusbar.set_status("Loading Home...")
 
         self.engine.load(url)
+
+        self.update_current_tab(url, "Home")
 
         self.statusbar.set_status("Home Loaded")
 
@@ -323,5 +342,7 @@ class BrowserApp(BaseApp):
         self.toolbar.set_url(url)
 
         self.engine.load(url)
+
+        self.update_current_tab(url, query)
 
         self.update_navigation()
