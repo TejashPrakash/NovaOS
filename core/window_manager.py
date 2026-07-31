@@ -185,7 +185,8 @@ class WindowManager:
         self,
         title,
         width=520,
-        height=360
+        height=360,
+        launch_app=True
     ):
 
         # ----------------------------------
@@ -215,7 +216,7 @@ class WindowManager:
         # Create Application
         # ----------------------------------
 
-        if title in APP_REGISTRY:
+        if launch_app and title in APP_REGISTRY:
 
             app = APP_REGISTRY[title](window)
 

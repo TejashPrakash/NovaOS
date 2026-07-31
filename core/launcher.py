@@ -3,10 +3,13 @@ import customtkinter as ctk
 
 class Launcher:
 
-    def __init__(self, root, window_manager):
+    def __init__(self, root, kernel):
 
         self.root = root
-        self.window_manager = window_manager
+        self.kernel = kernel
+
+        self.window_manager = kernel.window_manager
+        self.process_manager = kernel.process_manager
 
         self.visible = False
 
@@ -132,7 +135,7 @@ class Launcher:
 
     def launch(self, app):
 
-        self.window_manager.create_window(app)
+        self.kernel.process_manager.start_process(app)
 
         self.hide()
 
