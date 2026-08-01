@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -10,8 +10,8 @@ class BrowserTab:
 
     url: str = "about:home"
 
+    history: list = field(default_factory=list)
+
+    history_index: int = -1
+
     loading: bool = False
-
-    can_go_back: bool = False
-
-    can_go_forward: bool = False

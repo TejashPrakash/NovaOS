@@ -3,15 +3,21 @@ import customtkinter as ctk
 
 class NovaApp(ctk.CTkFrame):
     """
-    Base class for every NovaOS application.
+    Shared base class for NovaOS applications.
     """
 
     APP_NAME = "Application"
     APP_ICON = "📦"
 
-    def __init__(self, window):
+    def __init__(self, window, **kwargs):
         self.window = window
-        self.content = window.content
+        self.content = getattr(window, "content", None)
+
+        if self.content is None:
+            raise AttributeError("Window must expose a content frame")
+
+        super().__init__(self.content, fg_color="transparent", **kwargs)
+        self.pack(fill="both", expand=True)
 
     # ======================================
 
@@ -50,5 +56,13 @@ class NovaApp(ctk.CTkFrame):
     def on_blur(self):
         """
         Called when another window becomes active.
+        """
+        pass
+
+    # ======================================
+
+    def refresh(self):
+        """
+        Optional hook for subclasses that need to refresh UI state.
         """
         pass

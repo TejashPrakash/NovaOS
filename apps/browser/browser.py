@@ -105,15 +105,20 @@ class BrowserApp(NovaApp):
 
     def update_navigation(self):
 
+        if not hasattr(self, "toolbar"):
+            return
+
+        tab = self.current_tab
+
         self.toolbar.back_btn.configure(
             state="normal"
-            if self.controller.can_go_back()
+            if tab is not None and self.controller.can_go_back(tab)
             else "disabled"
         )
 
         self.toolbar.forward_btn.configure(
             state="normal"
-            if self.controller.can_go_forward()
+            if tab is not None and self.controller.can_go_forward(tab)
             else "disabled"
         )
 
@@ -179,8 +184,10 @@ class BrowserApp(NovaApp):
         # Initial URL
         # ---------------------------------------
 
+        self.create_new_tab()
+
         self.toolbar.set_url(
-            self.controller.get_home()
+            self.controller.go_home(self.current_tab)
         )
 
         # ---------------------------------------
@@ -223,7 +230,6 @@ class BrowserApp(NovaApp):
 
         self.update_navigation()
 
-        self.create_new_tab()
         self.refresh_tabs()
 
     # =====================================================
@@ -231,6 +237,7 @@ class BrowserApp(NovaApp):
     def open_bookmark(self, bookmark):
 
         url = self.controller.navigate(
+            self.current_tab,
             bookmark["url"]
         )
 
@@ -256,7 +263,7 @@ class BrowserApp(NovaApp):
 
         url = self.toolbar.get_url()
 
-        url = self.controller.navigate(url)
+        url = self.controller.navigate(self.current_tab, url)
 
         self.toolbar.set_url(url)
 
@@ -278,7 +285,7 @@ class BrowserApp(NovaApp):
 
     def back(self):
 
-        url = self.controller.go_back()
+        url = self.controller.go_back(self.current_tab)
 
         self.toolbar.set_url(url)
 
@@ -290,7 +297,7 @@ class BrowserApp(NovaApp):
 
     def forward(self):
 
-        url = self.controller.go_forward()
+        url = self.controller.go_forward(self.current_tab)
 
         self.toolbar.set_url(url)
 
@@ -304,7 +311,7 @@ class BrowserApp(NovaApp):
 
     def home(self):
 
-        url = self.controller.go_home()
+        url = self.controller.go_home(self.current_tab)
 
         self.toolbar.set_url(url)
 
@@ -337,7 +344,7 @@ class BrowserApp(NovaApp):
         if not query:
             return
 
-        url = self.controller.navigate(query)
+        url = self.controller.navigate(self.current_tab, query)
 
         self.toolbar.set_url(url)
 

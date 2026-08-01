@@ -211,6 +211,7 @@ class WindowManager:
             width,
             height
         )
+        self.desktop.kernel.events.emit("window_created", window)
 
         # ----------------------------------
         # Create Application

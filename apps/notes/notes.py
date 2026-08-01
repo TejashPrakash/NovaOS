@@ -1,9 +1,9 @@
-from core.base_app import BaseApp
+from sdk.app import NovaApp
 
 import customtkinter as ctk
 
 
-class NotesApp(BaseApp):
+class NotesApp(NovaApp):
 
     APP_NAME = "Notes"
 

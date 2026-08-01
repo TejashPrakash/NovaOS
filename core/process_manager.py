@@ -79,6 +79,7 @@ class ProcessManager:
         # -----------------------------
 
         self.processes[process.pid] = process
+        self.kernel.events.emit("process_started", process)
 
         print(f"[Kernel] Started {app_name} ({process.pid})")
 

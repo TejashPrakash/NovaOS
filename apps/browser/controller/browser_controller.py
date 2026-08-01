@@ -2,97 +2,86 @@ class BrowserController:
 
     HOME_URL = "https://www.google.com"
 
-    def __init__(self):
+    # ============================================
 
-        self.current_url = self.HOME_URL
-
-        self.back_history = []
-
-        self.forward_history = []
-
-    # =====================================================
-
-    def get_home(self):
-
-        return self.HOME_URL
-
-    # =====================================================
-
-    def get_url(self):
-
-        return self.current_url
-
-    # =====================================================
-
-    def navigate(self, url):
+    def normalize_url(self, url):
 
         url = url.strip()
 
         if not url:
-            return self.current_url
+            return self.HOME_URL
 
         if " " in url:
 
-            url = (
+            return (
                 "https://www.google.com/search?q="
                 + url.replace(" ", "+")
             )
 
-        elif not url.startswith("http://") \
+        if not url.startswith("http://") \
                 and not url.startswith("https://"):
 
-            url = "https://" + url
+            return "https://" + url
 
-        if url != self.current_url:
+        return url
 
-            self.back_history.append(self.current_url)
+    # ============================================
 
-            self.forward_history.clear()
+    def navigate(self, tab, url):
 
-            self.current_url = url
+        url = self.normalize_url(url)
 
-        return self.current_url
+        if tab.history_index < len(tab.history) - 1:
+            tab.history = tab.history[:tab.history_index + 1]
 
-    # =====================================================
+        if not tab.history or tab.history[-1] != url:
+            tab.history.append(url)
 
-    def go_home(self):
+        tab.history_index = len(tab.history) - 1
+        tab.url = url
 
-        return self.navigate(self.HOME_URL)
+        return url
 
-    # =====================================================
+    # ============================================
 
-    def can_go_back(self):
+    def go_home(self, tab):
 
-        return len(self.back_history) > 0
+        return self.navigate(tab, self.HOME_URL)
 
-    # =====================================================
+    # ============================================
 
-    def can_go_forward(self):
+    def can_go_back(self, tab):
 
-        return len(self.forward_history) > 0
+        return tab.history_index > 0
 
-    # =====================================================
+    # ============================================
 
-    def go_back(self):
+    def can_go_forward(self, tab):
 
-        if not self.can_go_back():
-            return self.current_url
+        return tab.history_index < len(tab.history) - 1
 
-        self.forward_history.append(self.current_url)
+    # ============================================
 
-        self.current_url = self.back_history.pop()
+    def go_back(self, tab):
 
-        return self.current_url
+        if not self.can_go_back(tab):
+            return tab.url
 
-    # =====================================================
+        tab.history_index -= 1
 
-    def go_forward(self):
+        tab.url = tab.history[tab.history_index]
 
-        if not self.can_go_forward():
-            return self.current_url
+        return tab.url
 
-        self.back_history.append(self.current_url)
+    # ============================================
 
-        self.current_url = self.forward_history.pop()
+    def go_forward(self, tab):
 
-        return self.current_url
+        if not self.can_go_forward(tab):
+            return tab.url
+
+        tab.history_index += 1
+
+        tab.url = tab.history[tab.history_index]
+
+        return tab.url

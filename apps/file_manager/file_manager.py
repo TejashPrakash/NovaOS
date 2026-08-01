@@ -1,13 +1,13 @@
 from pathlib import Path
 
-from core.base_app import BaseApp
+from sdk.app import NovaApp
 
 from apps.file_manager.services.filesystem import FileSystem
 from apps.file_manager.ui.toolbar import FileToolbar
 from apps.file_manager.ui.file_list import FileList
 
 
-class FileManagerApp(BaseApp):
+class FileManagerApp(NovaApp):
 
     APP_NAME = "Files"
 
