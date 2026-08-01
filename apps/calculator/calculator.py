@@ -9,16 +9,6 @@ class CalculatorApp(NovaApp):
 
     APP_ICON = "🧮"
 
-    def __init__(self, window):
-
-        super().__init__(window)
-
     def build(self):
 
-        label = ctk.CTkLabel(
-            self.content,
-            text="Calculator Coming Soon",
-            font=("Segoe UI", 24, "bold")
-        )
-
-        label.pack(expand=True)
+        self.build_placeholder(self.APP_NAME)

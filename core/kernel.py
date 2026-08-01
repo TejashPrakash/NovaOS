@@ -6,6 +6,8 @@ from services.audio_service import AudioService
 from services.settings_service import SettingsService
 from services.wallpaper_service import WallpaperService
 from sdk.command import CommandRegistry
+from commands.app_commands import OpenAppCommand
+from commands.system_commands import ShutdownCommand
 
 class Kernel:
     """
@@ -49,8 +51,10 @@ class Kernel:
         self.register_service("settings", SettingsService())
         self.register_service("wallpaper", WallpaperService())
         self.register_service("process_manager", self.process_manager)
-
+        self.commands.register(OpenAppCommand())
+        self.commands.register(ShutdownCommand())
         self.running = True
+        print(self.commands.all())
 
     # =====================================================
 

@@ -18,13 +18,10 @@ class NovaOS:
         self.root = ctk.CTk()
 
         self.root.title("NovaOS")
-
         self.root.geometry("1600x900")
-
         self.root.minsize(1200, 700)
 
         ctk.set_appearance_mode("Dark")
-
         ctk.set_default_color_theme("blue")
 
         # ==========================================
@@ -32,7 +29,6 @@ class NovaOS:
         # ==========================================
 
         self.kernel = Kernel()
-
         self.kernel.boot()
 
         # ==========================================
@@ -40,7 +36,6 @@ class NovaOS:
         # ==========================================
 
         self.desktop = Desktop(self.root)
-
         self.kernel.desktop = self.desktop
 
         # ==========================================
@@ -48,7 +43,6 @@ class NovaOS:
         # ==========================================
 
         self.dock = Dock(self.root)
-
         self.kernel.dock = self.dock
 
         # ==========================================
@@ -57,10 +51,27 @@ class NovaOS:
 
         self.window_manager = WindowManager(
             self.desktop,
-            self.dock
+            self.dock,
+            self.kernel      # <-- NEW
         )
 
         self.kernel.window_manager = self.window_manager
+
+        # Register as a kernel service
+        self.kernel.register_service(
+            "window_manager",
+            self.window_manager
+        )
+
+        self.kernel.register_service(
+            "desktop",
+            self.desktop
+        )
+
+        self.kernel.register_service(
+            "dock",
+            self.dock
+        )
 
         # ==========================================
         # Launcher
@@ -71,9 +82,7 @@ class NovaOS:
             self.kernel
         )
 
-        self.dock.set_launcher(
-            self.launcher
-        )
+        self.dock.set_launcher(self.launcher)
 
         # ==========================================
         # Global Events
@@ -91,7 +100,7 @@ class NovaOS:
 
         print("[NovaOS] System Ready")
 
-    # =====================================================
+    # ==========================================
 
     def run(self):
 

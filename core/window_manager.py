@@ -165,15 +165,11 @@ class AppWindow(ctk.CTkFrame):
 
 class WindowManager:
 
-    def __init__(
-        self,
-        desktop,
-        dock
-    ):
+    def __init__(self,desktop,dock,kernel):
 
         self.desktop = desktop
         self.dock = dock
-
+        self.kernel = kernel
         self.windows = []
 
         self.next_x = 150
@@ -184,10 +180,25 @@ class WindowManager:
     def create_window(
         self,
         title,
-        width=520,
-        height=360,
+        width=None,
+        height=None,
         launch_app=True
     ):
+
+        if title in APP_REGISTRY:
+            app_class = APP_REGISTRY[title]
+
+            if width is None:
+                width = app_class.DEFAULT_WIDTH
+
+            if height is None:
+                height = app_class.DEFAULT_HEIGHT
+
+        if width is None:
+            width = 520
+
+        if height is None:
+            height = 360
 
         # ----------------------------------
         # Already Open?
@@ -211,7 +222,7 @@ class WindowManager:
             width,
             height
         )
-        self.desktop.kernel.events.emit("window_created", window)
+        self.kernel.events.emit("window_created", window)
 
         # ----------------------------------
         # Create Application

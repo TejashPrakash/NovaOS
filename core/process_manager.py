@@ -17,22 +17,30 @@ class ProcessManager:
 
     def start_process(self, app_name):
 
-        # -----------------------------
+        # ---------------------------------
         # Already running?
-        # -----------------------------
+        # ---------------------------------
 
-        for process in self.processes.values():
+        for pid, process in list(self.processes.items()):
 
-            if process.name == app_name:
+            if process.name != app_name:
+                continue
 
-                if process.window:
-                    process.window.focus_window()
-
+            # Window still exists
+            if (
+                process.window is not None
+                and process.window.winfo_exists()
+            ):
+                process.window.focus_window()
                 return process
 
-        # -----------------------------
-        # Application exists?
-        # -----------------------------
+            # Dead window -> remove process
+            del self.processes[pid]
+            break
+
+        # ---------------------------------
+        # Unknown app
+        # ---------------------------------
 
         if app_name not in APP_REGISTRY:
 
@@ -40,9 +48,9 @@ class ProcessManager:
 
             return None
 
-        # -----------------------------
+        # ---------------------------------
         # Create Process
-        # -----------------------------
+        # ---------------------------------
 
         process = Process(
             app_name,
@@ -51,35 +59,42 @@ class ProcessManager:
 
         process.start()
 
-        # -----------------------------
+        # ---------------------------------
         # Create Window
-        # -----------------------------
+        # ---------------------------------
+
+        app_class = APP_REGISTRY[app_name]
 
         window = self.kernel.window_manager.create_window(
             app_name,
+            width=app_class.DEFAULT_WIDTH,
+            height=app_class.DEFAULT_HEIGHT,
             launch_app=False
         )
 
         process.window = window
 
-        # -----------------------------
-        # Create Application
-        # -----------------------------
+        # ---------------------------------
+        # Create App
+        # ---------------------------------
 
-        app = APP_REGISTRY[app_name](window)
+        app = app_class(window)
 
         process.instance = app
-
         window.app = app
 
         app.build()
 
-        # -----------------------------
-        # Register Process
-        # -----------------------------
+        # ---------------------------------
+        # Register
+        # ---------------------------------
 
         self.processes[process.pid] = process
-        self.kernel.events.emit("process_started", process)
+
+        self.kernel.events.emit(
+            "process_started",
+            process
+        )
 
         print(f"[Kernel] Started {app_name} ({process.pid})")
 
@@ -87,21 +102,40 @@ class ProcessManager:
 
     # =====================================================
 
-    def stop_process(self, pid):
+    def stop_process(self, app_name):
 
-        if pid not in self.processes:
-            return
+        """
+        Stop process by application name.
+        """
 
-        process = self.processes[pid]
+        for pid, process in list(self.processes.items()):
 
-        process.terminate()
+            if process.name != app_name:
+                continue
 
-        if process.window:
-            self.kernel.window_manager.close_window(
-                process.window
+            process.terminate()
+
+            del self.processes[pid]
+
+            self.kernel.events.emit(
+                "process_stopped",
+                process
             )
 
-        del self.processes[pid]
+            print(f"[Kernel] Stopped {app_name} ({pid})")
+
+            return
+
+    # =====================================================
+
+    def get_process(self, app_name):
+
+        for process in self.processes.values():
+
+            if process.name == app_name:
+                return process
+
+        return None
 
     # =====================================================
 
