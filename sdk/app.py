@@ -15,18 +15,33 @@ class NovaApp(ctk.CTkFrame):
     def __init__(self, window, **kwargs):
 
         self.window = window
-        self.content = getattr(window, "content", None)
+        window_content = getattr(window, "content", None)
 
-        if self.content is None:
+        if window_content is None:
             raise AttributeError("Window must expose a content frame")
 
         super().__init__(
-            self.content,
+            window_content,
             fg_color="transparent",
             **kwargs
         )
 
-        self.pack(fill="both", expand=True)
+        # NovaApp fills the window's available content area.
+        self.pack(
+            fill="both",
+            expand=True
+        )
+
+        # Every app builds its widgets inside this frame.
+        self.content = ctk.CTkFrame(
+            self,
+            fg_color="transparent"
+        )
+
+        self.content.pack(
+            fill="both",
+            expand=True
+        )
 
     # ======================================
 
@@ -47,3 +62,27 @@ class NovaApp(ctk.CTkFrame):
 
     def refresh(self):
         pass
+
+    def build_placeholder(self, title="Coming Soon"):
+
+        frame = ctk.CTkFrame(
+            self,
+            fg_color="transparent"
+        )
+
+        frame.pack(expand=True, fill="both")
+
+        icon = ctk.CTkLabel(
+            frame,
+            text="🚧",
+            font=("Segoe UI Emoji", 56)
+        )
+        icon.pack(pady=(80, 20))
+
+        label = ctk.CTkLabel(
+            frame,
+            text=f"{title}\nComing Soon",
+            font=("Segoe UI", 22, "bold"),
+            justify="center"
+        )
+        label.pack()
