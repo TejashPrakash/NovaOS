@@ -1,6 +1,7 @@
 """Provider-neutral interface for NovaOS AI backends."""
 
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 
 
@@ -20,7 +21,7 @@ class Reply:
     tool_calls: tuple[ToolCall, ...] = ()
 
     @property
-    def is_tool_call(self):
+    def is_tool_call(self) -> bool:
         return bool(self.tool_calls)
 
 
@@ -43,13 +44,21 @@ class BaseProvider(ABC):
     name = "base"
 
     @abstractmethod
-    def is_available(self):
+    def is_available(self) -> bool:
         """Return True when this backend is configured and reachable."""
+        ...
 
     @abstractmethod
-    def complete(self, prompt, system=None, history=(), tools=()):
+    def complete(
+        self,
+        prompt: str,
+        system: str | None = None,
+        history: Sequence[tuple[str, str]] = (),
+        tools: Sequence[Tool] = (),
+    ) -> Reply:
         """Return a Reply for prompt.
 
         history is a sequence of (role, text) pairs where role is
         "user" or "assistant". tools is a sequence of Tool objects.
         """
+        ...
