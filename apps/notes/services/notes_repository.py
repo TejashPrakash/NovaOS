@@ -1,7 +1,7 @@
+import os
 import sqlite3
 from datetime import datetime
 from pathlib import Path
-
 
 class NotesRepository:
     """
@@ -23,6 +23,7 @@ class NotesRepository:
         self._create_table()
 
     def _connect(self):
+        os.makedirs(os.path.dirname(self.database_path), exist_ok=True)
         connection = sqlite3.connect(self.database_path)
         connection.row_factory = sqlite3.Row
         return connection

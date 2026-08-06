@@ -45,6 +45,16 @@ class NovaApp(ctk.CTkFrame):
 
     # ======================================
 
+    def create_container(self, parent=None):
+
+        if parent is None:
+            parent = self.content
+
+        return ctk.CTkFrame(
+            parent,
+            fg_color="transparent"
+        )
+
     def build(self):
         pass
 
