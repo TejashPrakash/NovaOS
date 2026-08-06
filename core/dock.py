@@ -100,6 +100,12 @@ class Dock:
 
         self.running_apps = {}
 
+        # ==========================================
+        # Launcher (attached later by NovaOS)
+        # ==========================================
+
+        self.launcher = None
+
     # =========================================================
 
     def add_app(self, name, callback):
