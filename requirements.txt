@@ -8,3 +8,4 @@ setuptools==83.0.0
 tkinterweb==4.25.3
 tkinterweb-tkhtml==2.1.1
 wheel==0.47.0
+google-genai==2.14.0
