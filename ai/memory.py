@@ -1,18 +1,24 @@
-# TODO: Implement 
-"""Simple memory store for assistant history."""
+"""Short-term conversation memory for the assistant."""
 
 from collections import deque
 
 
 class MemoryStore:
-    """Stores recent assistant-related messages."""
+    """Keeps the most recent conversation turns as (role, text) pairs."""
 
-    def __init__(self, max_items: int = 50):
-        self.max_items = max_items
-        self._history = deque(maxlen=max_items)
+    def __init__(self, max_turns: int = 20):
+        self.max_turns = max_turns
+        self._turns = deque(maxlen=max_turns)
 
-    def append(self, item: str) -> None:
-        self._history.append(item)
+    def remember(self, role: str, text: str) -> None:
 
-    def get_history(self) -> list[str]:
-        return list(self._history)
+        if role not in ("user", "assistant"):
+            raise ValueError(f"Unknown role: {role}")
+
+        self._turns.append((role, text))
+
+    def turns(self) -> tuple[tuple[str, str], ...]:
+        return tuple(self._turns)
+
+    def clear(self) -> None:
+        self._turns.clear()
