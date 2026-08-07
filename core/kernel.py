@@ -46,7 +46,8 @@ class Kernel:
 
         print("[Kernel] Booting NovaOS...")
 
-        self.register_service("ai", AIService())
+        self.ai = AIService(self)
+        self.register_service("ai", self.ai)
         self.register_service("audio", AudioService())
         self.register_service("settings", SettingsService())
         self.register_service("wallpaper", WallpaperService())
