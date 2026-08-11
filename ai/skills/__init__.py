@@ -2,8 +2,9 @@
 
 from ai.skills import apps, notes, system
 from ai.skills.base import Skill, SkillError
+from ai.skills import apps, notes, system, weather
 
-SKILLS = apps.SKILLS + notes.SKILLS + system.SKILLS
+SKILLS = apps.SKILLS + notes.SKILLS + system.SKILLS + weather.SKILLS
 
 SKILLS_BY_NAME = {skill.name: skill for skill in SKILLS}
 
