@@ -12,7 +12,9 @@ class ConversationContext:
     user_id: str | None = None
     session_id: str | None = None
     metadata: dict = field(default_factory=dict)
-    memory: MemoryStore = field(default_factory=MemoryStore)
+    memory: MemoryStore = field(
+        default_factory=lambda: MemoryStore(persist_file="data/conversation_history.json")
+    )
 
     @property
     def history(self) -> tuple[tuple[str, str], ...]:
@@ -20,3 +22,7 @@ class ConversationContext:
 
     def remember(self, role: str, text: str) -> None:
         self.memory.remember(role, text)
+
+    def search_history(self, query: str) -> list:
+        """Search conversation history."""
+        return self.memory.search_history(query)
