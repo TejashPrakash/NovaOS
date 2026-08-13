@@ -1,7 +1,7 @@
 """Provider selection for the NovaOS AI layer."""
 
 from core.config import CONFIG
-
+from .voice import VoiceProvider
 from .base_provider import BaseProvider, ProviderError, Reply, Tool, ToolCall
 from .gemini import GeminiProvider
 from .ollama import OllamaProvider
@@ -17,6 +17,7 @@ __all__ = [
     "Reply",
     "Tool",
     "ToolCall",
+    "VoiceProvider",
     "get_provider",
 ]
 
