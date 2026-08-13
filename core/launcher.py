@@ -1,5 +1,7 @@
 import customtkinter as ctk
 
+from ai.skills import find
+
 
 class Launcher:
 
@@ -12,6 +14,7 @@ class Launcher:
         self.process_manager = kernel.process_manager
 
         self.visible = False
+        self.ai_enabled = True
 
         # -----------------------------
         # Launcher Window
@@ -130,6 +133,60 @@ class Launcher:
             else:
 
                 button.pack_forget()
+                
+    # ========================================
+
+    def process_search(self, query: str) -> dict:
+        """Process search query with AI enhancement."""
+        results = {
+            'apps': [],
+            'ai_response': None,
+            'web_results': []
+        }
+
+        # First check if AI skills can handle this
+        if self.ai_enabled:
+            query_lower = query.lower()
+            
+            # Check for time queries
+            if any(word in query_lower for word in ['time', 'date', 'weather', 'calculate']):
+                # Try to find matching skill
+                for skill_name in ['get_current_time', 'get_current_date', 'get_datetime_info', 'get_weather', 'calculate']:
+                    skill = find(skill_name)
+                    if skill:
+                        try:
+                            if skill_name == 'calculate':
+                                result = skill.run(self.kernel, expression=query)
+                            elif 'weather' in skill_name:
+                                result = skill.run(self.kernel, location=query.replace('weather in', '').replace('weather', '').strip())
+                            elif 'time' in skill_name and 'date' not in skill_name:
+                                result = skill.run(self.kernel, timezone='UTC')
+                            else:
+                                result = skill.run(self.kernel)
+                            
+                            results['ai_response'] = result
+                            return results
+                        except Exception as e:
+                            print(f"[Launcher] AI skill error: {e}")
+
+        # Fall back to app search
+        results['apps'] = self._search_apps(query)
+        return results
+
+    def _search_apps(self, query: str) -> list:
+        """Search installed applications."""
+        query_lower = query.lower()
+        matching_apps = []
+
+        from apps.registry import APP_REGISTRY
+        for app_name, app_class in APP_REGISTRY.items():
+            if query_lower in app_name.lower():
+                matching_apps.append({
+                    'name': app_name,
+                    'class': app_class
+                })
+
+        return matching_apps
                 
     # ========================================
 
