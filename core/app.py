@@ -52,7 +52,7 @@ class NovaOS:
         self.window_manager = WindowManager(
             self.desktop,
             self.dock,
-            self.kernel      # <-- NEW
+            self.kernel     
         )
 
         self.kernel.window_manager = self.window_manager
@@ -92,6 +92,27 @@ class NovaOS:
             "<Button-1>",
             lambda e: self.launcher.hide()
         )
+
+        # Add AI panel toggle button to desktop
+        def toggle_ai():
+            """Safe toggle function that handles AI availability."""
+            if hasattr(self.kernel, 'ai') and self.kernel.ai and getattr(self.kernel.ai, 'assistant', None):
+                self.desktop.toggle_ai_panel(self.kernel.ai.assistant)
+            else:
+                print("[NovaOS] AI assistant not available")
+
+        ai_toggle = ctk.CTkButton(
+            self.desktop.get_widget_layer(),
+            text="◈ Nova",
+            width=100,
+            height=35,
+            fg_color="#00E5FF",
+            text_color="black",
+            hover_color="#00C8E8",
+            corner_radius=8,
+            command=toggle_ai
+        )
+        ai_toggle.place(x=1400, y=20)
 
         self.root.bind_all(
             "<Control-space>",

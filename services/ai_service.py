@@ -1,28 +1,23 @@
 """Kernel service that owns the NovaOS assistant."""
 
-from ai.assistant import create_assistant
-
 
 class AIService:
-    """Lazily builds the assistant so NovaOS still boots without a provider."""
+    """Initializes the assistant when a provider is available."""
 
     name = "ai"
 
     def __init__(self, kernel):
         self.kernel = kernel
-        self._assistant = None
-        self._tried = False
+        self.assistant = None  # Will be set when provider is available
 
-    # =====================================================
+        try:
+            from ai.assistant import create_assistant
 
-    @property
-    def assistant(self):
-
-        if not self._tried:
-            self._assistant = create_assistant(self.kernel)
-            self._tried = True
-
-        return self._assistant
+            self.assistant = create_assistant(kernel)
+            if self.assistant:
+                print("[AI Service] Nova AI assistant initialized")
+        except Exception as e:
+            print(f"[AI Service] Could not initialize assistant: {e}")
 
     # =====================================================
 

@@ -1,5 +1,5 @@
 import customtkinter as ctk
-
+from ai.ui.panel import AIPanel
 
 class Desktop:
 
@@ -65,6 +65,8 @@ class Desktop:
             relheight=1
         )
 
+        self.ai_panel = None
+
     # ==========================================
     # Public API
     # ==========================================
@@ -80,3 +82,12 @@ class Desktop:
     def get_icon_layer(self):
 
         return self.icon_layer
+
+    def toggle_ai_panel(self, assistant):
+        """Toggle AI panel visibility."""
+        if self.ai_panel is None:
+            self.ai_panel = AIPanel(self.get_widget_layer(), assistant)
+            self.ai_panel.place(relx=0.5, rely=0.5, anchor="center")
+        else:
+            self.ai_panel.destroy()
+            self.ai_panel = None
