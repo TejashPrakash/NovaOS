@@ -16,7 +16,7 @@ class Dock:
         self.frame = ctk.CTkFrame(
             self.root,
             width=700,
-            height=70,
+            height=90,
             fg_color="#1A1F2B",
             corner_radius=35,
             border_width=1,
@@ -25,7 +25,7 @@ class Dock:
 
         self.frame.place(
             relx=0.5,
-            rely=0.96,
+            rely=0.94,
             anchor="s"
         )
 
@@ -59,7 +59,7 @@ class Dock:
         )
 
         self.launcher_btn.pack(
-            pady=12
+            pady=20
         )
 
         # ==========================================
@@ -127,7 +127,7 @@ class Dock:
         button.pack(
             side="left",
             padx=8,
-            pady=14
+            pady=24
         )
 
         self.running_apps[name] = button
