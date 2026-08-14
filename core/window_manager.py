@@ -384,3 +384,40 @@ class WindowManager:
 
         # Reflow remaining windows after one closes.
         self.arrange_windows()
+
+    # =====================================================
+
+    def snap_window(self, window, direction: str):
+        """Snap window to screen edge."""
+        desktop_width, work_height = self.get_work_area()
+        margin = self.WINDOW_MARGIN
+        
+        if direction == "left":
+            new_x = margin
+            new_y = margin
+            new_width = desktop_width // 2 - margin
+            new_height = work_height - margin * 2
+        elif direction == "right":
+            new_x = desktop_width // 2
+            new_y = margin
+            new_width = desktop_width // 2 - margin
+            new_height = work_height - margin * 2
+        elif direction == "top":
+            new_x = margin
+            new_y = margin
+            new_width = desktop_width - margin * 2
+            new_height = work_height // 2 - margin
+        elif direction == "bottom":
+            new_x = margin
+            new_y = work_height // 2
+            new_width = desktop_width - margin * 2
+            new_height = work_height // 2 - margin
+        elif direction == "maximize":
+            new_x = margin
+            new_y = margin
+            new_width = desktop_width - margin * 2
+            new_height = work_height - margin * 2
+        else:
+            return
+            
+        window.animate_to(new_x, new_y, new_width, new_height)
