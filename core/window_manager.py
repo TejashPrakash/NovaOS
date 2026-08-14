@@ -8,7 +8,6 @@ class AppWindow(ctk.CTkFrame):
     """
     Floating application window inside the NovaOS desktop.
     """
-
     def __init__(
         self,
         manager,
@@ -25,27 +24,30 @@ class AppWindow(ctk.CTkFrame):
             border_width=1,
             border_color="#2F3545"
         )
-
         self.manager = manager
         self.title = title
         self.app = None
-
-        # Remember each app's original preferred size.
         self.requested_width = width
         self.requested_height = height
-
+        self._target_x = None
+        self._target_y = None
+        self._target_width = None
+        self._target_height = None
+        self._animation_steps = 0
+        self._total_animation_steps = 10
+        
         self.place(
             x=manager.WINDOW_MARGIN,
             y=manager.WINDOW_MARGIN
         )
-
-        # App widgets must not resize the outer NovaOS window.
         self.pack_propagate(False)
-
-        # ======================================
-        # Title Bar
-        # ======================================
-
+        self._setup_titlebar()
+        self._setup_content()
+        self._setup_dragging()
+        self.lift()
+        
+    def _setup_titlebar(self):
+        """Setup title bar."""
         self.titlebar = ctk.CTkFrame(
             self,
             height=42,
@@ -54,17 +56,14 @@ class AppWindow(ctk.CTkFrame):
         )
         self.titlebar.pack(fill="x")
         self.titlebar.pack_propagate(False)
-
+        
         self.title_label = ctk.CTkLabel(
             self.titlebar,
-            text=title,
+            text=self.title,
             font=("Segoe UI", 15, "bold")
         )
-        self.title_label.pack(
-            side="left",
-            padx=15
-        )
-
+        self.title_label.pack(side="left", padx=15)
+        
         self.close_btn = ctk.CTkButton(
             self.titlebar,
             text="✕",
@@ -73,92 +72,95 @@ class AppWindow(ctk.CTkFrame):
             hover_color="#C62828",
             command=self.close
         )
-        self.close_btn.pack(
-            side="right",
-            padx=6,
-            pady=5
-        )
-
-        # ======================================
-        # App Content
-        # ======================================
-
+        self.close_btn.pack(side="right", padx=6, pady=5)
+        
+    def _setup_content(self):
+        """Setup app content area."""
         self.content = ctk.CTkFrame(
             self,
             fg_color="transparent"
         )
-        self.content.pack(
-            fill="both",
-            expand=True
-        )
-
-        # ======================================
-        # Window Dragging
-        # ======================================
-
-        self.titlebar.bind(
-            "<Button-1>",
-            self.start_move
-        )
-
-        self.titlebar.bind(
-            "<B1-Motion>",
-            self.do_move
-        )
-
-        self.bind(
-            "<Button-1>",
-            lambda event: self.focus_window()
-        )
-
-        self.content.bind(
-            "<Button-1>",
-            lambda event: self.focus_window()
-        )
-
-        self.lift()
-
-    # =====================================================
-
+        self.content.pack(fill="both", expand=True)
+        
+    def _setup_dragging(self):
+        """Setup window dragging."""
+        self.titlebar.bind("<Button-1>", self.start_move)
+        self.titlebar.bind("<B1-Motion>", self.do_move)
+        self.bind("<Button-1>", lambda event: self.focus_window())
+        self.content.bind("<Button-1>", lambda event: self.focus_window())
+        
+    def animate_to(self, x, y, width=None, height=None):
+        """Animate window to new position/size."""
+        self._target_x = x
+        self._target_y = y
+        self._target_width = width or self.winfo_width()
+        self._target_height = height or self.winfo_height()
+        self._animation_steps = 0
+        self._animate()
+        
+    def _animate(self):
+        """Perform animation step."""
+        if self._animation_steps >= self._total_animation_steps:
+            return
+            
+        progress = self._animation_steps / self._total_animation_steps
+        eased_progress = self._ease_out_cubic(progress)
+        
+        current_x = self.winfo_x()
+        current_y = self.winfo_y()
+        current_width = self.winfo_width()
+        current_height = self.winfo_height()
+        
+        new_x = current_x + (self._target_x - current_x) * eased_progress
+        new_y = current_y + (self._target_y - current_y) * eased_progress
+        new_width = current_width + (self._target_width - current_width) * eased_progress
+        new_height = current_height + (self._target_height - current_height) * eased_progress
+        
+        self.place(x=int(new_x), y=int(new_y))
+        self.configure(width=int(new_width), height=int(new_height))
+        
+        self._animation_steps += 1
+        self.after(16, self._animate)  # ~60 FPS
+        
+    def _ease_out_cubic(self, t: float) -> float:
+        """Cubic easing out function."""
+        return 1 - pow(1 - t, 3)
+        
     def focus_window(self):
+        """Focus window and bring to front."""
         self.lift()
         self.focus_force()
-
-    # =====================================================
-
+        
     def close(self):
+        """Close window with animation."""
+        self.animate_to(
+            self.winfo_x(),
+            self.winfo_y() + 20,
+            self.winfo_width(),
+            max(10, self.winfo_height() - 20)
+        )
+        self.after(200, self._destroy)
+        
+    def _destroy(self):
+        """Actually destroy the window."""
         self.manager.close_window(self)
 
-    # =====================================================
-
     def start_move(self, event):
+        """Start window dragging."""
         self.focus_window()
-
         self._x = event.x
         self._y = event.y
-
-    # =====================================================
-
+        
     def do_move(self, event):
+        """Move window during drag."""
         x = self.winfo_x() + event.x - self._x
         y = self.winfo_y() + event.y - self._y
-
         desktop_width, work_height = self.manager.get_work_area()
         margin = self.manager.WINDOW_MARGIN
-
-        max_x = max(
-            margin,
-            desktop_width - self.winfo_width() - margin
-        )
-
-        max_y = max(
-            margin,
-            work_height - self.winfo_height() - margin
-        )
-
+        max_x = max(margin, desktop_width - self.winfo_width() - margin)
+        max_y = max(margin, work_height - self.winfo_height() - margin)
         x = max(margin, min(x, max_x))
         y = max(margin, min(y, max_y))
-
         self.place(x=x, y=y)
 
 
