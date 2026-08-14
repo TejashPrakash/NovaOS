@@ -5,6 +5,7 @@ from core.desktop import Desktop
 from core.dock import Dock
 from core.window_manager import WindowManager
 from core.launcher import Launcher
+from core.start_menu import StartMenu
 
 
 class NovaOS:
@@ -83,6 +84,18 @@ class NovaOS:
         )
 
         self.dock.set_launcher(self.launcher)
+
+        # ==========================================
+        # Start Menu
+        # ==========================================
+
+        self.start_menu = StartMenu(
+            self.desktop.get_widget_layer(),
+            self.window_manager
+        )
+
+        # Add start button to dock
+        self.dock.add_start_button()
 
         # ==========================================
         # Global Events

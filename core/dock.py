@@ -1,5 +1,6 @@
 import customtkinter as ctk
 
+from core.start_menu import StartMenu
 from widgets.clock import Clock
 
 
@@ -105,6 +106,8 @@ class Dock:
         # ==========================================
 
         self.launcher = None
+        self.start_menu = None
+        self.start_menu_btn = None
 
     # =========================================================
 
@@ -154,3 +157,33 @@ class Dock:
     def set_launcher(self, launcher):
 
         self.launcher = launcher
+
+    # =========================================================
+
+    def add_start_button(self):
+        """Add start button to dock (optional alternative to launcher)."""
+        self.start_menu_btn = ctk.CTkButton(
+            self.left_frame,
+            text="◈",
+            width=45,
+            height=45,
+            corner_radius=22,
+            fg_color="#00E5FF",
+            hover_color="#00BCD4",
+            font=("Segoe UI", 18, "bold"),
+            command=self.toggle_start_menu
+        )
+        # Replace or add alongside launcher button
+        self.launcher_btn.pack_forget()
+        self.start_menu_btn.pack(pady=12)
+
+    # =========================================================
+
+    def toggle_start_menu(self):
+        """Toggle start menu visibility."""
+        if self.start_menu is None:
+            # This would need reference to NovaOS to create start menu
+            print("Open start menu")
+        else:
+            self.start_menu.hide()
+            self.start_menu = None
