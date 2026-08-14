@@ -47,7 +47,7 @@ class AppWindow(ctk.CTkFrame):
         self.lift()
         
     def _setup_titlebar(self):
-        """Setup title bar."""
+        """Setup title bar with window controls."""
         self.titlebar = ctk.CTkFrame(
             self,
             height=42,
@@ -64,15 +64,49 @@ class AppWindow(ctk.CTkFrame):
         )
         self.title_label.pack(side="left", padx=15)
         
-        self.close_btn = ctk.CTkButton(
+        # Window controls
+        controls_frame = ctk.CTkFrame(
             self.titlebar,
+            fg_color="transparent"
+        )
+        controls_frame.pack(side="right", padx=6, pady=5)
+        
+        # Minimize button
+        self.minimize_btn = ctk.CTkButton(
+            controls_frame,
+            text="─",
+            width=32,
+            fg_color="#FFA500",
+            hover_color="#FB8C00",
+            command=self.minimize
+        )
+        self.minimize_btn.pack(side="right", padx=2)
+        
+        # Maximize button
+        self.maximize_btn = ctk.CTkButton(
+            controls_frame,
+            text="□",
+            width=32,
+            fg_color="#00E5FF",
+            hover_color="#00BCD4",
+            command=self.toggle_maximize
+        )
+        self.maximize_btn.pack(side="right", padx=2)
+        
+        # Close button
+        self.close_btn = ctk.CTkButton(
+            controls_frame,
             text="✕",
             width=32,
             fg_color="#E53935",
             hover_color="#C62828",
             command=self.close
         )
-        self.close_btn.pack(side="right", padx=6, pady=5)
+        self.close_btn.pack(side="right", padx=2)
+        
+        self.is_maximized = False
+        self.is_minimized = False
+        self.restore_geometry = None
         
     def _setup_content(self):
         """Setup app content area."""
@@ -144,6 +178,40 @@ class AppWindow(ctk.CTkFrame):
     def _destroy(self):
         """Actually destroy the window."""
         self.manager.close_window(self)
+
+    def minimize(self):
+        """Minimize window."""
+        self.is_minimized = True
+        self.restore_geometry = (self.winfo_x(), self.winfo_y(), self.winfo_width(), self.winfo_height())
+        self.place_forget()
+
+    def restore(self):
+        """Restore window to previous size."""
+        if self.restore_geometry:
+            x, y, width, height = self.restore_geometry
+            self.animate_to(x, y, width, height)
+            self.is_maximized = False
+            self.is_minimized = False
+
+    def toggle_maximize(self):
+        """Toggle maximize state."""
+        if self.is_maximized:
+            self.restore()
+        else:
+            self.maximize()
+
+    def maximize(self):
+        """Maximize window to desktop size."""
+        self.is_maximized = True
+        self.restore_geometry = (self.winfo_x(), self.winfo_y(), self.winfo_width(), self.winfo_height())
+        
+        desktop_width, work_height = self.manager.get_work_area()
+        margin = self.manager.WINDOW_MARGIN
+        
+        new_width = desktop_width - margin * 2
+        new_height = work_height - margin * 2
+        
+        self.animate_to(margin, margin, new_width, new_height)
 
     def start_move(self, event):
         """Start window dragging."""
