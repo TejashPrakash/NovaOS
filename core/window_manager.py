@@ -115,14 +115,45 @@ class AppWindow(ctk.CTkFrame):
             fg_color="transparent"
         )
         self.content.pack(fill="both", expand=True)
-        
+        self._setup_resize_handles()
+
     def _setup_dragging(self):
         """Setup window dragging."""
         self.titlebar.bind("<Button-1>", self.start_move)
         self.titlebar.bind("<B1-Motion>", self.do_move)
         self.bind("<Button-1>", lambda event: self.focus_window())
         self.content.bind("<Button-1>", lambda event: self.focus_window())
-        
+
+    def _setup_resize_handles(self):
+        """Setup window resize handles."""
+        self.resize_handle = ctk.CTkFrame(
+            self,
+            width=20,
+            height=20,
+            fg_color="#00E5FF",
+            corner_radius=0
+        )
+        self.resize_handle.place(relx=1, rely=1, anchor="se")
+        self.resize_handle.bind("<B1-Motion>", self._do_resize)
+        self.resize_handle.bind("<Button-1>", self._start_resize)
+
+    def _start_resize(self, event):
+        """Start window resizing."""
+        self._resize_start_x = event.x
+        self._resize_start_y = event.y
+        self._resize_start_width = self.winfo_width()
+        self._resize_start_height = self.winfo_height()
+
+    def _do_resize(self, event):
+        """Handle window resizing."""
+        delta_x = event.x - self._resize_start_x
+        delta_y = event.y - self._resize_start_y
+
+        new_width = max(320, self._resize_start_width + delta_x)
+        new_height = max(240, self._resize_start_height + delta_y)
+
+        self.configure(width=new_width, height=new_height)
+
     def animate_to(self, x, y, width=None, height=None):
         """Animate window to new position/size."""
         self._target_x = x
