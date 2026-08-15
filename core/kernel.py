@@ -1,4 +1,5 @@
 from core.process_manager import ProcessManager
+from core.state_manager import StateManager
 from sdk.events import EventBus
 from sdk.service import ServiceContainer
 from services.ai_service import AIService
@@ -31,6 +32,7 @@ class Kernel:
         self.window_manager = None
         self.events = EventBus()
         self.process_manager = ProcessManager(self)
+        self.state_manager = StateManager()
 
         self.ai = None
 
