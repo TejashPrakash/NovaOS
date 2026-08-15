@@ -3,6 +3,7 @@ import customtkinter as ctk
 from core.kernel import Kernel
 from core.desktop import Desktop
 from core.desktop_icons import DesktopIconsManager
+from core.context_menu import ContextMenuManager
 from core.dock import Dock
 from core.window_manager import WindowManager
 from core.launcher import Launcher
@@ -39,6 +40,8 @@ class NovaOS:
 
         self.desktop = Desktop(self.root)
         self.kernel.desktop = self.desktop
+
+        self.context_menu_manager = ContextMenuManager(self.desktop)
 
         # ==========================================
         # Dock
