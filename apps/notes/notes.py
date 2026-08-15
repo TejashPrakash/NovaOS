@@ -1,3 +1,5 @@
+import customtkinter as ctk
+
 from sdk.app import NovaApp
 
 from apps.notes.controller.notes_controller import NotesController
@@ -53,6 +55,16 @@ class NotesApp(NovaApp):
         self.toolbar.save_button.configure(
             command=self.save_note
         )
+
+        # Add AI assistance button to toolbar
+        ai_btn = ctk.CTkButton(
+            self.toolbar,
+            text="✨ AI Assist",
+            fg_color="#00E5FF",
+            text_color="black",
+            command=self._ai_assist
+        )
+        ai_btn.pack(side="right", padx=5)
 
         # -------------------------
         # Sidebar
@@ -135,3 +147,16 @@ class NotesApp(NovaApp):
         self.editor.clear()
 
         self.refresh_notes()
+
+    def _ai_assist(self):
+        """Get AI assistance for current note."""
+        if self.selected_note is None:
+            return
+
+        content = self.editor.get_content()
+        if hasattr(self.window, 'kernel') and hasattr(self.window.kernel, 'ai'):
+            response = self.window.kernel.ai.assistant.process(
+                f"Help me improve this note: {content}"
+            )
+            current_content = self.editor.get_content()
+            self.editor.set_content(f"{current_content}\n\nAI Suggestion: {response}")
