@@ -2,6 +2,7 @@ import customtkinter as ctk
 
 from core.kernel import Kernel
 from core.desktop import Desktop
+from core.desktop_icons import DesktopIconsManager
 from core.dock import Dock
 from core.window_manager import WindowManager
 from core.launcher import Launcher
@@ -72,6 +73,15 @@ class NovaOS:
         self.kernel.register_service(
             "dock",
             self.dock
+        )
+
+        # ==========================================
+        # Desktop Icons
+        # ==========================================
+
+        self.desktop.icons_manager = DesktopIconsManager(
+            self.desktop,
+            self.window_manager
         )
 
         # ==========================================

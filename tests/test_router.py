@@ -111,3 +111,102 @@ def test_multiple_tool_calls_are_all_executed():
 
     assert reply == "On it. Opened Notes. Opened Browser."
     assert kernel.calls == [("open_app", ("Notes",)), ("open_app", ("Browser",))]
+
+
+def test_novaos_attaches_desktop_icons_manager(monkeypatch):
+    import core.app as app_module
+
+    class FakeRoot:
+        def title(self, *_args, **_kwargs):
+            pass
+
+        def geometry(self, *_args, **_kwargs):
+            pass
+
+        def minsize(self, *_args, **_kwargs):
+            pass
+
+        def bind_all(self, *_args, **_kwargs):
+            pass
+
+    class FakeKernel:
+        def __init__(self):
+            self.desktop = None
+            self.dock = None
+            self.window_manager = None
+
+        def boot(self):
+            pass
+
+        def register_service(self, *_args, **_kwargs):
+            pass
+
+    class FakeDesktop:
+        def __init__(self, root):
+            self.root = root
+            self.widget_layer = object()
+            self.icon_layer = object()
+            self.icons_manager = None
+
+        def get_widget_layer(self):
+            return self.widget_layer
+
+        def get_icon_layer(self):
+            return self.icon_layer
+
+        def get_canvas(self):
+            return object()
+
+    class FakeDock:
+        def __init__(self, root):
+            self.root = root
+
+        def set_launcher(self, *_args, **_kwargs):
+            pass
+
+        def add_start_button(self):
+            pass
+
+    class FakeWindowManager:
+        def __init__(self, desktop, dock, kernel):
+            self.desktop = desktop
+            self.dock = dock
+            self.kernel = kernel
+
+    class FakeLauncher:
+        def __init__(self, root, kernel):
+            self.root = root
+            self.kernel = kernel
+
+        def hide(self):
+            pass
+
+    class FakeStartMenu:
+        def __init__(self, widget_layer, window_manager):
+            self.widget_layer = widget_layer
+            self.window_manager = window_manager
+
+    class FakeIconsManager:
+        def __init__(self, desktop, window_manager):
+            self.desktop = desktop
+            self.window_manager = window_manager
+
+    monkeypatch.setattr(app_module, 'ctk', type('FakeCtk', (), {
+        'CTk': FakeRoot,
+        'set_appearance_mode': staticmethod(lambda *_args, **_kwargs: None),
+        'set_default_color_theme': staticmethod(lambda *_args, **_kwargs: None),
+        'CTkButton': type('FakeButton', (), {'__init__': lambda self, *a, **k: None, 'place': lambda self, *a, **k: None}),
+    }))
+    monkeypatch.setattr(app_module, 'Kernel', FakeKernel)
+    monkeypatch.setattr(app_module, 'Desktop', FakeDesktop)
+    monkeypatch.setattr(app_module, 'Dock', FakeDock)
+    monkeypatch.setattr(app_module, 'WindowManager', FakeWindowManager)
+    monkeypatch.setattr(app_module, 'Launcher', FakeLauncher)
+    monkeypatch.setattr(app_module, 'StartMenu', FakeStartMenu)
+    monkeypatch.setattr(app_module, 'DesktopIconsManager', FakeIconsManager)
+
+    nova = app_module.NovaOS()
+
+    assert isinstance(nova.desktop.icons_manager, FakeIconsManager)
+    assert nova.desktop.icons_manager.desktop is nova.desktop
+    assert nova.desktop.icons_manager.window_manager is nova.window_manager
