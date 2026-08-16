@@ -1,77 +1,70 @@
 import customtkinter as ctk
-
 from core.start_menu import StartMenu
 from widgets.clock import Clock
-
+from widgets.glass import GlassFrame
 
 class Dock:
 
     def __init__(self, root):
-
         self.root = root
 
         # ==========================================
         # Floating Dock Container
         # ==========================================
-
-        self.frame = ctk.CTkFrame(
+        self.frame = GlassFrame(
             self.root,
             width=700,
-            height=90,
-            fg_color="#1A1F2B",
-            corner_radius=35,
-            border_width=1,
-            border_color="#2F3545"
+            height=100,
+            blur_amount=20,
+            opacity=0.9,
+            corner_radius=40,
+            border_width=2,
+            border_color="#00E5FF40"
         )
-
         self.frame.place(
             relx=0.5,
-            rely=0.94,
+            rely=0.93,
             anchor="s"
         )
-
         self.frame.pack_propagate(False)
 
         # ==========================================
-        # Left Side (Launcher)
+        # Left Side (Launcher)  
         # ==========================================
-
         self.left_frame = ctk.CTkFrame(
             self.frame,
             fg_color="transparent"
         )
-
         self.left_frame.pack(
             side="left",
-            padx=15,
+            padx=20,
             fill="y"
         )
 
         self.launcher_btn = ctk.CTkButton(
             self.left_frame,
             text="✦",
-            width=45,
-            height=45,
-            corner_radius=22,
+            width=50,
+            height=50,
+            corner_radius=25,
             fg_color="#00E5FF",
-            hover_color="#00BCD4",
-            font=("Segoe UI", 22, "bold"),
-            command=self.open_launcher
+            hover_color="#00FFFF",
+            font=("Segoe UI", 24, "bold"),
+            command=self.open_launcher,
+            border_width=2,
+            border_color="#00E5FF80"
         )
-
         self.launcher_btn.pack(
-            pady=20
+            pady=25
         )
 
         # ==========================================
-        # Center (Running Apps)
+        # Center (Running Apps) - Glass Effect
         # ==========================================
-
         self.apps_frame = ctk.CTkFrame(
             self.frame,
             fg_color="transparent"
         )
-
         self.apps_frame.pack(
             side="left",
             expand=True,
@@ -79,17 +72,15 @@ class Dock:
         )
 
         # ==========================================
-        # Right Side (Clock)
+        # Right Side (Clock) 
         # ==========================================
-
         self.right_frame = ctk.CTkFrame(
             self.frame,
             fg_color="transparent"
         )
-
         self.right_frame.pack(
             side="right",
-            padx=15,
+            padx=20,
             fill="y"
         )
 
@@ -98,13 +89,11 @@ class Dock:
         # ==========================================
         # Running Apps
         # ==========================================
-
         self.running_apps = {}
 
         # ==========================================
         # Launcher (attached later by NovaOS)
         # ==========================================
-
         self.launcher = None
         self.start_menu = None
         self.start_menu_btn = None
