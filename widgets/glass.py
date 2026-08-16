@@ -15,7 +15,7 @@ class GlassFrame(ctk.CTkFrame):
         self.configure(
             fg_color="#161B22",
             border_width=1,
-            border_color="#FFFFFF40"
+            border_color="#FFFFFF"
         )
 
 
@@ -72,6 +72,6 @@ class GlassButton(ctk.CTkButton):
             text_color="#00E5FF",
             hover_color="#00E5FF",
             border_width=1,
-            border_color="#FFFFFF40",
+            border_color="#FFFFFF",
             **kwargs
         )
