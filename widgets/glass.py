@@ -71,7 +71,6 @@ class GlassButton(ctk.CTkButton):
             fg_color="#161B22",
             text_color="#00E5FF",
             hover_color="#00E5FF",
-            hover_text_color="black",
             border_width=1,
             border_color="#FFFFFF40",
             **kwargs
