@@ -2,7 +2,7 @@ import customtkinter as ctk
 from ai.ui.panel import AIPanel
 from PIL import Image, ImageTk
 import os
-
+from widgets.neural_background import NeuralBackground
 
 class Desktop:
     def __init__(self, root):
@@ -34,6 +34,9 @@ class Desktop:
             relwidth=1,
             relheight=1
         )
+
+        # Add neural network background option
+        self.neural_background = None
         self._setup_default_background()
         
         # -----------------------------
@@ -83,6 +86,18 @@ class Desktop:
             fg_color=color,
             image=""
         )
+
+    def enable_neural_background(self):
+        """Enable animated neural network background."""
+        if self.neural_background is None:
+            self.neural_background = NeuralBackground(self.wallpaper)
+            self.neural_background.place(relwidth=1, relheight=1)
+
+    def disable_neural_background(self):
+        """Disable neural network background."""
+        if self.neural_background:
+            self.neural_background.destroy()
+            self.neural_background = None
         
     # ==========================================
     # Public API
