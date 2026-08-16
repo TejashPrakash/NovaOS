@@ -3,7 +3,7 @@ from ai.ui.panel import AIPanel
 from PIL import Image, ImageTk
 import os
 from widgets.neural_background import NeuralBackground
-
+from widgets.ambient_lighting import AmbientLighting
 class Desktop:
     def __init__(self, root):
         self.root = root
@@ -62,7 +62,12 @@ class Desktop:
             relwidth=1,
             relheight=1
         )
-        
+
+        # -----------------------------
+        # Ambient Lighting Layer (optional)
+        # -----------------------------
+        self.ambient_lighting = None
+
         self.ai_panel = None
         
     def _setup_default_background(self):
@@ -98,6 +103,18 @@ class Desktop:
         if self.neural_background:
             self.neural_background.destroy()
             self.neural_background = None
+
+    def enable_ambient_lighting(self):
+        """Enable ambient lighting effects."""
+        if self.ambient_lighting is None:
+            self.ambient_lighting = AmbientLighting(self.widget_layer)
+            self.ambient_lighting.place(relwidth=1, relheight=1)
+
+    def disable_ambient_lighting(self):
+        """Disable ambient lighting effects."""
+        if self.ambient_lighting:
+            self.ambient_lighting.destroy()
+            self.ambient_lighting = None
         
     # ==========================================
     # Public API
