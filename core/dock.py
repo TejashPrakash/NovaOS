@@ -160,8 +160,10 @@ class Dock:
 
     # =========================================================
 
-    def add_start_button(self):
+    def add_start_button(self, start_menu=None):
         """Add start button to dock (optional alternative to launcher)."""
+        self.start_menu = start_menu  # Store reference to actual start menu
+
         self.start_menu_btn = ctk.CTkButton(
             self.left_frame,
             text="◈",
@@ -182,8 +184,9 @@ class Dock:
     def toggle_start_menu(self):
         """Toggle start menu visibility."""
         if self.start_menu is None:
-            # This would need reference to NovaOS to create start menu
-            print("Open start menu")
+            print("Open start menu - needs reference to NovaOS start_menu")
         else:
-            self.start_menu.hide()
-            self.start_menu = None
+            if self.start_menu.winfo_ismapped():
+                self.start_menu.hide()
+            else:
+                self.start_menu.show()

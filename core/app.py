@@ -108,7 +108,7 @@ class NovaOS:
         )
 
         # Add start button to dock
-        self.dock.add_start_button()
+        self.dock.add_start_button(self.start_menu)
 
         # ==========================================
         # Global Events

@@ -69,7 +69,6 @@ class StartMenu(ctk.CTkFrame):
                 fg_color="#252B3B",
                 text_color="#00E5FF",
                 hover_color="#00E5FF",
-                hover_text_color="black",
                 corner_radius=12,
                 command=lambda a=app_name: self._launch_app(a)
             )
