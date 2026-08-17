@@ -1,10 +1,11 @@
 import customtkinter as ctk
 import random
 import math
+from core.theme import ThemeManager
 
 
 class AmbientLighting(ctk.CTkFrame):
-    """Ambient lighting effects for premium atmosphere."""
+    """Ambient lighting effects with theme integration."""
     
     def __init__(self, parent, **kwargs):
         super().__init__(
@@ -12,14 +13,20 @@ class AmbientLighting(ctk.CTkFrame):
             fg_color="transparent",
             **kwargs
         )
+        self.theme = ThemeManager()
         self.light_orbs = []
         self.animation_time = 0
         self._setup_lighting()
         self._animate_lights()
-        
+    
     def _setup_lighting(self):
-        """Setup ambient light orbs."""
-        colors = ["#00E5FF", "#7B61FF", "#FF00E5"]
+        """Setup ambient light orbs with theme colors."""
+        # Use theme colors for lighting
+        colors = [
+            self.theme.get_color("primary"),
+            self.theme.get_color("secondary"),
+            self.theme.get_color("accent")
+        ]
         
         for i in range(6):
             orb = ctk.CTkFrame(
@@ -29,7 +36,6 @@ class AmbientLighting(ctk.CTkFrame):
                 fg_color=random.choice(colors),
                 corner_radius=40
             )
-            
             x = random.randint(100, 1500)
             y = random.randint(100, 800)
             orb.place(x=x, y=y)
@@ -42,7 +48,7 @@ class AmbientLighting(ctk.CTkFrame):
                 "vy": random.uniform(-0.2, 0.2),
                 "base_alpha": random.uniform(0.1, 0.25)
             })
-            
+    
     def _animate_lights(self):
         """Animate ambient lighting."""
         self.animation_time += 0.05
@@ -56,12 +62,14 @@ class AmbientLighting(ctk.CTkFrame):
                 light["vx"] *= -1
             if light["y"] < 50 or light["y"] > 850:
                 light["vy"] *= -1
-                
+            
             # Pulsate alpha
-            pulsating_alpha = light["base_alpha"] + 0.1 * math.sin(self.animation_time + light["x"] * 0.01)
+            pulsating_alpha = light["base_alpha"] + 0.1 * math.sin(
+                self.animation_time + light["x"] * 0.01
+            )
             pulsating_alpha = max(0.05, min(0.35, pulsating_alpha))
             
             # Update position
             light["orb"].place(x=light["x"], y=light["y"])
-            
+        
         self.after(50, self._animate_lights)
