@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 import os
 from widgets.neural_background import NeuralBackground
 from widgets.ambient_lighting import AmbientLighting
+from core.theme import ThemeManager
 class Desktop:
     def __init__(self, root):
         self.root = root
@@ -69,10 +70,11 @@ class Desktop:
         self.ambient_lighting = None
 
         self.ai_panel = None
+        self.theme = ThemeManager()
         
     def _setup_default_background(self):
-        """Setup default gradient background."""
-        self.wallpaper.configure(fg_color="#0D1117")
+        """Setup default gradient background with theme colors."""
+        self.wallpaper.configure(fg_color=self.theme.get_color("background"))
         
     def set_background_image(self, image_path):
         """Set background image from file."""
@@ -86,11 +88,17 @@ class Desktop:
             print(f"[Desktop] Error loading background: {e}")
             
     def set_background_color(self, color):
-        """Set solid background color."""
-        self.wallpaper.configure(
-            fg_color=color,
-            image=""
-        )
+        """Set solid background color with theme support."""
+        if color == "theme":
+            self.wallpaper.configure(
+                fg_color=self.theme.get_color("background"),
+                image=""
+            )
+        else:
+            self.wallpaper.configure(
+                fg_color=color,
+                image=""
+            )
 
     def enable_neural_background(self):
         """Enable animated neural network background."""
@@ -136,3 +144,21 @@ class Desktop:
         else:
             self.ai_panel.destroy()
             self.ai_panel = None
+    
+    def set_theme(self, theme_name: str):
+        """Apply theme to desktop."""
+        self.theme.apply_theme(theme_name)
+        self.set_background_color("theme")
+        
+        # Update existing premium effects if active
+        if self.neural_background:
+            self.disable_neural_background()
+            self.enable_neural_background()
+        
+        if self.ambient_lighting:
+            self.disable_ambient_lighting()
+            self.enable_ambient_lighting()
+
+    def get_theme_manager(self):
+        """Get theme manager instance."""
+        return self.theme
