@@ -30,6 +30,20 @@ class ColorScheme:
     border_light: str = "#FFFFFF"
     border_primary: str = "#00E5FF"
     
+    # Additional hover colors
+    primary_hover: str = "#00BCD4"
+    secondary_hover: str = "#9D7CFF"
+    accent_hover: str = "#FF66E5"
+    
+    # Status colors
+    success: str = "#00E676"
+    warning: str = "#FFC107"
+    error: str = "#E53935"
+    info: str = "#00E5FF"
+    
+    # Surface variants
+    surface_lighter: str = "#252B3B"
+    
     @classmethod
     def get_gradient(cls, color1: str, color2: str, steps: int = 10) -> list:
         """Generate gradient between two colors."""
@@ -71,13 +85,34 @@ class ThemeManager:
         return getattr(self.color_scheme, color_name, "#FFFFFF")
         
     def apply_theme(self, theme_name: str):
-        """Apply a specific theme."""
+        """Apply a specific theme with enhanced color schemes."""
         self.current_theme = theme_name
         if theme_name == "cyberpunk":
             self.color_scheme = ColorScheme()
         elif theme_name == "neon":
             self.color_scheme = ColorScheme(
                 primary="#FF00FF",
+                primary_hover="#FF66FF",
                 secondary="#00FFFF",
-                accent="#FFFF00"
+                secondary_hover="#00CCFF",
+                accent="#FFFF00",
+                accent_hover="#FFFF66"
+            )
+        elif theme_name == "sunset":
+            self.color_scheme = ColorScheme(
+                primary="#FF6B35",
+                primary_hover="#FF8C5A",
+                secondary="#F7C59F",
+                secondary_hover="#FFE0B2",
+                accent="#FF006E",
+                accent_hover="#FF3385"
+            )
+        elif theme_name == "ocean":
+            self.color_scheme = ColorScheme(
+                primary="#00D4FF",
+                primary_hover="#00A8CC",
+                secondary="#0066FF",
+                secondary_hover="#0088FF",
+                accent="#00FF99",
+                accent_hover="#00FFBB"
             )
