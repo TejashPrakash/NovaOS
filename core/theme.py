@@ -22,13 +22,13 @@ class ColorScheme:
     text_muted: str = "#666666"
     
     # Glow effects
-    glow_primary: str = "#00E5FF40"
-    glow_secondary: str = "#7B61FF40"
-    glow_accent: str = "#FF00E540"
+    glow_primary: str = "#00E5FF"
+    glow_secondary: str = "#7B61FF"
+    glow_accent: str = "#FF00E5"
     
     # Borders
-    border_light: str = "#FFFFFF40"
-    border_primary: str = "#00E5FF40"
+    border_light: str = "#FFFFFF"
+    border_primary: str = "#00E5FF"
     
     @classmethod
     def get_gradient(cls, color1: str, color2: str, steps: int = 10) -> list:
