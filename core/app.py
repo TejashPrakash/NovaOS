@@ -88,6 +88,11 @@ class NovaOS:
         )
 
         # ==========================================
+        # Premium Effects Toggle
+        # ==========================================
+        self.premium_effects_enabled = False
+
+        # ==========================================
         # Launcher
         # ==========================================
 
@@ -147,6 +152,30 @@ class NovaOS:
         )
 
         print("[NovaOS] System Ready")
+
+    # ==========================================
+    # Premium Effects
+    # ==========================================
+
+    def toggle_premium_effects(self):
+        """Toggle premium visual effects."""
+        self.premium_effects_enabled = not self.premium_effects_enabled
+        
+        if self.premium_effects_enabled:
+            # Enable premium effects
+            self.desktop.enable_neural_background()
+            self.desktop.enable_ambient_lighting()
+            print("[NovaOS] Premium effects enabled")
+        else:
+            # Disable premium effects
+            self.desktop.disable_neural_background()
+            self.desktop.disable_ambient_lighting()
+            print("[NovaOS] Premium effects disabled")
+
+    def set_theme(self, theme_name: str):
+        """Apply theme to NovaOS."""
+        self.desktop.set_theme(theme_name)
+        print(f"[NovaOS] Theme changed to {theme_name}")
 
     # ==========================================
 
