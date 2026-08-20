@@ -59,7 +59,7 @@ class NotesSidebar(ctk.CTkFrame):
                 text=note["title"],
                 anchor="w",
                 height=40,
-                command=lambda n=note: self.select(n)
+                command=lambda n=note["id"]: self.select(n)
             )
 
             button.pack(
