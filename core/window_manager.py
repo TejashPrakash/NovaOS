@@ -2,6 +2,7 @@ import math
 import customtkinter as ctk
 
 from apps.registry import APP_REGISTRY
+from core.theme import ThemeManager
 
 
 class AppWindow(ctk.CTkFrame):
@@ -15,14 +16,15 @@ class AppWindow(ctk.CTkFrame):
         width=520,
         height=360
     ):
+        self.theme = ThemeManager()
         super().__init__(
             manager.desktop.get_canvas(),
             width=width,
             height=height,
-            fg_color="#1A1F2B",
+            fg_color=self.theme.get_color("surface"),
             corner_radius=16,
-            border_width=1,
-            border_color="#2F3545"
+            border_width=2,
+            border_color=self.theme.get_color("primary")
         )
         self.manager = manager
         self.title = title
@@ -51,7 +53,7 @@ class AppWindow(ctk.CTkFrame):
         self.titlebar = ctk.CTkFrame(
             self,
             height=42,
-            fg_color="#252B3B",
+            fg_color=self.theme.get_color("surface_light"),
             corner_radius=16
         )
         self.titlebar.pack(fill="x")
@@ -60,7 +62,8 @@ class AppWindow(ctk.CTkFrame):
         self.title_label = ctk.CTkLabel(
             self.titlebar,
             text=self.title,
-            font=("Segoe UI", 15, "bold")
+            font=("Segoe UI", 15, "bold"),
+            text_color=self.theme.get_color("primary")
         )
         self.title_label.pack(side="left", padx=15)
         
@@ -78,6 +81,7 @@ class AppWindow(ctk.CTkFrame):
             width=32,
             fg_color="#FFA500",
             hover_color="#FB8C00",
+            corner_radius=6,
             command=self.minimize
         )
         self.minimize_btn.pack(side="right", padx=2)
@@ -87,8 +91,9 @@ class AppWindow(ctk.CTkFrame):
             controls_frame,
             text="□",
             width=32,
-            fg_color="#00E5FF",
-            hover_color="#00BCD4",
+            fg_color=self.theme.get_color("primary"),
+            hover_color=self.theme.get_color("primary_hover"),
+            corner_radius=6,
             command=self.toggle_maximize
         )
         self.maximize_btn.pack(side="right", padx=2)
@@ -98,8 +103,9 @@ class AppWindow(ctk.CTkFrame):
             controls_frame,
             text="✕",
             width=32,
-            fg_color="#E53935",
+            fg_color=self.theme.get_color("error"),
             hover_color="#C62828",
+            corner_radius=6,
             command=self.close
         )
         self.close_btn.pack(side="right", padx=2)
@@ -130,7 +136,7 @@ class AppWindow(ctk.CTkFrame):
             self,
             width=20,
             height=20,
-            fg_color="#00E5FF",
+            fg_color=self.theme.get_color("primary"),
             corner_radius=0
         )
         self.resize_handle.place(relx=1, rely=1, anchor="se")
