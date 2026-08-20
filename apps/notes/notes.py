@@ -109,13 +109,7 @@ class NotesApp(NovaApp):
 
         self.selected_note = note
 
-        self.editor.set_title(
-            note["title"]
-        )
-
-        self.editor.set_content(
-            note["content"]
-        )
+        self.editor.load_note(note)
 
     # =====================================================
 
