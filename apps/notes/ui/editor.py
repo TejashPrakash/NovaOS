@@ -36,6 +36,16 @@ class NotesEditor(ctk.CTkFrame):
 
     # =====================================
 
+    def set_title(self, title):
+        """Set the title in the editor."""
+        self.title_entry.delete(0, "end")
+        self.title_entry.insert(0, title)
+
+    def set_content(self, content):
+        """Set the content in the editor."""
+        self.text.delete("1.0", "end")
+        self.text.insert("1.0", content)
+
     def load_note(self, note):
 
         self.title_entry.delete(0, "end")
