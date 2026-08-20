@@ -46,15 +46,15 @@ class NotesApp(NovaApp):
         # Toolbar Actions
         # -------------------------
 
-        self.toolbar.new_button.configure(
+        self.toolbar.new_btn.configure(
             command=self.create_note
         )
 
-        self.toolbar.delete_button.configure(
+        self.toolbar.delete_btn.configure(
             command=self.delete_note
         )
 
-        self.toolbar.save_button.configure(
+        self.toolbar.save_btn.configure(
             command=self.save_note
         )
 
