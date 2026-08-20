@@ -38,6 +38,9 @@ class AppWindow(GlassFrame):
         self._target_height = None
         self._animation_steps = 0
         self._total_animation_steps = 10
+        self.tabs = []
+        self.current_tab = None
+        self.tab_frame = None
         
         self.place(
             x=manager.WINDOW_MARGIN,
@@ -50,7 +53,7 @@ class AppWindow(GlassFrame):
         self.lift()
         
     def _setup_titlebar(self):
-        """Setup title bar with window controls."""
+        """Setup title bar with window controls and tabs."""
         self.titlebar = ctk.CTkFrame(
             self,
             height=42,
@@ -59,6 +62,9 @@ class AppWindow(GlassFrame):
         )
         self.titlebar.pack(fill="x")
         self.titlebar.pack_propagate(False)
+        
+        # Setup tabs
+        self._setup_tabs()
         
         self.title_label = ctk.CTkLabel(
             self.titlebar,
@@ -123,6 +129,50 @@ class AppWindow(GlassFrame):
         )
         self.content.pack(fill="both", expand=True)
         self._setup_resize_handles()
+
+    def _setup_tabs(self):
+        """Setup tab management for the window."""
+        self.tab_frame = ctk.CTkFrame(
+            self.titlebar,
+            fg_color="transparent"
+        )
+        self.tab_frame.pack(side="left", padx=10, fill="y")
+        
+        self.add_tab("Main")
+
+    def add_tab(self, tab_name):
+        """Add a new tab to the window."""
+        tab_button = ctk.CTkButton(
+            self.tab_frame,
+            text=tab_name,
+            width=80,
+            height=30,
+            fg_color=self.theme.get_color("surface_light"),
+            text_color=self.theme.get_color("text_primary"),
+            hover_color=self.theme.get_color("primary"),
+            corner_radius=6,
+            command=lambda: self.switch_tab(tab_name)
+        )
+        tab_button.pack(side="left", padx=2)
+        self.tabs.append({"name": tab_name, "button": tab_button})
+        
+        if len(self.tabs) == 1:
+            self.switch_tab(tab_name)
+
+    def switch_tab(self, tab_name):
+        """Switch to a specific tab."""
+        self.current_tab = tab_name
+        for tab in self.tabs:
+            if tab["name"] == tab_name:
+                tab["button"].configure(
+                    fg_color=self.theme.get_color("primary"),
+                    text_color="white"
+                )
+            else:
+                tab["button"].configure(
+                    fg_color=self.theme.get_color("surface_light"),
+                    text_color=self.theme.get_color("text_primary")
+                )
 
     def _setup_dragging(self):
         """Setup window dragging."""
