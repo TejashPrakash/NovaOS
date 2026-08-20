@@ -16,6 +16,8 @@ class Launcher:
         self.process_manager = kernel.process_manager
 
         self.visible = False
+        self.animation_step = 0
+        self.is_animating = False
         self.ai_enabled = True
         self.theme = ThemeManager()
 
@@ -250,11 +252,13 @@ class Launcher:
     # ========================================
 
     def show(self):
-
-        if self.visible:
+        """Show launcher with smooth animation."""
+        if self.visible or self.is_animating:
             return
 
+        self.is_animating = True
         self.visible = True
+        self.animation_step = 0
 
         self.frame.place(
             relx=0.5,
@@ -262,22 +266,53 @@ class Launcher:
             anchor="center"
         )
 
-        self.search.focus()
+        self._animate_show()
+
+    def _animate_show(self):
+        """Animate launcher appearance."""
+        if self.animation_step < 10:
+            self.animation_step += 1
+            alpha = self.animation_step / 10
+            if alpha >= 1:
+                self.frame.configure(border_width=2)
+            else:
+                self.frame.configure(border_width=int(2 * alpha))
+
+            self.root.after(20, self._animate_show)
+        else:
+            self.is_animating = False
+            self.search.focus()
 
     # ========================================
 
     def hide(self):
-        """Hide launcher and clear results."""
-        self.visible = False
+        """Hide launcher with smooth animation."""
+        if not self.visible or self.is_animating:
+            return
 
-        self.frame.place_forget()
+        self.is_animating = True
+        self.animation_step = 10
+        self._animate_hide()
 
-        self.search.delete(0, "end")
+    def _animate_hide(self):
+        """Animate launcher disappearance."""
+        if self.animation_step > 0:
+            self.animation_step -= 1
+            alpha = self.animation_step / 10
+            if alpha <= 0:
+                self.frame.configure(border_width=0)
+            else:
+                self.frame.configure(border_width=int(2 * alpha))
 
-        self.ai_response_label.configure(text="")
-        self.ai_response_frame.pack_forget()
-
-        self.filter_apps()
+            self.root.after(20, self._animate_hide)
+        else:
+            self.is_animating = False
+            self.visible = False
+            self.frame.place_forget()
+            self.search.delete(0, "end")
+            self.ai_response_label.configure(text="")
+            self.ai_response_frame.pack_forget()
+            self.filter_apps()
 
     # ========================================
 
