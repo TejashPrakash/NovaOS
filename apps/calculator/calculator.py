@@ -1,5 +1,6 @@
 from sdk.app import NovaApp
 import customtkinter as ctk
+from core.theme import ThemeManager
 
 
 class CalculatorApp(NovaApp):
@@ -10,6 +11,7 @@ class CalculatorApp(NovaApp):
         super().__init__(window)
         self.current_input = ""
         self.result = ""
+        self.theme = ThemeManager()
         
     def build(self):
         # Display
@@ -19,12 +21,14 @@ class CalculatorApp(NovaApp):
         self._setup_buttons()
         
     def _setup_display(self):
-        """Setup calculator display."""
+        """Setup calculator display with theme colors."""
         display_frame = ctk.CTkFrame(
             self.content,
             height=80,
-            fg_color="#252B3B",
-            corner_radius=12
+            fg_color=self.theme.get_color("surface_light"),
+            corner_radius=12,
+            border_width=1,
+            border_color=self.theme.get_color("primary_dim")
         )
         display_frame.pack(fill="x", padx=20, pady=20)
         
@@ -32,12 +36,12 @@ class CalculatorApp(NovaApp):
             display_frame,
             text="0",
             font=("Segoe UI", 32, "bold"),
-            text_color="#00E5FF"
+            text_color=self.theme.get_color("primary")
         )
         self.display.pack(expand=True)
         
     def _setup_buttons(self):
-        """Setup calculator buttons."""
+        """Setup calculator buttons with theme colors."""
         button_frame = ctk.CTkFrame(
             self.content,
             fg_color="transparent"
@@ -45,11 +49,25 @@ class CalculatorApp(NovaApp):
         button_frame.pack(fill="both", expand=True, padx=20, pady=20)
         
         buttons = [
-            ("C", "#E53935"), ("±", "#FFA500"), ("%", "#FFA500"), ("÷", "#00E5FF"),
-            ("7", "#252B3B"), ("8", "#252B3B"), ("9", "#252B3B"), ("×", "#00E5FF"),
-            ("4", "#252B3B"), ("5", "#252B3B"), ("6", "#252B3B"), ("-", "#00E5FF"),
-            ("1", "#252B3B"), ("2", "#252B3B"), ("3", "#252B3B"), ("+", "#00E5FF"),
-            ("0", "#252B3B"), (".", "#252B3B"), ("=", "#00E5FF")
+            ("C", self.theme.get_color("error")),
+            ("±", "#FFA500"),
+            ("%", "#FFA500"),
+            ("÷", self.theme.get_color("primary")),
+            ("7", self.theme.get_color("surface_light")),
+            ("8", self.theme.get_color("surface_light")),
+            ("9", self.theme.get_color("surface_light")),
+            ("×", self.theme.get_color("primary")),
+            ("4", self.theme.get_color("surface_light")),
+            ("5", self.theme.get_color("surface_light")),
+            ("6", self.theme.get_color("surface_light")),
+            ("-", self.theme.get_color("primary")),
+            ("1", self.theme.get_color("surface_light")),
+            ("2", self.theme.get_color("surface_light")),
+            ("3", self.theme.get_color("surface_light")),
+            ("+", self.theme.get_color("primary")),
+            ("0", self.theme.get_color("surface_light")),
+            (".", self.theme.get_color("surface_light")),
+            ("=", self.theme.get_color("primary"))
         ]
         
         for i, (text, color) in enumerate(buttons):
@@ -58,8 +76,9 @@ class CalculatorApp(NovaApp):
                 text=text,
                 font=("Segoe UI", 20, "bold"),
                 fg_color=color,
-                text_color="white" if color != "#00E5FF" else "black",
+                text_color="white" if color != self.theme.get_color("primary") else "black",
                 corner_radius=12,
+                hover_color=self.theme.get_color("primary_hover") if color == self.theme.get_color("primary") else color,
                 command=lambda t=text: self._button_press(t)
             )
             
@@ -74,15 +93,21 @@ class CalculatorApp(NovaApp):
             button_frame.grid_rowconfigure(i, weight=1)
             
     def _button_press(self, text):
-        """Handle button press."""
+        """Handle button press with safer calculations."""
         if text == "C":
             self.current_input = ""
             self.result = ""
         elif text == "=":
             try:
-                self.result = str(eval(self.current_input.replace("×", "*").replace("÷", "/")))
-                self.current_input = self.result
-            except:
+                expression = self.current_input.replace("×", "*").replace("÷", "/")
+                allowed_chars = set("0123456789+-*/.()")
+                if all(c in allowed_chars for c in expression):
+                    self.result = str(eval(expression))
+                    self.current_input = self.result
+                else:
+                    self.result = "Invalid input"
+                    self.current_input = ""
+            except Exception:
                 self.result = "Error"
                 self.current_input = ""
         elif text == "±":
@@ -93,7 +118,10 @@ class CalculatorApp(NovaApp):
                     self.current_input = "-" + self.current_input
         elif text == "%":
             if self.current_input:
-                self.current_input = str(float(self.current_input) / 100)
+                try:
+                    self.current_input = str(float(self.current_input) / 100)
+                except Exception:
+                    self.current_input = ""
         else:
             self.current_input += text
             

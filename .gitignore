@@ -55,6 +55,74 @@ Thumbs.db
 database/*.db
 
 # ==========================
+# NovaOS-specific data files
+# ==========================
+
+window_state.json
+config/*.json
+*.db
+*.sqlite
+*.sqlite3
+
+# ==========================
+# User data and cache
+# ==========================
+
+data/
+cache/
+temp/
+tmp/
+
+# ==========================
+# AI model files
+# ==========================
+
+models/
+*.pt
+*.pth
+*.onnx
+*.gguf
+
+# ==========================
+# Browser data
+# ==========================
+
+browser_history.json
+browser_cache/
+cookies.json
+
+# ==========================
+# Notes and user content
+# ==========================
+
+notes_data/
+user_content/
+*.notes
+
+# ==========================
+# Configuration backups
+# ==========================
+
+*.bak
+*.backup
+config_backup/
+
+# ==========================
+# Session files
+# ==========================
+
+session.json
+*.session
+
+# ==========================
+# Development-specific
+# ==========================
+
+*.swp
+*.swo
+*~
+
+# ==========================
 # Python Cache
 # ==========================
 
