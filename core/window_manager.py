@@ -280,7 +280,9 @@ class AppWindow(GlassFrame):
 
     def toggle_maximize(self):
         """Toggle maximize state."""
-        if self.is_maximized:
+        if self.is_minimized:
+            self.restore()
+        elif self.is_maximized:
             self.restore()
         else:
             self.maximize()
