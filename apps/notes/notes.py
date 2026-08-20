@@ -1,5 +1,6 @@
 import customtkinter as ctk
 
+from core.theme import ThemeManager
 from sdk.app import NovaApp
 
 from apps.notes.controller.notes_controller import NotesController
@@ -23,6 +24,7 @@ class NotesApp(NovaApp):
         self.controller = NotesController()
 
         self.selected_note = None
+        self.theme = ThemeManager()
 
     # =====================================================
 
@@ -60,8 +62,10 @@ class NotesApp(NovaApp):
         ai_btn = ctk.CTkButton(
             self.toolbar,
             text="✨ AI Assist",
-            fg_color="#00E5FF",
+            fg_color=self.theme.get_color("primary"),
             text_color="black",
+            hover_color=self.theme.get_color("primary_hover"),
+            corner_radius=8,
             command=self._ai_assist
         )
         ai_btn.pack(side="right", padx=5)
