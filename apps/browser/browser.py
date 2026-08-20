@@ -13,6 +13,8 @@ class BrowserApp(NovaApp):
     APP_NAME = "Browser"
 
     APP_ICON = "🌐"
+    DEFAULT_WIDTH = 1000
+    DEFAULT_HEIGHT = 700
 
     # =====================================================
 
