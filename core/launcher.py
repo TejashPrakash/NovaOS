@@ -148,7 +148,6 @@ class Launcher:
                 fg_color=self.theme.get_color("surface_light"),
                 text_color=self.theme.get_color("text_primary"),
                 hover_color=self.theme.get_color("primary"),
-                hover_text_color="white",
                 corner_radius=8,
                 border_width=1,
                 border_color=self.theme.get_color("primary_dim"),
