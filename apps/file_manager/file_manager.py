@@ -12,6 +12,8 @@ class FileManagerApp(NovaApp):
     APP_NAME = "Files"
 
     APP_ICON = "📁"
+    DEFAULT_WIDTH = 800
+    DEFAULT_HEIGHT = 600
 
     def __init__(self, window):
 
