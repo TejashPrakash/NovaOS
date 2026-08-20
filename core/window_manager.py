@@ -3,12 +3,11 @@ import customtkinter as ctk
 
 from apps.registry import APP_REGISTRY
 from core.theme import ThemeManager
+from widgets.glass import GlassFrame
 
 
-class AppWindow(ctk.CTkFrame):
-    """
-    Floating application window inside the NovaOS desktop.
-    """
+class AppWindow(GlassFrame):
+    """Premium glassmorphism application window inside NovaOS desktop."""
     def __init__(
         self,
         manager,
@@ -21,6 +20,8 @@ class AppWindow(ctk.CTkFrame):
             manager.desktop.get_canvas(),
             width=width,
             height=height,
+            blur_amount=15,
+            opacity=0.95,
             fg_color=self.theme.get_color("surface"),
             corner_radius=16,
             border_width=2,
