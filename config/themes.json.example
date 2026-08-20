@@ -1,0 +1,4 @@
+{
+  "available_themes": ["cyberpunk", "neon", "sunset", "ocean"],
+  "default_theme": "cyberpunk"
+}

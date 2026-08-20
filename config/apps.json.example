@@ -1,0 +1,4 @@
+{
+  "default_apps": ["Browser", "Notes", "Calculator", "Settings"],
+  "startup_apps": []
+}
