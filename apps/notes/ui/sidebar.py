@@ -41,6 +41,10 @@ class NotesSidebar(ctk.CTkFrame):
 
     # =====================================
 
+    def set_callback(self, callback):
+        """Set the callback for note selection."""
+        self.on_select = callback
+
     def load_notes(self, notes):
 
         for btn in self.buttons:
