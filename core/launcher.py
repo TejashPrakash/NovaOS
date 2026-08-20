@@ -2,6 +2,7 @@ import customtkinter as ctk
 
 from ai.skills import find
 from core.theme import ThemeManager
+from widgets.glass import GlassFrame
 
 
 class Launcher:
@@ -22,10 +23,12 @@ class Launcher:
         # Launcher Window
         # -----------------------------
 
-        self.frame = ctk.CTkFrame(
+        self.frame = GlassFrame(
             self.root,
             width=500,
             height=500,
+            blur_amount=20,
+            opacity=0.95,
             fg_color=self.theme.get_color("surface"),
             corner_radius=20,
             border_width=2,
