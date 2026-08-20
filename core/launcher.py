@@ -86,6 +86,29 @@ class Launcher:
         )
 
         # -----------------------------
+        # AI Response Display
+        # -----------------------------
+
+        self.ai_response_frame = ctk.CTkFrame(
+            self.frame,
+            fg_color="transparent"
+        )
+        self.ai_response_frame.pack(
+            fill="x",
+            padx=20,
+            pady=(0, 10)
+        )
+
+        self.ai_response_label = ctk.CTkLabel(
+            self.ai_response_frame,
+            text="",
+            font=("Segoe UI", 11),
+            text_color=self.theme.get_color("accent"),
+            wraplength=460
+        )
+        self.ai_response_label.pack(fill="x")
+
+        # -----------------------------
         # Available Apps
         # -----------------------------
 
@@ -137,8 +160,18 @@ class Launcher:
     # ========================================
 
     def filter_apps(self, event=None):
-
+        """Filter apps and show AI responses."""
         query = self.search.get().lower()
+
+        results = self.process_search(query)
+
+        if results.get('ai_response'):
+            self.ai_response_label.configure(
+                text=f"🤖 {results['ai_response']}"
+            )
+            self.ai_response_frame.pack(fill="x", padx=20, pady=(0, 10))
+        else:
+            self.ai_response_frame.pack_forget()
 
         for button in self.buttons:
 
@@ -234,12 +267,15 @@ class Launcher:
     # ========================================
 
     def hide(self):
-
+        """Hide launcher and clear results."""
         self.visible = False
 
         self.frame.place_forget()
 
         self.search.delete(0, "end")
+
+        self.ai_response_label.configure(text="")
+        self.ai_response_frame.pack_forget()
 
         self.filter_apps()
 
