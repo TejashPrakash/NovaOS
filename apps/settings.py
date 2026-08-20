@@ -5,6 +5,10 @@ from core.theme import ThemeManager
 
 
 class SettingsApp:
+    APP_ICON = "⚙"
+    DEFAULT_WIDTH = 600
+    DEFAULT_HEIGHT = 500
+
     @staticmethod
     def build(window):
         """Build premium functional settings application."""
