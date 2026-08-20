@@ -70,6 +70,9 @@ class Launcher:
 
         self.frame.bind("<Escape>", lambda e: self.hide())
         self.search.bind("<Escape>", lambda e: self.hide())
+        self.search.bind("<Return>", lambda e: self._launch_first_app())
+        self.search.bind("<Up>", lambda e: self._navigate_apps(-1))
+        self.search.bind("<Down>", lambda e: self._navigate_apps(1))
 
         # -----------------------------
         # Apps Container
@@ -325,3 +328,29 @@ class Launcher:
         else:
 
             self.show()
+
+    def _launch_first_app(self):
+        """Launch the first visible app from search results."""
+        visible_buttons = [btn for btn in self.buttons if btn.winfo_ismapped()]
+        if visible_buttons:
+            text = visible_buttons[0].cget("text")
+            app_name = text.split(" ", 1)[1] if " " in text else text
+            self.launch(app_name)
+
+    def _navigate_apps(self, direction):
+        """Navigate through app results with arrow keys."""
+        visible_buttons = [btn for btn in self.buttons if btn.winfo_ismapped()]
+        if not visible_buttons:
+            return
+
+        current_focus = self.focus_get()
+
+        if current_focus in visible_buttons:
+            current_index = visible_buttons.index(current_focus)
+            new_index = (current_index + direction) % len(visible_buttons)
+            visible_buttons[new_index].focus()
+        else:
+            if direction > 0:
+                visible_buttons[0].focus()
+            else:
+                visible_buttons[-1].focus()
