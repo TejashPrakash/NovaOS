@@ -1,4 +1,6 @@
 import math
+import json
+import os
 import customtkinter as ctk
 
 from apps.registry import APP_REGISTRY
@@ -254,14 +256,9 @@ class AppWindow(GlassFrame):
         self.focus_force()
         
     def close(self):
-        """Close window with animation."""
-        self.animate_to(
-            self.winfo_x(),
-            self.winfo_y() + 20,
-            self.winfo_width(),
-            max(10, self.winfo_height() - 20)
-        )
-        self.after(200, self._destroy)
+        """Close window and save state."""
+        self.manager.save_window_state(self.title, self)
+        self.manager.close_window(self)
         
     def _destroy(self):
         """Actually destroy the window."""
@@ -336,6 +333,9 @@ class WindowManager:
         self.dock = dock
         self.kernel = kernel
         self.windows = []
+        self.state_file = "window_state.json"
+        self.window_states = {}
+        self._load_window_states()
 
     # =====================================================
 
@@ -512,6 +512,8 @@ class WindowManager:
 
         self.arrange_windows()
 
+        self.restore_window_state(title, window)
+
         self.kernel.events.emit(
             "window_created",
             window
@@ -577,3 +579,45 @@ class WindowManager:
             return
             
         window.animate_to(new_x, new_y, new_width, new_height)
+
+    def _load_window_states(self):
+        """Load window states from file."""
+        if os.path.exists(self.state_file):
+            try:
+                with open(self.state_file, 'r') as f:
+                    self.window_states = json.load(f)
+            except Exception as e:
+                print(f"[WindowManager] Error loading states: {e}")
+                self.window_states = {}
+
+    def _save_window_states(self):
+        """Save window states to file."""
+        try:
+            with open(self.state_file, 'w') as f:
+                json.dump(self.window_states, f, indent=2)
+        except Exception as e:
+            print(f"[WindowManager] Error saving states: {e}")
+
+    def save_window_state(self, app_name, window):
+        """Save state of a specific window."""
+        self.window_states[app_name] = {
+            'x': window.winfo_x(),
+            'y': window.winfo_y(),
+            'width': window.winfo_width(),
+            'height': window.winfo_height(),
+            'maximized': window.is_maximized,
+            'minimized': window.is_minimized
+        }
+        self._save_window_states()
+
+    def restore_window_state(self, app_name, window):
+        """Restore state of a specific window."""
+        if app_name in self.window_states:
+            state = self.window_states[app_name]
+            window.place(x=state['x'], y=state['y'])
+            window.configure(width=state['width'], height=state['height'])
+            
+            if state.get('maximized'):
+                window.maximize()
+            elif state.get('minimized'):
+                window.minimize()
