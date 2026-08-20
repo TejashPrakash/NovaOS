@@ -38,6 +38,7 @@ class Desktop:
 
         # Add neural network background option
         self.neural_background = None
+        self.theme = ThemeManager()
         self._setup_default_background()
         
         # -----------------------------
@@ -70,7 +71,6 @@ class Desktop:
         self.ambient_lighting = None
 
         self.ai_panel = None
-        self.theme = ThemeManager()
         
     def _setup_default_background(self):
         """Setup default gradient background with theme colors."""
