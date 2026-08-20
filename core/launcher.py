@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from ai.skills import find
+from core.theme import ThemeManager
 
 
 class Launcher:
@@ -15,6 +16,7 @@ class Launcher:
 
         self.visible = False
         self.ai_enabled = True
+        self.theme = ThemeManager()
 
         # -----------------------------
         # Launcher Window
@@ -24,10 +26,10 @@ class Launcher:
             self.root,
             width=500,
             height=500,
-            fg_color="#1A1F2B",
+            fg_color=self.theme.get_color("surface"),
             corner_radius=20,
-            border_width=1,
-            border_color="#2F3545"
+            border_width=2,
+            border_color=self.theme.get_color("primary")
         )
 
         # -----------------------------
@@ -37,7 +39,13 @@ class Launcher:
         self.search = ctk.CTkEntry(
             self.frame,
             placeholder_text="Search applications...",
-            height=45
+            height=45,
+            fg_color=self.theme.get_color("surface_light"),
+            text_color=self.theme.get_color("text_primary"),
+            placeholder_text_color=self.theme.get_color("text_muted"),
+            corner_radius=10,
+            border_width=1,
+            border_color=self.theme.get_color("primary_dim")
         )
 
         self.search.pack(
@@ -103,9 +111,16 @@ class Launcher:
 
             btn = ctk.CTkButton(
                 self.apps_frame,
-                text=f"{icon}   {app}",
+                text=f"{icon} {app}",
                 height=45,
                 anchor="w",
+                fg_color=self.theme.get_color("surface_light"),
+                text_color=self.theme.get_color("text_primary"),
+                hover_color=self.theme.get_color("primary"),
+                hover_text_color="white",
+                corner_radius=8,
+                border_width=1,
+                border_color=self.theme.get_color("primary_dim"),
                 command=lambda a=app: self.launch(a)
             )
 
