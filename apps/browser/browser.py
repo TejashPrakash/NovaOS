@@ -174,6 +174,25 @@ class BrowserApp(NovaApp):
             self.open_bookmark
         )
 
+        # ---------------------------------------
+        # Webview (optional)
+        # ---------------------------------------
+
+        try:
+            from apps.browser.engine.webview import BrowserWebView, WEBVIEW_AVAILABLE
+
+            if WEBVIEW_AVAILABLE:
+                self.webview = BrowserWebView(self.content)
+                self.webview.pack(fill="both", expand=True, padx=8, pady=8)
+                self.engine.set_webview(self.webview)
+                print("[Browser] Webview enabled")
+            else:
+                self.webview = None
+                print("[Browser] Webview not available - running in placeholder mode")
+        except ImportError as e:
+            self.webview = None
+            print(f"[Browser] Webview import error: {e}")
+
         self.statusbar = BrowserStatusBar(self.content)
 
         self.statusbar.pack(

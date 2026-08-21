@@ -1,1 +1,1 @@
-# Package initializer inside the file
+# Browser services package

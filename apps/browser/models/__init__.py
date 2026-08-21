@@ -1,1 +1,1 @@
-# Package initializer inside the file
+# Browser models package

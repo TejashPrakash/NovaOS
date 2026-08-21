@@ -1,53 +1,48 @@
 from tkinterweb import HtmlFrame
-
+try:
+    WEBVIEW_AVAILABLE = True
+except ImportError:
+    WEBVIEW_AVAILABLE = False
+    print("[Browser] tkinterweb not available - webview disabled")
 
 class BrowserWebView:
-
     def __init__(self, parent):
-
+        if not WEBVIEW_AVAILABLE:
+            self.frame = None
+            print("[Browser] Running in placeholder mode - install tkinterweb for full functionality")
+            return
         self.frame = HtmlFrame(parent)
-
-        # Default Home Page
         self.frame.load_website("https://www.google.com")
-
-    # ---------------------------------------
-
+    
     def pack(self, **kwargs):
-
-        self.frame.pack(**kwargs)
-
-    # ---------------------------------------
-
+        if self.frame:
+            self.frame.pack(**kwargs)
+    
     def load(self, url):
-
+        if not self.frame:
+            print(f"[Browser] Would load: {url} (webview unavailable)")
+            return
         if not url.startswith("http://") and not url.startswith("https://"):
             url = "https://" + url
-
         self.frame.load_website(url)
-
-    # ---------------------------------------
-
+    
     def back(self):
-
-        try:
-            self.frame.back()
-        except:
-            pass
-
-    # ---------------------------------------
-
+        if self.frame:
+            try:
+                self.frame.back()
+            except:
+                pass
+    
     def forward(self):
-
-        try:
-            self.frame.forward()
-        except:
-            pass
-
-    # ---------------------------------------
-
+        if self.frame:
+            try:
+                self.frame.forward()
+            except:
+                pass
+    
     def reload(self):
-
-        try:
-            self.frame.reload()
-        except:
-            pass
+        if self.frame:
+            try:
+                self.frame.reload()
+            except:
+                pass
