@@ -1,3 +1,4 @@
+import customtkinter as ctk
 from sdk.app import NovaApp
 from apps.browser.services.bookmarks import BookmarkService
 from apps.browser.controller.browser_controller import BrowserController
@@ -123,6 +124,20 @@ class BrowserApp(NovaApp):
             if tab is not None and self.controller.can_go_forward(tab)
             else "disabled"
         )
+    
+    def show_webview(self):
+        """Show webview and hide homepage."""
+        if self.webview:
+            self.homepage.pack_forget()
+            self.webview.pack(fill="both", expand=True)
+            self.on_homepage = False
+    
+    def show_homepage(self):
+        """Show homepage and hide webview."""
+        self.homepage.pack(fill="both", expand=True)
+        if self.webview:
+            self.webview.pack_forget()
+        self.on_homepage = True
 
     # =====================================================
 
@@ -155,16 +170,21 @@ class BrowserApp(NovaApp):
         )
 
         # ---------------------------------------
+        # Content Area (switches between homepage and webview)
+        # ---------------------------------------
+        
+        self.content_area = ctk.CTkFrame(self.content, fg_color="transparent")
+        self.content_area.pack(fill="both", expand=True, padx=8, pady=8)
+
+        # ---------------------------------------
         # Homepage
         # ---------------------------------------
 
-        self.homepage = BrowserHomepage(self.content)
+        self.homepage = BrowserHomepage(self.content_area)
 
         self.homepage.pack(
             fill="both",
-            expand=True,
-            padx=8,
-            pady=8
+            expand=True
         )
 
         self.homepage.load_bookmarks(
@@ -178,12 +198,15 @@ class BrowserApp(NovaApp):
         # Webview (optional)
         # ---------------------------------------
 
+        self.webview = None
+        self.on_homepage = True
+
         try:
             from apps.browser.engine.webview import BrowserWebView, WEBVIEW_AVAILABLE
 
             if WEBVIEW_AVAILABLE:
-                self.webview = BrowserWebView(self.content)
-                self.webview.pack(fill="both", expand=True, padx=8, pady=8)
+                self.webview = BrowserWebView(self.content_area)
+                # Don't pack initially - will be shown when navigating
                 self.engine.set_webview(self.webview)
                 print("[Browser] Webview enabled")
             else:
@@ -268,6 +291,7 @@ class BrowserApp(NovaApp):
             f"Opening {bookmark['title']}..."
         )
 
+        self.show_webview()
         self.engine.load(url)
 
         self.update_current_tab(url, bookmark["title"])
@@ -292,6 +316,7 @@ class BrowserApp(NovaApp):
             "Loading..."
         )
 
+        self.show_webview()
         self.engine.load(url)
 
         self.update_current_tab(url, url)
@@ -310,6 +335,7 @@ class BrowserApp(NovaApp):
 
         self.toolbar.set_url(url)
 
+        self.show_webview()
         self.engine.load(url)
         self.update_current_tab(url, url)
         self.update_navigation()
@@ -322,6 +348,7 @@ class BrowserApp(NovaApp):
 
         self.toolbar.set_url(url)
 
+        self.show_webview()
         self.engine.load(url)
 
         self.update_current_tab(url, url)
@@ -332,18 +359,11 @@ class BrowserApp(NovaApp):
 
     def home(self):
 
-        url = self.controller.go_home(self.current_tab)
-
-        self.toolbar.set_url(url)
-
-        self.statusbar.set_status("Loading Home...")
-
-        self.engine.load(url)
-
-        self.update_current_tab(url, "Home")
-
-        self.statusbar.set_status("Home Loaded")
-
+        # Show homepage instead of loading URL
+        self.show_homepage()
+        self.toolbar.set_url("")
+        self.statusbar.set_status("Home")
+        self.update_current_tab("", "Home")
         self.update_navigation()
 
     # =====================================================
@@ -369,6 +389,7 @@ class BrowserApp(NovaApp):
 
         self.toolbar.set_url(url)
 
+        self.show_webview()
         self.engine.load(url)
 
         self.update_current_tab(url, query)

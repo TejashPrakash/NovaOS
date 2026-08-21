@@ -1,5 +1,5 @@
-from tkinterweb import HtmlFrame
 try:
+    from tkinterweb import HtmlFrame
     WEBVIEW_AVAILABLE = True
 except ImportError:
     WEBVIEW_AVAILABLE = False
@@ -17,6 +17,10 @@ class BrowserWebView:
     def pack(self, **kwargs):
         if self.frame:
             self.frame.pack(**kwargs)
+    
+    def pack_forget(self):
+        if self.frame:
+            self.frame.pack_forget()
     
     def load(self, url):
         if not self.frame:

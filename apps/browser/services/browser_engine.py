@@ -7,13 +7,6 @@ except ImportError:
 class BrowserEngine:
     """
     Browser engine abstraction.
-    Today:
-    - Stores the current URL.
-    - Optional webview rendering if tkinterweb is available.
-    Future:
-    - pywebview
-    - QtWebEngine
-    - CEF
     """
     def __init__(self):
         self.current_url = None
