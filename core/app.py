@@ -63,6 +63,7 @@ class NovaOS:
             self.kernel     
         )
 
+        self.desktop.window_manager = self.window_manager
         self.kernel.window_manager = self.window_manager
 
         # Register as a kernel service
