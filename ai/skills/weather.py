@@ -14,7 +14,7 @@ def get_weather(kernel, location: str = "") -> str:
     
     try:
         response = requests.get(
-            f"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={CONFIG.openweather_api_key}&units=metric"
+            f"https://api.openweathermap.org/data/2.5/weather?q={location}&appid={CONFIG.openweather_api_key}&units=metric"
         )
         if response.status_code == 200:
             data = response.json()
