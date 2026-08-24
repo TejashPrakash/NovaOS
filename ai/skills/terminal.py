@@ -56,7 +56,7 @@ def list_directory(kernel, path: str = ".") -> str:
         raise SkillError(f"Could not list directory: {e}")
 
 
-SKILLS = [
+SKILLS = (
     Skill(
         tool=string_parameters(
             name="execute_command",
@@ -73,4 +73,4 @@ SKILLS = [
         ),
         run=list_directory
     ),
-]
+)
