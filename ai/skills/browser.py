@@ -35,7 +35,7 @@ def get_current_url(kernel) -> str:
         raise SkillError(f"Could not get current URL: {e}")
 
 
-SKILLS = [
+SKILLS = (
     Skill(
         tool=string_parameters(
             name="open_url",
@@ -59,4 +59,4 @@ SKILLS = [
         ),
         run=get_current_url
     ),
-]
+)
