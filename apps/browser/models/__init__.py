@@ -1,1 +1,1 @@
-# Browser models package
+from .tab import BrowserTab

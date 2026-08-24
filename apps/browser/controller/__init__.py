@@ -1,1 +1,1 @@
-# Browser controller package
+from .browser_controller import BrowserController

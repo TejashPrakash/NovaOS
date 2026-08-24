@@ -1,1 +1,1 @@
-# Browser engine package
+from .chromium_engine import ChromiumBrowserEngine
