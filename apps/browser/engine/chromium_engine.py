@@ -30,13 +30,7 @@ class ChromiumBrowserEngine:
         self._external_browser = False
         self._qt_process = None
         
-    FULL_BROWSER_HOSTS = {
-        "google.com", "www.google.com", "mail.google.com", "gmail.com",
-        "accounts.google.com", "images.google.com", "news.google.com",
-        "youtube.com", "www.youtube.com",
-        "drive.google.com", "docs.google.com", "meet.google.com",
-        "discord.com", "web.whatsapp.com", "netflix.com",
-    }
+    FULL_BROWSER_HOSTS = set()
 
     def requires_full_browser(self, url):
         host = urlparse(url).netloc.lower().split(":")[0]

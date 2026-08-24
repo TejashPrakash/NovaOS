@@ -50,6 +50,8 @@ class BrowserApp(NovaApp):
             self.homepage.pack(fill="both", expand=True, padx=8, pady=8)
         else:
             self.show_browser()
+            if self.chromium_engine:
+                self.chromium_engine.load(tab.url)
         self.statusbar.set_status(f"Tab: {tab.title}")
         self.refresh_tabs()
         self.update_navigation()
