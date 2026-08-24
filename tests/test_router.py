@@ -164,7 +164,10 @@ def test_novaos_attaches_desktop_icons_manager(monkeypatch):
         def set_launcher(self, *_args, **_kwargs):
             pass
 
-        def add_start_button(self):
+        def add_start_button(self, start_menu=None):
+            self.start_menu = start_menu
+
+        def integrate_launcher_with_start_menu(self):
             pass
 
     class FakeWindowManager:
