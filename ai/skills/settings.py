@@ -31,8 +31,27 @@ def toggle_premium_effects(kernel) -> str:
         raise SkillError(f"Could not toggle effects: {e}")
 
 
-SKILLS = [
-    Skill(tool=string_parameters(name="get_theme", description="Get the current system theme name"),run=get_theme),
-    Skill(tool=string_parameters(name="set_theme", description="Set the system theme", theme_name="Theme name to set"), run=set_theme),
-    Skill(tool=string_parameters(name="toggle_premium_effects", description="Toggle premium visual effects on/off"), run=toggle_premium_effects),
-]
+SKILLS = (
+    Skill(
+        tool=string_parameters(
+            name="get_theme",
+            description="Get the current system theme name"
+        ),
+        run=get_theme
+    ),
+    Skill(
+        tool=string_parameters(
+            name="set_theme",
+            description="Set the system theme",
+            theme_name="Theme name to set"
+        ),
+        run=set_theme
+    ),
+    Skill(
+        tool=string_parameters(
+            name="toggle_premium_effects",
+            description="Toggle premium visual effects on/off"
+        ),
+        run=toggle_premium_effects
+    ),
+)
