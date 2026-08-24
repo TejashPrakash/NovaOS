@@ -153,8 +153,8 @@ class NotesApp(NovaApp):
 
         content = self.editor.get_content()
         if hasattr(self.window, 'kernel') and hasattr(self.window.kernel, 'ai'):
-            response = self.window.kernel.ai.assistant.process(
-                f"Help me improve this note: {content}"
+            response = self.window.kernel.ai.assistant.ask(
+                f"Help me improve this note:\n{content}"
             )
             current_content = self.editor.get_content()
             self.editor.set_content(f"{current_content}\n\nAI Suggestion: {response}")

@@ -73,6 +73,8 @@ class ProcessManager:
         )
 
         process.window = window
+        window.kernel = self.kernel
+        window.app_name = app_name
 
         # ---------------------------------
         # Create App
