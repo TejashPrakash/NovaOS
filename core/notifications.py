@@ -90,7 +90,7 @@ class NotificationSystem:
         message_label.pack(pady=(5, 0))
         
         # Auto-hide after duration
-        self.desktop.after(notification.duration * 1000, self._hide_current)
+        self.desktop.root.after(notification.duration * 1000, self._hide_current)
         
     def _hide_current(self):
         """Hide current notification."""

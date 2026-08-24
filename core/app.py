@@ -4,6 +4,7 @@ from core.kernel import Kernel
 from core.desktop import Desktop
 from core.desktop_icons import DesktopIconsManager
 from core.context_menu import ContextMenuManager
+from core.notifications import NotificationSystem
 from core.dock import Dock
 from core.window_manager import WindowManager
 from core.launcher import Launcher
@@ -41,6 +42,8 @@ class NovaOS:
         self.desktop = Desktop(self.root)
         self.kernel.desktop = self.desktop
 
+        self.notifications = NotificationSystem(self.desktop)
+
         self.context_menu_manager = ContextMenuManager(self.desktop)
 
         # ==========================================
@@ -71,6 +74,11 @@ class NovaOS:
         self.kernel.register_service(
             "desktop",
             self.desktop
+        )
+
+        self.kernel.register_service(
+            "notifications",
+            self.notifications
         )
 
         self.kernel.register_service(
