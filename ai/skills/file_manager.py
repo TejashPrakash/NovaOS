@@ -53,7 +53,7 @@ def get_file_info(kernel, path: str) -> str:
         raise SkillError(f"Could not get file info: {e}")
 
 
-SKILLS = [
+SKILLS = (
     Skill(
         tool=string_parameters(
             name="list_files",
@@ -78,4 +78,4 @@ SKILLS = [
         ),
         run=get_file_info
     ),
-]
+)
