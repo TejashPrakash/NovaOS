@@ -1,21 +1,20 @@
-"""Skill registry for the NovaOS AI layer."""
-
 from ai.skills import apps, notes, system, weather, time_skill, calculator
 from ai.skills import settings, terminal, music, file_manager, browser
 from ai.skills.base import Skill, SkillError
 
+# Convert all skills to tuples for consistent concatenation
 SKILLS = (
-    apps.SKILLS + 
-    notes.SKILLS + 
-    system.SKILLS + 
-    weather.SKILLS + 
-    time_skill.SKILLS + 
-    calculator.SKILLS +
-    settings.SKILLS +
-    terminal.SKILLS +
-    music.SKILLS +
-    file_manager.SKILLS +
-    browser.SKILLS
+    tuple(apps.SKILLS) + 
+    tuple(notes.SKILLS) + 
+    tuple(system.SKILLS) + 
+    tuple(weather.SKILLS) + 
+    tuple(time_skill.SKILLS) + 
+    tuple(calculator.SKILLS) +
+    tuple(settings.SKILLS) +
+    tuple(terminal.SKILLS) +
+    tuple(music.SKILLS) +
+    tuple(file_manager.SKILLS) +
+    tuple(browser.SKILLS)
 )
 
 SKILLS_BY_NAME = {skill.name: skill for skill in SKILLS}
