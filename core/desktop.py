@@ -100,13 +100,13 @@ class Desktop:
                 image=""
             )
 
-    def enable_neural_background(self):
+    def enable_neural_network_background(self):
         """Enable animated neural network background."""
         if self.neural_background is None:
             self.neural_background = NeuralBackground(self.wallpaper)
             self.neural_background.place(relwidth=1, relheight=1)
 
-    def disable_neural_background(self):
+    def disable_neural_network_background(self):
         """Disable neural network background."""
         if self.neural_background:
             self.neural_background.destroy()
@@ -152,8 +152,8 @@ class Desktop:
         
         # Update existing premium effects if active
         if self.neural_background:
-            self.disable_neural_background()
-            self.enable_neural_background()
+            self.disable_neural_network_background()
+            self.enable_neural_network_background()
         
         if self.ambient_lighting:
             self.disable_ambient_lighting()

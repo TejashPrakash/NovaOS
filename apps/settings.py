@@ -63,7 +63,7 @@ class SettingsApp(NovaApp):
         
         provider_combo = ctk.CTkComboBox(
             ai_frame,
-            values=["Gemini", "Ollama", "Claude"],
+            values=["Gemini", "Ollama"],
             width=200,
             fg_color=self.theme.get_color("surface"),
             text_color=self.theme.get_color("text_primary"),
@@ -126,10 +126,10 @@ class SettingsApp(NovaApp):
             desktop = getattr(getattr(self.window, "kernel", None), "desktop", None)
             if desktop:
                 if enabled:
-                    desktop.enable_neural_background()
+                    desktop.enable_neural_network_background()
                     desktop.enable_ambient_lighting()
                 else:
-                    desktop.disable_neural_background()
+                    desktop.disable_neural_network_background()
                     desktop.disable_ambient_lighting()
             print(f"[Settings] Premium effects {'enabled' if enabled else 'disabled'}")
         

@@ -168,12 +168,12 @@ class NovaOS:
         
         if self.premium_effects_enabled:
             # Enable premium effects
-            self.desktop.enable_neural_background()
+            self.desktop.enable_neural_network_background()
             self.desktop.enable_ambient_lighting()
             print("[NovaOS] Premium effects enabled")
         else:
             # Disable premium effects
-            self.desktop.disable_neural_background()
+            self.desktop.disable_neural_network_background()
             self.desktop.disable_ambient_lighting()
             print("[NovaOS] Premium effects disabled")
 

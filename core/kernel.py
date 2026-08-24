@@ -85,6 +85,13 @@ class Kernel:
 
     # =====================================================
 
+    def set_theme(self, theme_name: str):
+
+        if self.desktop is not None:
+            self.desktop.set_theme(theme_name)
+
+    # =====================================================
+
     def load_plugin(self, plugin):
 
         plugin.on_load(self)
