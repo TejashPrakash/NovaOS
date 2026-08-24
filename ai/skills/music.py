@@ -59,7 +59,7 @@ def previous_track(kernel) -> str:
         raise SkillError(f"Could not go to previous track: {e}")
 
 
-SKILLS = [
+SKILLS = (
     Skill(
         tool=string_parameters(
             name="play_music",
@@ -96,4 +96,4 @@ SKILLS = [
         ),
         run=previous_track
     ),
-]
+)
