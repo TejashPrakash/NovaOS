@@ -2,6 +2,7 @@
 
 import speech_recognition as sr
 import pyttsx3
+import threading
 from typing import Optional, Callable
 from .base_provider import BaseProvider
 
@@ -14,6 +15,7 @@ class VoiceProvider:
         self.tts_engine = pyttsx3.init()
         self.is_listening = False
         self.on_speech_callback: Optional[Callable] = None
+        self._listen_thread: Optional[threading.Thread] = None
 
         # Configure TTS
         self.tts_engine.setProperty('rate', 150)
@@ -23,7 +25,11 @@ class VoiceProvider:
         """Start listening for voice commands."""
         self.on_speech_callback = callback
         self.is_listening = True
-        self._listen_loop()
+        self._listen_thread = threading.Thread(
+            target=self._listen_loop,
+            daemon=True,
+        )
+        self._listen_thread.start()
 
     def stop_listening(self):
         """Stop listening for voice commands."""

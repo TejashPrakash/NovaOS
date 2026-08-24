@@ -27,7 +27,7 @@ class AIService:
         if not self.voice_enabled:
             self.voice_enabled = True
             try:
-                self.voice_provider.start_listening(self._handle_voice_input)
+                self.voice_provider.start_listening(self._schedule_voice_input)
             except Exception as e:
                 print(f"[AI Service] Failed to start voice provider: {e}")
 
@@ -55,6 +55,15 @@ class AIService:
                 pass
         except Exception as e:
             print(f"[AI Service] Error handling voice input: {e}")
+
+    def _schedule_voice_input(self, text: str):
+        """Run voice responses on the Tk main thread."""
+        desktop = getattr(self.kernel, "desktop", None)
+        root = getattr(desktop, "root", None)
+        if root is not None:
+            root.after(0, self._handle_voice_input, text)
+        else:
+            self._handle_voice_input(text)
 
     # =====================================================
 
