@@ -151,6 +151,11 @@ class NovaOS:
             lambda e: self.launcher.toggle()
         )
 
+        self.root.protocol(
+            "WM_DELETE_WINDOW",
+            lambda: self.kernel.commands.execute(self.kernel, "shutdown")
+        )
+
         print("[NovaOS] System Ready")
 
     # ==========================================

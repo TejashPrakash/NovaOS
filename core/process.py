@@ -64,8 +64,19 @@ class Process:
     # =====================================================
 
     def terminate(self):
-
         self.status = "Terminated"
+        if self.instance is not None:
+            try:
+                self.instance.on_close()
+            except Exception as error:
+                print(f"[Process] on_close failed: {error!r}")
+        if self.window is not None:
+            try:
+                if self.window.winfo_exists():
+                    self.window.manager.close_window(self.window)
+            except Exception as error:
+                print(f"[Process] window close failed: {error!r}")
+            self.window = None
 
     # =====================================================
 
