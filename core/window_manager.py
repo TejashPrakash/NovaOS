@@ -435,6 +435,8 @@ class WindowManager:
                 y=y
             )
 
+            window.lift()
+
             return
 
         # Two or more apps use a responsive two-column grid.
@@ -465,6 +467,8 @@ class WindowManager:
                 x=x,
                 y=y
             )
+
+            window.lift()
 
     # =====================================================
 
