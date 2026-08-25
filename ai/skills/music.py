@@ -1,5 +1,5 @@
-from ai.skills.base import Skill, string_parameters
-from ai.skills.base import SkillError
+from ai.skills.base import Skill, string_parameters, SkillError
+from ai.providers import Tool
 
 
 def play_music(kernel, song_name: str = "") -> str:
@@ -61,38 +61,38 @@ def previous_track(kernel) -> str:
 
 SKILLS = (
     Skill(
-        tool=string_parameters(
+        tool=Tool(
             name="play_music",
             description="Play music (resume or specific song)",
-            song_name="Optional song name to play"
+            parameters=string_parameters(song_name="Optional song name to play"),
         ),
         run=play_music
     ),
     Skill(
-        tool=string_parameters(
+        tool=Tool(
             name="pause_music",
-            description="Pause music playback"
+            description="Pause music playback",
         ),
         run=pause_music
     ),
     Skill(
-        tool=string_parameters(
+        tool=Tool(
             name="stop_music",
-            description="Stop music playback"
+            description="Stop music playback",
         ),
         run=stop_music
     ),
     Skill(
-        tool=string_parameters(
+        tool=Tool(
             name="next_track",
-            description="Skip to next track"
+            description="Skip to next track",
         ),
         run=next_track
     ),
     Skill(
-        tool=string_parameters(
+        tool=Tool(
             name="previous_track",
-            description="Go to previous track"
+            description="Go to previous track",
         ),
         run=previous_track
     ),
