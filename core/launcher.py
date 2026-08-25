@@ -124,6 +124,7 @@ class Launcher:
             ("📁", "Files"),
             (">_", "Terminal"),
             ("🌤", "Weather"),
+            ("📅", "Calendar"),
             ("📊", "System Monitor"),
             ("⚙", "Settings")
         ]
