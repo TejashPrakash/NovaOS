@@ -27,6 +27,7 @@ def main():
         root.deiconify()
 
         def on_unlock():
+            nonlocal os_app
             if os_app is None:
                 os_app = NovaOS(root)
 
