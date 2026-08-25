@@ -52,7 +52,7 @@ class ContextMenu(ctk.CTkFrame):
         """Clean up menu."""
         try:
             self.master.unbind("<Button-1>", self._close_on_click)
-        except:
+        except Exception:
             pass
         super().destroy()
 
