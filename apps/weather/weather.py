@@ -118,22 +118,33 @@ class WeatherApp(NovaApp):
             return
 
         if not CONFIG.is_weather_available():
-            self._show_demo_weather(city)
+            self._show_config_required()
             return
+
+        # Show loading state
+        self._show_loading(city)
 
         try:
             url = (
                 f"https://api.openweathermap.org/data/2.5/weather"
-                f?q={city}&appid={CONFIG.openweather_api_key}&units=metric"
+                f"?q={city}&appid={CONFIG.openweather_api_key}&units=metric"
             )
             response = requests.get(url, timeout=10)
             if response.status_code == 200:
                 data = response.json()
                 self._display_weather(data)
-            else:
+            elif response.status_code == 401:
+                self._show_error("Invalid API key. Check OPENWEATHER_API_KEY in .env")
+            elif response.status_code == 404:
                 self._show_error(f"City not found: {city}")
+            else:
+                self._show_error(f"Weather API error: {response.status_code}")
+        except requests.Timeout:
+            self._show_error("Request timed out. Check your internet connection.")
+        except requests.ConnectionError:
+            self._show_error("No internet connection. Please connect and try again.")
         except Exception as e:
-            self._show_error(f"Could not fetch weather: {e}")
+            self._show_error(f"Error: {e}")
 
     def _display_weather(self, data):
         """Display live weather data from API."""
@@ -279,63 +290,62 @@ class WeatherApp(NovaApp):
             text_color="#FFFFFF"
         ).place(relx=0.5, rely=0.5, anchor="center")
 
-    def _show_demo_weather(self, city):
-        """Show demo weather when API key is not set."""
+    def _show_loading(self, city):
+        """Show loading state while fetching weather."""
         for w in self.weather_frame.winfo_children():
             w.destroy()
 
         ctk.CTkLabel(
             self.weather_frame,
-            text="☀️",
-            font=("Segoe UI Emoji", 64)
-        ).pack(pady=(30, 5))
+            text="⏳",
+            font=("Segoe UI Emoji", 48)
+        ).pack(pady=(80, 10))
 
         ctk.CTkLabel(
             self.weather_frame,
-            text=f"{city}",
-            font=("Segoe UI", 28, "bold"),
-            text_color="#FFFFFF"
+            text=f"Fetching weather for {city}...",
+            font=("Segoe UI", 16),
+            text_color="#888888"
+        ).pack()
+
+    def _show_config_required(self):
+        """Show setup instructions when API key is missing."""
+        for w in self.weather_frame.winfo_children():
+            w.destroy()
+
+        ctk.CTkLabel(
+            self.weather_frame,
+            text="🔑",
+            font=("Segoe UI Emoji", 48)
+        ).pack(pady=(60, 10))
+
+        ctk.CTkLabel(
+            self.weather_frame,
+            text="Weather API key not configured",
+            font=("Segoe UI", 18, "bold"),
+            text_color="#FFC107"
         ).pack()
 
         ctk.CTkLabel(
             self.weather_frame,
-            text="24°C  •  Clear Sky",
-            font=("Segoe UI", 18),
-            text_color="#00E5FF"
-        ).pack(pady=(5, 15))
+            text="To enable live weather data:",
+            font=("Segoe UI", 14),
+            text_color="#BBBBBB"
+        ).pack(pady=(15, 5))
 
-        cards_frame = ctk.CTkFrame(self.weather_frame, fg_color="transparent")
-        cards_frame.pack(fill="x", padx=25)
-
-        demo_details = [
-            ("💧 Humidity", "45%", "#00B8D4"),
-            ("💨 Wind", "3.2 m/s", "#7B61FF"),
-            ("🌡 Pressure", "1013 hPa", "#FF00E5"),
-            ("👁 Visibility", "10.0 km", "#00E676"),
+        steps = [
+            "1. Get a free API key from openweathermap.org",
+            "2. Open the .env file in your NovaOS folder",
+            "3. Set: OPENWEATHER_API_KEY=your_key_here",
+            "4. Restart NovaOS"
         ]
 
-        for label_text, value, color in demo_details:
-            card = ctk.CTkFrame(
-                cards_frame, fg_color="#161B22",
-                corner_radius=12, height=80
-            )
-            card.pack(side="left", fill="x", expand=True, padx=4)
-            card.pack_propagate(False)
+        for step in steps:
             ctk.CTkLabel(
-                card, text=label_text,
-                font=("Segoe UI", 11), text_color="#888888"
-            ).pack(pady=(12, 2))
-            ctk.CTkLabel(
-                card, text=value,
-                font=("Segoe UI", 18, "bold"), text_color=color
-            ).pack()
-
-        ctk.CTkLabel(
-            self.weather_frame,
-            text="⚠ Demo mode — set OPENWEATHER_API_KEY for live data",
-            font=("Segoe UI", 11),
-            text_color="#FFC107"
-        ).pack(pady=(20, 0))
+                self.weather_frame, text=step,
+                font=("Cascadia Code", 12),
+                text_color="#00E5FF"
+            ).pack(anchor="w", padx=80, pady=2)
 
     def _show_error(self, message):
         """Show error message."""
