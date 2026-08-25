@@ -6,6 +6,7 @@ from apps.settings import SettingsApp
 from apps.music_player import MusicPlayerApp
 from apps.terminal.terminal import TerminalApp
 from apps.weather.weather import WeatherApp
+from apps.system_monitor import SystemMonitorApp
 
 APP_REGISTRY = {
 
@@ -24,4 +25,6 @@ APP_REGISTRY = {
     "Terminal": TerminalApp,
 
     "Weather": WeatherApp,
+
+    "System Monitor": SystemMonitorApp,
 }

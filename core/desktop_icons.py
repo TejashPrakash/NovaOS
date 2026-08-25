@@ -55,6 +55,7 @@ class DesktopIconsManager:
             ("📁", "Files"),
             (">_", "Terminal"),
             ("🌤", "Weather"),
+            ("📊", "System Monitor"),
             ("⚙️", "Settings"),
         ]
         

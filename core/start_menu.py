@@ -66,6 +66,7 @@ class StartMenu(GlassFrame):
             ("📁", "Files"),
             (">_", "Terminal"),
             ("🌤", "Weather"),
+            ("📊", "System Monitor"),
             ("⚙️", "Settings"),
             ("🎵", "Music Player")
         ]
