@@ -1,18 +1,18 @@
-from ai.skills.base import Skill, string_parameters
-from ai.skills.base import SkillError
+from ai.skills.base import Skill, string_parameters, SkillError
+from ai.providers import Tool
 
 
 def open_url(kernel, url: str) -> str:
     """Open a URL in the browser."""
     try:
-        # This would integrate with the browser app to open URLs
         window_manager = kernel.get_service("window_manager")
         if window_manager:
-            # Add protocol if missing
             if not url.startswith(('http://', 'https://')):
                 url = 'https://' + url
             return f"Opening {url} in browser"
         raise SkillError("Window manager not available")
+    except SkillError:
+        raise
     except Exception as e:
         raise SkillError(f"Could not open URL: {e}")
 
@@ -29,7 +29,6 @@ def search_web(kernel, query: str) -> str:
 def get_current_url(kernel) -> str:
     """Get the current browser URL."""
     try:
-        # This would get the active browser tab's URL
         return "Current URL feature not yet implemented"
     except Exception as e:
         raise SkillError(f"Could not get current URL: {e}")
@@ -37,25 +36,25 @@ def get_current_url(kernel) -> str:
 
 SKILLS = (
     Skill(
-        tool=string_parameters(
+        tool=Tool(
             name="open_url",
             description="Open a URL in the browser",
-            url="The URL to open"
+            parameters=string_parameters(url="The URL to open"),
         ),
         run=open_url
     ),
     Skill(
-        tool=string_parameters(
+        tool=Tool(
             name="search_web",
             description="Search the web with a query",
-            query="Search query"
+            parameters=string_parameters(query="Search query"),
         ),
         run=search_web
     ),
     Skill(
-        tool=string_parameters(
+        tool=Tool(
             name="get_current_url",
-            description="Get the current browser URL"
+            description="Get the current browser URL",
         ),
         run=get_current_url
     ),
