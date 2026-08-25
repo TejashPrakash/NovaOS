@@ -153,7 +153,7 @@ class ChromiumBrowserEngine:
             try:
                 self.window.reload()
                 print("[Browser] Reloaded")
-            except:
+            except Exception:
                 pass
     
     def back(self):
@@ -162,7 +162,7 @@ class ChromiumBrowserEngine:
         elif self.window:
             try:
                 self.window.back()
-            except:
+            except Exception:
                 pass
     
     def forward(self):
@@ -171,7 +171,7 @@ class ChromiumBrowserEngine:
         elif self.window:
             try:
                 self.window.forward()
-            except:
+            except Exception:
                 pass
     
     def get_current_url(self):
@@ -209,5 +209,5 @@ class ChromiumBrowserEngine:
         if self.window:
             try:
                 return self.window.evaluate_js(script)
-            except:
+            except Exception:
                 return None
