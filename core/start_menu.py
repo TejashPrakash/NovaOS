@@ -64,6 +64,8 @@ class StartMenu(GlassFrame):
             ("📝", "Notes"),
             ("🧮", "Calculator"),
             ("📁", "Files"),
+            (">_", "Terminal"),
+            ("📝", "Editor"),
             ("⚙️", "Settings"),
             ("🎵", "Music Player")
         ]

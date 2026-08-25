@@ -53,7 +53,9 @@ class DesktopIconsManager:
             ("📝", "Notes"),
             ("🧮", "Calculator"),
             ("📁", "Files"),
-            ("⚙️", "Settings")
+            (">_", "Terminal"),
+            ("📝", "Editor"),
+            ("⚙️", "Settings"),
         ]
         
         for i, (icon, app_name) in enumerate(default_apps):

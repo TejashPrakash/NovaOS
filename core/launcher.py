@@ -122,6 +122,8 @@ class Launcher:
             ("📝", "Notes"),
             ("🧮", "Calculator"),
             ("📁", "Files"),
+            (">_", "Terminal"),
+            ("📝", "Editor"),
             ("⚙", "Settings")
         ]
 

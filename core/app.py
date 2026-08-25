@@ -158,6 +158,17 @@ class NovaOS:
         )
         ai_toggle.place(x=1400, y=20)
 
+        try:
+            from ai.ui.desktop_widget import AIAssistantWidget
+            if hasattr(self.kernel, 'ai') and self.kernel.ai and self.kernel.ai.assistant:
+                self.ai_widget = AIAssistantWidget(
+                    self.desktop.get_widget_layer(),
+                    self.kernel.ai.assistant
+                )
+                self.ai_widget.place(relx=1.0, rely=0.5, anchor="e", x=-20)
+        except Exception as e:
+            print(f"[NovaOS] AI widget not available: {e}")
+
         self.root.bind_all(
             "<Control-space>",
             lambda e: self.launcher.toggle()
