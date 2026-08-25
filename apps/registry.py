@@ -5,6 +5,7 @@ from apps.file_manager.file_manager import FileManagerApp
 from apps.settings import SettingsApp
 from apps.music_player import MusicPlayerApp
 from apps.terminal.terminal import TerminalApp
+from apps.editor.editor import EditorApp
 
 APP_REGISTRY = {
 
@@ -20,5 +21,7 @@ APP_REGISTRY = {
 
     "Music Player": MusicPlayerApp,
 
-    "Terminal": TerminalApp
+    "Terminal": TerminalApp,
+
+    "Editor": EditorApp
 }
