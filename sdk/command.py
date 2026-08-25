@@ -4,22 +4,27 @@ from typing import Any, Dict, Optional
 
 class Command(ABC):
     """Base class for NovaOS commands."""
-    
+
+    NAME: str = ""
+    DESCRIPTION: str = ""
+
     @property
-    @abstractmethod
     def name(self) -> str:
         """Return the command name."""
-        pass
-    
+        return self.NAME
+
     @abstractmethod
     def execute(self, kernel, *args, **kwargs) -> Any:
         """Execute the command."""
         pass
-    
+
     @property
     def description(self) -> str:
         """Return command description."""
-        return f"Command: {self.name}"
+        return self.DESCRIPTION
+
+
+NovaCommand = Command
 
 
 class CommandRegistry:
