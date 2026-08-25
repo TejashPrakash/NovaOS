@@ -3,10 +3,11 @@ from apps.notes.notes import NotesApp
 from apps.calculator.calculator import CalculatorApp
 from apps.file_manager.file_manager import FileManagerApp
 from apps.settings import SettingsApp
-from apps.music_player import MusicPlayerApp
+from apps.music_player.player import MusicPlayerApp
 from apps.terminal.terminal import TerminalApp
 from apps.weather.weather import WeatherApp
 from apps.system_monitor import SystemMonitorApp
+from apps.calendar_app import CalendarApp
 
 APP_REGISTRY = {
 
@@ -27,4 +28,6 @@ APP_REGISTRY = {
     "Weather": WeatherApp,
 
     "System Monitor": SystemMonitorApp,
+
+    "Calendar": CalendarApp,
 }
