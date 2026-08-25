@@ -1,28 +1,44 @@
-"""Voice input/output provider for NovaOS AI."""
-
-import speech_recognition as sr
-import pyttsx3
 import threading
 from typing import Optional, Callable
-from .base_provider import BaseProvider
+
+try:
+    import speech_recognition as sr
+    HAS_SR = True
+except (ImportError, OSError):
+    sr = None
+    HAS_SR = False
+
+try:
+    import pyttsx3
+    HAS_TTS = True
+except (ImportError, OSError):
+    pyttsx3 = None
+    HAS_TTS = False
 
 
 class VoiceProvider:
     """Voice input/output provider for Nova AI."""
 
     def __init__(self):
-        self.recognizer = sr.Recognizer()
-        self.tts_engine = pyttsx3.init()
         self.is_listening = False
         self.on_speech_callback: Optional[Callable] = None
         self._listen_thread: Optional[threading.Thread] = None
+        self.recognizer = sr.Recognizer() if HAS_SR else None
+        self.tts_engine = None
 
-        # Configure TTS
-        self.tts_engine.setProperty('rate', 150)
-        self.tts_engine.setProperty('volume', 0.9)
+        if HAS_TTS:
+            try:
+                self.tts_engine = pyttsx3.init()
+                self.tts_engine.setProperty('rate', 150)
+                self.tts_engine.setProperty('volume', 0.9)
+            except Exception:
+                self.tts_engine = None
 
     def start_listening(self, callback: Callable):
         """Start listening for voice commands."""
+        if not HAS_SR or self.recognizer is None:
+            print("[Voice] speech_recognition not available")
+            return
         self.on_speech_callback = callback
         self.is_listening = True
         self._listen_thread = threading.Thread(
@@ -57,6 +73,8 @@ class VoiceProvider:
 
     def speak(self, text: str):
         """Speak text using TTS."""
+        if self.tts_engine is None:
+            return
         try:
             self.tts_engine.say(text)
             self.tts_engine.runAndWait()
@@ -65,6 +83,8 @@ class VoiceProvider:
 
     def set_voice_properties(self, rate: int = None, volume: float = None):
         """Set TTS voice properties."""
+        if self.tts_engine is None:
+            return
         if rate:
             self.tts_engine.setProperty('rate', rate)
         if volume:
