@@ -6,6 +6,8 @@ from core.theme import ThemeManager
 class CalculatorApp(NovaApp):
     APP_NAME = "Calculator"
     APP_ICON = "🧮"
+    DEFAULT_WIDTH = 400
+    DEFAULT_HEIGHT = 500
     
     def __init__(self, window):
         super().__init__(window)
