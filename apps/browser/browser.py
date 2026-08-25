@@ -29,7 +29,7 @@ class BrowserApp(NovaApp):
             if hasattr(window, 'kernel') and hasattr(window.kernel, 'ai'):
                 self.ai_service = AIBrowserService(window.kernel.ai.assistant)
                 print("[Browser] AI Service initialized")
-        except:
+        except Exception:
             print("[Browser] AI Service not available")
 
     def create_new_tab(self):
