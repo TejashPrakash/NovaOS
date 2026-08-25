@@ -8,6 +8,7 @@ class ColorScheme:
     
     # Primary colors
     primary: str = "#00E5FF"  # Cyan neon
+    primary_dim: str = "#00B8D4"  # Dimmed cyan
     secondary: str = "#7B61FF"  # Purple neon
     accent: str = "#FF00E5"  # Magenta neon
     
