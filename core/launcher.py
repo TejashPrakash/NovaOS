@@ -123,7 +123,7 @@ class Launcher:
             ("🧮", "Calculator"),
             ("📁", "Files"),
             (">_", "Terminal"),
-            ("📝", "Editor"),
+            ("🌤", "Weather"),
             ("⚙", "Settings")
         ]
 

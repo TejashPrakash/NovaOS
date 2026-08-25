@@ -54,7 +54,7 @@ class DesktopIconsManager:
             ("🧮", "Calculator"),
             ("📁", "Files"),
             (">_", "Terminal"),
-            ("📝", "Editor"),
+            ("🌤", "Weather"),
             ("⚙️", "Settings"),
         ]
         
