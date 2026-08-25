@@ -1,5 +1,5 @@
-from ai.skills.base import Skill, string_parameters
-from ai.skills.base import SkillError
+from ai.skills.base import Skill, SkillError, string_parameters
+from ai.providers import Tool
 
 
 def get_theme(kernel) -> str:
@@ -22,9 +22,7 @@ def set_theme(kernel, theme_name: str) -> str:
 def toggle_premium_effects(kernel) -> str:
     """Toggle premium visual effects."""
     try:
-        # Access the NovaOS app instance through kernel
         if hasattr(kernel, 'desktop') and kernel.desktop:
-            # This would need to be implemented in the desktop
             return "Premium effects toggled"
         raise SkillError("Desktop not available")
     except Exception as e:
@@ -33,24 +31,24 @@ def toggle_premium_effects(kernel) -> str:
 
 SKILLS = (
     Skill(
-        tool=string_parameters(
+        tool=Tool(
             name="get_theme",
-            description="Get the current system theme name"
+            description="Get the current system theme name",
         ),
         run=get_theme
     ),
     Skill(
-        tool=string_parameters(
+        tool=Tool(
             name="set_theme",
             description="Set the system theme",
-            theme_name="Theme name to set"
+            parameters=string_parameters(theme_name="Theme name to set"),
         ),
         run=set_theme
     ),
     Skill(
-        tool=string_parameters(
+        tool=Tool(
             name="toggle_premium_effects",
-            description="Toggle premium visual effects on/off"
+            description="Toggle premium visual effects on/off",
         ),
         run=toggle_premium_effects
     ),
