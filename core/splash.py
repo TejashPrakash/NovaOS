@@ -182,8 +182,12 @@ class NovaSplashScreen(ctk.CTkToplevel):
         if steps <= 0:
             if self._on_complete:
                 self._on_complete()
-            self.destroy()
+            try:
+                self.destroy()
+            except Exception:
+                pass
             return
+
         alpha = steps / 10
         bg = f"#{int(5*alpha):02x}{int(8*alpha):02x}{int(16*alpha):02x}"
         try:
@@ -191,9 +195,13 @@ class NovaSplashScreen(ctk.CTkToplevel):
             self.bg_canvas.configure(bg=bg)
         except Exception:
             pass
+
         for child in self.container.winfo_children():
             try:
                 child.configure(text_color=bg)
             except Exception:
                 pass
-        self.after(40, lambda: self._fade_out(steps - 1))
+        try:
+            self.after(40, lambda: self._fade_out(steps - 1))
+        except Exception:
+            pass

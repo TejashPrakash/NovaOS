@@ -252,6 +252,9 @@ class AppWindow(GlassFrame):
         
     def focus_window(self):
         """Focus window and bring to front."""
+        if self.is_minimized:
+            self.restore()
+            return
         self.lift()
         self.focus_force()
         
