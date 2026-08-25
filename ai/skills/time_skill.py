@@ -13,7 +13,7 @@ def get_current_time(kernel, timezone: str = "UTC") -> str:
         tz = pytz.timezone(timezone)
         now = datetime.now(tz)
         return f"Current time in {timezone}: {now.strftime('%I:%M %p')}"
-    except:
+    except Exception:
         return f"Unknown timezone: {timezone}. Available: UTC, America/New_York, Europe/London, etc."
 
 
@@ -31,7 +31,7 @@ def get_datetime_info(kernel, timezone: str = "UTC") -> str:
         tz = pytz.timezone(timezone)
         now = datetime.now(tz)
         return f"Date: {now.strftime('%A, %B %d, %Y')}. Time: {now.strftime('%I:%M:%S %p')} in {timezone}"
-    except:
+    except Exception:
         return f"Could not get time for timezone: {timezone}"
 
 
