@@ -13,13 +13,16 @@ from core.start_menu import StartMenu
 
 class NovaOS:
 
-    def __init__(self):
+    def __init__(self, root=None):
 
         # ==========================================
         # Main Window
         # ==========================================
 
-        self.root = ctk.CTk()
+        if root is not None:
+            self.root = root
+        else:
+            self.root = ctk.CTk()
 
         self.root.title("NovaOS")
         self.root.geometry("1600x900")
