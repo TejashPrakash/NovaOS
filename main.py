@@ -1,23 +1,39 @@
 import customtkinter as ctk
-from core.splash import NovaSplashScreen
 
 
 def main():
-    """Launch NovaOS with an animated boot splash."""
+    """Launch NovaOS: splash -> lock screen -> desktop."""
     ctk.set_appearance_mode("Dark")
     ctk.set_default_color_theme("blue")
 
     root = ctk.CTk()
     root.withdraw()
 
+    from core.splash import NovaSplashScreen
+    from core.lock_screen import LockScreen
+    from core.app import NovaOS
+
+    os_app = None
+
     def boot_desktop():
+        """Called when the splash animation finishes."""
+        nonlocal os_app
         root.deiconify()
-        from core.app import NovaOS
         os_app = NovaOS(root)
-        os_app.run()
+
+    def show_lock_screen():
+        """Called when splash finishes — show lock screen first."""
+        nonlocal os_app
+        root.deiconify()
+
+        def on_unlock():
+            if os_app is None:
+                os_app = NovaOS(root)
+
+        LockScreen(on_unlock=on_unlock)
 
     splash = NovaSplashScreen()
-    splash.start_boot(boot_desktop)
+    splash.start_boot(show_lock_screen)
 
     root.mainloop()
 

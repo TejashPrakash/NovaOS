@@ -176,6 +176,7 @@ class NovaSplashScreen(ctk.CTkToplevel):
         self._animate()
 
     def _finish_boot(self):
+        self._boot_complete = True
         self._fade_out(10)
 
     def _fade_out(self, steps):
@@ -183,6 +184,7 @@ class NovaSplashScreen(ctk.CTkToplevel):
             if self._on_complete:
                 self._on_complete()
             try:
+                self.place_forget()
                 self.destroy()
             except Exception:
                 pass
