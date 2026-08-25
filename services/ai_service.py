@@ -1,5 +1,3 @@
-"""Kernel service that owns the NovaOS assistant."""
-
 from ai.providers.voice import VoiceProvider
 
 class AIService:
@@ -9,9 +7,14 @@ class AIService:
 
     def __init__(self, kernel):
         self.kernel = kernel
-        self.assistant = None  # Will be set when provider is available
-        self.voice_provider = VoiceProvider()
+        self.assistant = None
+        self.voice_provider = None
         self.voice_enabled = False
+
+        try:
+            self.voice_provider = VoiceProvider()
+        except Exception as e:
+            print(f"[AI Service] Voice provider unavailable: {e}")
 
         try:
             from ai.assistant import create_assistant
@@ -25,6 +28,9 @@ class AIService:
     def enable_voice(self):
         """Enable voice interaction."""
         if not self.voice_enabled:
+            if self.voice_provider is None:
+                print("[AI Service] Voice provider not available")
+                return
             self.voice_enabled = True
             try:
                 self.voice_provider.start_listening(self._schedule_voice_input)
@@ -36,7 +42,8 @@ class AIService:
         if self.voice_enabled:
             self.voice_enabled = False
             try:
-                self.voice_provider.stop_listening()
+                if self.voice_provider:
+                    self.voice_provider.stop_listening()
             except Exception as e:
                 print(f"[AI Service] Failed to stop voice provider: {e}")
 
@@ -48,9 +55,9 @@ class AIService:
 
         try:
             response = self.assistant.ask(text)
-            # speak the response if TTS is available
             try:
-                self.voice_provider.speak(response)
+                if self.voice_provider:
+                    self.voice_provider.speak(response)
             except Exception:
                 pass
         except Exception as e:
@@ -69,8 +76,6 @@ class AIService:
 
     def is_available(self):
         return self.assistant is not None
-
-    # =====================================================
 
     def ask(self, message):
         """Answer a user message, or explain why the AI layer is off."""
