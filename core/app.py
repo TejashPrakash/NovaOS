@@ -174,6 +174,16 @@ class NovaOS:
             lambda e: self.launcher.toggle()
         )
 
+        # Lock screen shortcut (Ctrl+Shift+L)
+        def lock_screen():
+            from core.lock_screen import LockScreen
+            LockScreen(on_unlock=lambda: None)
+
+        self.root.bind_all(
+            "<Control-Shift-L>",
+            lambda e: lock_screen()
+        )
+
         self.root.protocol(
             "WM_DELETE_WINDOW",
             lambda: self.kernel.commands.execute(self.kernel, "shutdown")
