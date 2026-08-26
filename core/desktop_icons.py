@@ -2,39 +2,71 @@ import customtkinter as ctk
 
 
 class DesktopIcon(ctk.CTkFrame):
-    """Single desktop icon."""
+    """Vibrant desktop icon with glow effects."""
     
     def __init__(self, parent, icon_text, app_name, callback, **kwargs):
         super().__init__(
             parent,
-            width=80,
-            height=90,
+            width=90,
+            height=100,
             fg_color="transparent",
             **kwargs
         )
         self.callback = callback
+        self.app_name = app_name
         self._setup_icon(icon_text, app_name)
         
     def _setup_icon(self, icon_text, app_name):
-        """Setup icon appearance."""
-        self.icon_label = ctk.CTkLabel(
+        """Setup vibrant icon with glow background."""
+        # Glow background frame
+        self.glow_frame = ctk.CTkFrame(
             self,
-            text=icon_text,
-            font=("Segoe UI", 32)
+            width=70, height=70,
+            fg_color="#0D1A25",
+            corner_radius=16,
+            border_width=1,
+            border_color="#0A1520"
         )
-        self.icon_label.pack(pady=(10, 5))
+        self.glow_frame.pack(pady=(8, 2))
+        self.glow_frame.pack_propagate(False)
+
+        self.icon_label = ctk.CTkLabel(
+            self.glow_frame,
+            text=icon_text,
+            font=("Segoe UI Emoji", 30),
+            text_color="#FFFFFF"
+        )
+        self.icon_label.place(relx=0.5, rely=0.5, anchor="center")
         
         self.name_label = ctk.CTkLabel(
             self,
             text=app_name,
-            font=("Segoe UI", 10),
+            font=("Segoe UI", 10, "bold"),
             text_color="#BBBBBB"
         )
         self.name_label.pack()
         
-        self.bind("<Button-1>", lambda e: self.callback())
-        self.icon_label.bind("<Button-1>", lambda e: self.callback())
-        self.name_label.bind("<Button-1>", lambda e: self.callback())
+        # Hover effects
+        for widget in (self, self.glow_frame, self.icon_label, self.name_label):
+            widget.bind("<Button-1>", lambda e: self.callback())
+            widget.bind("<Enter>", self._on_enter)
+            widget.bind("<Leave>", self._on_leave)
+
+    def _on_enter(self, e=None):
+        """Glow on hover."""
+        self.glow_frame.configure(
+            fg_color="#0D2833",
+            border_color="#00E5FF"
+        )
+        self.name_label.configure(text_color="#00E5FF")
+
+    def _on_leave(self, e=None):
+        """Remove glow."""
+        self.glow_frame.configure(
+            fg_color="#0D1A25",
+            border_color="#0A1520"
+        )
+        self.name_label.configure(text_color="#BBBBBB")
 
 
 class DesktopIconsManager:
@@ -73,7 +105,7 @@ class DesktopIconsManager:
             # Position in grid
             row = i // 5
             col = i % 5
-            icon_widget.place(x=30 + col * 100, y=30 + row * 110)
+            icon_widget.place(x=25 + col * 105, y=25 + row * 115)
             self.icons.append(icon_widget)
             
     def _launch_app(self, app_name):
