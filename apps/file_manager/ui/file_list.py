@@ -60,6 +60,12 @@ class FileList(ctk.CTkScrollableFrame):
                 lambda e, p=item: open_callback(p)
             )
 
+            # Right-click AI context menu
+            button.bind(
+                "<Button-3>",
+                lambda e, p=item: self._show_ai_context(p)
+            )
+
             self.buttons.append(button)
 
     # ======================================================
@@ -77,3 +83,17 @@ class FileList(ctk.CTkScrollableFrame):
         )
 
         self.selected = button
+
+    def _show_ai_context(self, file_path):
+        """Show AI context menu for a file."""
+        try:
+            from ai.ui.ai_context_menu import AIContextMenu
+            # Walk up to find a root window
+            widget = self
+            while hasattr(widget, 'master') and widget.master:
+                widget = widget.master
+                if isinstance(widget, (ctk.CTkToplevel, ctk.CTk)):
+                    break
+            AIContextMenu(widget, file_path=str(file_path))
+        except Exception as e:
+            print(f"[FileList] Context menu error: {e}")
