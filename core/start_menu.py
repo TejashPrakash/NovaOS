@@ -68,8 +68,9 @@ class StartMenu(GlassFrame):
             ("🌤", "Weather"),
             ("📅", "Calendar"),
             ("📊", "System Monitor"),
-            ("⚙️", "Settings"),
-            ("🎵", "Music Player")
+            ("🎵", "Music Player"),
+            ("👁", "Viewer"),
+            ("⚙️", "Settings")
         ]
         
         for i, (icon, app_name) in enumerate(apps):

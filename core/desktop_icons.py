@@ -58,6 +58,7 @@ class DesktopIconsManager:
             ("📅", "Calendar"),
             ("📊", "System Monitor"),
             ("🎵", "Music Player"),
+            ("👁", "Viewer"),
             ("⚙️", "Settings"),
         ]
         

@@ -127,6 +127,7 @@ class Launcher:
             ("📅", "Calendar"),
             ("📊", "System Monitor"),
             ("🎵", "Music Player"),
+            ("👁", "Viewer"),
             ("⚙", "Settings")
         ]
 
