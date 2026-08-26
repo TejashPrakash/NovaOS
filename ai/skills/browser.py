@@ -29,7 +29,20 @@ def search_web(kernel, query: str) -> str:
 def get_current_url(kernel) -> str:
     """Get the current browser URL."""
     try:
-        return "Current URL feature not yet implemented"
+        process_manager = kernel.get_service("process_manager")
+        if process_manager:
+            process = process_manager.get_process("Browser")
+            if process and process.instance:
+                app = process.instance
+                if hasattr(app, "current_tab") and app.current_tab:
+                    url = app.current_tab.url
+                    if url and url != "about:home":
+                        return f"Current URL: {url}"
+                    return "Browser is on the homepage"
+            return "Browser is not open"
+        raise SkillError("Process manager not available")
+    except SkillError:
+        raise
     except Exception as e:
         raise SkillError(f"Could not get current URL: {e}")
 
