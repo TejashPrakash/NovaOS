@@ -44,7 +44,7 @@ class Desktop:
         self._setup_default_background()
         
         # -----------------------------
-        # Desktop Widgets Layer
+        # Desktop Widgets Layer (on top of AI background)
         # -----------------------------
         self.widget_layer = ctk.CTkFrame(
             self.frame,
@@ -54,6 +54,7 @@ class Desktop:
             relwidth=1,
             relheight=1
         )
+        self.widget_layer.lift()
         
         # -----------------------------
         # Desktop Icons Layer
@@ -66,6 +67,7 @@ class Desktop:
             relwidth=1,
             relheight=1
         )
+        self.icon_layer.lift()
 
         # -----------------------------
         # Ambient Lighting Layer (optional)
@@ -79,7 +81,8 @@ class Desktop:
         try:
             self.ai_bg = AIBackground(self.frame)
             self.ai_bg.place(relx=0, rely=0, relwidth=1, relheight=1)
-            self.ai_bg.lower()
+            # Push background below all other layers
+            self.ai_bg.lower(self.wallpaper)
         except Exception as e:
             print(f"[Desktop] AI background failed, using solid: {e}")
             self.wallpaper.configure(fg_color=self.theme.get_color("background"))

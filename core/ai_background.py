@@ -50,7 +50,7 @@ class AIBackground(ctk.CTkFrame):
             })
 
         self._orbs = []
-        orb_colors = ["#00E5FF20", "#7B61FF18", "#FF00E515", "#00FF8810"]
+        orb_colors = ["#00E5FF", "#7B61FF", "#FF00E5", "#00FF88"]
         for _ in range(5):
             self._orbs.append({
                 "x": random.uniform(100, self._w - 100),
@@ -131,44 +131,39 @@ class AIBackground(ctk.CTkFrame):
             orb["x"] += orb["vx"]
             orb["y"] += orb["vy"]
 
-            if orb["x"] < -orb["radius"]:
-                orb["x"] = self._w + orb["radius"]
-            elif orb["x"] > self._w + orb["radius"]:
-                orb["x"] = -orb["radius"]
-            if orb["y"] < -orb["radius"]:
-                orb["y"] = self._h + orb["radius"]
-            elif orb["y"] > self._h + orb["radius"]:
-                orb["y"] = -orb["radius"]
+            ox = orb["x"]
+            oy = orb["y"]
+            radius = orb["radius"]
+
+            if ox < -radius:
+                orb["x"] = self._w + radius
+            elif ox > self._w + radius:
+                orb["x"] = -radius
+            if oy < -radius:
+                orb["y"] = self._h + radius
+            elif oy > self._h + radius:
+                orb["y"] = -radius
 
             pulse = 0.7 + 0.3 * math.sin(
                 self._step * orb["pulse_speed"] + orb["pulse_offset"]
             )
-            r = int(orb["radius"] * pulse)
+            r = int(radius * pulse)
+            color = orb["color"]
 
             for ring in range(3, 0, -1):
-                ring_r = r * (ring * 0.8)
-                alpha = int(20 / ring)
-                color_hex = orb["color"][:7]
-                r_val = int(color_hex[1:3], 16)
-                g_val = int(color_hex[3:5], 16)
-                b_val = int(color_hex[5:7], 16)
-                r_adj = min(255, r_val + alpha)
-                g_adj = min(255, g_val + alpha)
-                b_adj = min(255, b_val + alpha)
-                ring_color = f"#{r_adj:02x}{g_adj:02x}{b_adj:02x}"
-
+                ring_r = int(r * ring * 0.8)
                 self._canvas.create_oval(
-                    orb["x"] - ring_r, orb["y"] - ring_r,
-                    orb["x"] + ring_r, orb["y"] + ring_r,
-                    fill="", outline=ring_color, width=1
+                    ox - ring_r, oy - ring_r,
+                    ox + ring_r, oy + ring_r,
+                    fill="", outline=color, width=1
                 )
 
             # Core
-            core_color = orb["color"][:7]
+            core_r = int(r * 0.3)
             self._canvas.create_oval(
-                orb["x"] - r * 0.3, orb["y"] - r * 0.3,
-                orb["x"] + r * 0.3, orb["y"] + r * 0.3,
-                fill=core_color, outline=""
+                ox - core_r, oy - core_r,
+                ox + core_r, oy + core_r,
+                fill=color, outline=""
             )
 
     def _draw_particles(self):
@@ -223,8 +218,10 @@ class AIBackground(ctk.CTkFrame):
                 dist = math.sqrt(dx * dx + dy * dy)
                 if dist < max_dist:
                     alpha = int(40 * (1 - dist / max_dist))
+                    g = min(255, alpha + 20)
+                    b = min(255, alpha + 40)
                     self._canvas.create_line(
                         p1["x"], p1["y"], p2["x"], p2["y"],
-                        fill=f"#{alpha:02x}{alpha + 20:02x}{alpha + 40:02x}",
+                        fill=f"#{alpha:02x}{g:02x}{b:02x}",
                         width=1
                     )
