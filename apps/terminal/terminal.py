@@ -25,6 +25,14 @@ class TerminalApp(NovaApp):
         self.command_history = []
         self.history_index = -1
         self.output_lines = []
+        self.aliases = {
+            "ll": "ls",
+            "la": "ls",
+            "cls": "clear",
+            "q": "exit",
+            "..": "cd ..",
+            "~": "cd ~",
+        }
 
     def build(self):
         # Output area
@@ -123,6 +131,14 @@ class TerminalApp(NovaApp):
         cmd = parts[0].lower()
         args = parts[1:]
 
+        # Resolve aliases
+        if cmd in self.aliases:
+            resolved = self.aliases[cmd]
+            command = resolved + (" " + " ".join(args) if args else "")
+            parts = command.split()
+            cmd = parts[0].lower()
+            args = parts[1:]
+
         builtins = {
             "help": self._cmd_help,
             "clear": self._cmd_clear,
@@ -140,6 +156,28 @@ class TerminalApp(NovaApp):
             "history": self._cmd_history,
             "neofetch": self._cmd_neofetch,
             "theme": self._cmd_theme,
+            "grep": self._cmd_grep,
+            "alias": self._cmd_alias,
+            "export": self._cmd_export,
+            "env": self._cmd_env,
+            "kill": self._cmd_kill,
+            "ps": self._cmd_ps,
+            "df": self._cmd_df,
+            "du": self._cmd_du,
+            "head": self._cmd_head,
+            "tail": self._cmd_tail,
+            "wc": self._cmd_wc,
+            "sort": self._cmd_sort,
+            "uniq": self._cmd_uniq,
+            "find": self._cmd_find,
+            "tree": self._cmd_tree,
+            "curl": self._cmd_curl,
+            "ping": self._cmd_ping,
+            "ifconfig": self._cmd_ifconfig,
+            "nano": self._cmd_nano,
+            "vim": self._cmd_vim,
+            "exit": self._cmd_exit,
+            "about": self._cmd_about,
         }
 
         if cmd in builtins:
@@ -209,6 +247,10 @@ class TerminalApp(NovaApp):
         self._write_line("")
         for cmd, desc in commands:
             self._write_line(f"  {cmd:<20} {desc}", "#BBBBBB")
+        self._write_line("")
+        self._write_line("Aliases:", "#00E5FF")
+        for alias, target in self.aliases.items():
+            self._write_line(f"  {alias:<20} -> {target}", "#BBBBBB")
 
     def _cmd_clear(self, args):
         self.output.configure(state="normal")
@@ -339,6 +381,333 @@ class TerminalApp(NovaApp):
             self._write_line(f"Theme changed to {theme}", "#00E676")
         else:
             self._write_line("Theme manager not available", "#FFC107")
+
+    # =====================================================
+    # Extended Commands
+    # =====================================================
+
+    def _cmd_grep(self, args):
+        if len(args) < 2:
+            self._write_line("Usage: grep <pattern> <file>", "#FFC107")
+            return
+        pattern, filepath = args[0], args[1]
+        path = Path(filepath) if Path(filepath).is_absolute() else self.current_dir / filepath
+        if not path.exists():
+            self._write_line(f"grep: {filepath}: No such file", "#E53935")
+            return
+        try:
+            for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+                if pattern.lower() in line.lower():
+                    self._write_line(line, "#BBBBBB")
+        except Exception as e:
+            self._write_line(f"grep: {e}", "#E53935")
+
+    def _cmd_alias(self, args):
+        if not args:
+            for alias, target in self.aliases.items():
+                self._write_line(f"  {alias}='{target}'", "#BBBBBB")
+            return
+        if "=" in args[0]:
+            name, target = args[0].split("=", 1)
+            self.aliases[name] = target
+            self._write_line(f"Alias set: {name}='{target}'", "#00E676")
+        else:
+            self._write_line(f"Usage: alias name='command'", "#FFC107")
+
+    def _cmd_export(self, args):
+        if not args:
+            for k, v in os.environ.items():
+                self._write_line(f"  {k}={v}", "#BBBBBB")
+            return
+        if "=" in args[0]:
+            key, val = args[0].split("=", 1)
+            os.environ[key] = val
+            self._write_line(f"Exported: {key}={val}", "#00E676")
+        else:
+            self._write_line(f"Usage: export KEY=value", "#FFC107")
+
+    def _cmd_env(self, args):
+        for k, v in sorted(os.environ.items()):
+            self._write_line(f"  {k}={v}", "#BBBBBB")
+
+    def _cmd_kill(self, args):
+        if not args:
+            self._write_line("Usage: kill <PID>", "#FFC107")
+            return
+        try:
+            import signal
+            pid = int(args[0])
+            os.kill(pid, signal.SIGTERM)
+            self._write_line(f"Sent SIGTERM to PID {pid}", "#00E676")
+        except ProcessLookupError:
+            self._write_line(f"No such process: {args[0]}", "#E53935")
+        except PermissionError:
+            self._write_line(f"Permission denied: {args[0]}", "#E53935")
+        except Exception as e:
+            self._write_line(f"kill: {e}", "#E53935")
+
+    def _cmd_ps(self, args):
+        import psutil
+        procs = []
+        for p in psutil.process_iter(["pid", "name", "cpu_percent", "memory_percent"]):
+            try:
+                info = p.info
+                procs.append(info)
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                pass
+        self._write_line(f"{'PID':>7}  {'CPU%':>6}  {'MEM%':>6}  NAME", "#00E5FF")
+        for p in sorted(procs, key=lambda x: x.get("cpu_percent", 0) or 0, reverse=True)[:25]:
+            pid = p.get("pid", 0)
+            cpu = p.get("cpu_percent", 0) or 0
+            mem = p.get("memory_percent", 0) or 0
+            name = p.get("name", "?")
+            self._write_line(f"{pid:>7}  {cpu:>5.1f}%  {mem:>5.1f}%  {name}", "#BBBBBB")
+
+    def _cmd_df(self, args):
+        import psutil
+        for part in psutil.disk_partitions():
+            try:
+                usage = psutil.disk_usage(part.mountpoint)
+                self._write_line(
+                    f"  {part.device:<15} {usage.total // (1024**3):>5}G "
+                    f"{usage.used // (1024**3):>5}G {usage.percent:>5.1f}%  {part.mountpoint}",
+                    "#BBBBBB"
+                )
+            except PermissionError:
+                pass
+
+    def _cmd_du(self, args):
+        target = self.current_dir if not args else (
+            Path(args[0]) if Path(args[0]).is_absolute() else self.current_dir / args[0]
+        )
+        if not target.exists():
+            self._write_line(f"du: {target}: No such file or directory", "#E53935")
+            return
+        if target.is_file():
+            size = target.stat().st_size
+            self._write_line(f"  {self._human_size(size):>10}  {target.name}", "#BBBBBB")
+        else:
+            total = 0
+            for f in target.rglob("*"):
+                if f.is_file():
+                    total += f.stat().st_size
+            self._write_line(f"  {self._human_size(total):>10}  {target.name}/", "#BBBBBB")
+
+    def _cmd_head(self, args):
+        if not args:
+            self._write_line("Usage: head <file> [lines]", "#FFC107")
+            return
+        n = 10
+        filepath = args[0]
+        if len(args) >= 3 and args[1] == "-n":
+            try: n = int(args[2])
+            except: pass
+        path = Path(filepath) if Path(filepath).is_absolute() else self.current_dir / filepath
+        if not path.exists():
+            self._write_line(f"head: {filepath}: No such file", "#E53935")
+            return
+        try:
+            for line in path.read_text(encoding="utf-8", errors="replace").splitlines()[:n]:
+                self._write_line(line, "#BBBBBB")
+        except Exception as e:
+            self._write_line(f"head: {e}", "#E53935")
+
+    def _cmd_tail(self, args):
+        if not args:
+            self._write_line("Usage: tail <file> [lines]", "#FFC107")
+            return
+        n = 10
+        filepath = args[0]
+        if len(args) >= 3 and args[1] == "-n":
+            try: n = int(args[2])
+            except: pass
+        path = Path(filepath) if Path(filepath).is_absolute() else self.current_dir / filepath
+        if not path.exists():
+            self._write_line(f"tail: {filepath}: No such file", "#E53935")
+            return
+        try:
+            lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+            for line in lines[-n:]:
+                self._write_line(line, "#BBBBBB")
+        except Exception as e:
+            self._write_line(f"tail: {e}", "#E53935")
+
+    def _cmd_wc(self, args):
+        if not args:
+            self._write_line("Usage: wc <file>", "#FFC107")
+            return
+        path = Path(args[0]) if Path(args[0]).is_absolute() else self.current_dir / args[0]
+        if not path.exists():
+            self._write_line(f"wc: {args[0]}: No such file", "#E53935")
+            return
+        try:
+            text = path.read_text(encoding="utf-8", errors="replace")
+            lines = len(text.splitlines())
+            words = len(text.split())
+            chars = len(text)
+            self._write_line(f"  {lines} {words} {chars} {args[0]}", "#BBBBBB")
+        except Exception as e:
+            self._write_line(f"wc: {e}", "#E53935")
+
+    def _cmd_sort(self, args):
+        if not args:
+            self._write_line("Usage: sort <file>", "#FFC107")
+            return
+        path = Path(args[0]) if Path(args[0]).is_absolute() else self.current_dir / args[0]
+        if not path.exists():
+            self._write_line(f"sort: {args[0]}: No such file", "#E53935")
+            return
+        try:
+            lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+            for line in sorted(lines):
+                self._write_line(line, "#BBBBBB")
+        except Exception as e:
+            self._write_line(f"sort: {e}", "#E53935")
+
+    def _cmd_uniq(self, args):
+        if not args:
+            self._write_line("Usage: uniq <file>", "#FFC107")
+            return
+        path = Path(args[0]) if Path(args[0]).is_absolute() else self.current_dir / args[0]
+        if not path.exists():
+            self._write_line(f"uniq: {args[0]}: No such file", "#E53935")
+            return
+        try:
+            prev = None
+            for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+                if line != prev:
+                    self._write_line(line, "#BBBBBB")
+                    prev = line
+        except Exception as e:
+            self._write_line(f"uniq: {e}", "#E53935")
+
+    def _cmd_find(self, args):
+        if not args:
+            self._write_line("Usage: find <name>", "#FFC107")
+            return
+        pattern = args[0]
+        matches = []
+        for f in self.current_dir.rglob("*"):
+            if pattern.lower() in f.name.lower():
+                matches.append(f)
+        if not matches:
+            self._write_line(f"No matches for '{pattern}'", "#FFC107")
+        else:
+            for m in matches[:30]:
+                color = "#00E5FF" if m.is_dir() else "#BBBBBB"
+                self._write_line(f"  {m.relative_to(self.current_dir)}", color)
+            if len(matches) > 30:
+                self._write_line(f"  ... and {len(matches) - 30} more", "#FFC107")
+
+    def _cmd_tree(self, args):
+        target = self.current_dir if not args else (
+            Path(args[0]) if Path(args[0]).is_absolute() else self.current_dir / args[0]
+        )
+        if not target.exists():
+            self._write_line(f"tree: {target}: No such directory", "#E53935")
+            return
+        self._write_line(target.name or str(target), "#00E5FF")
+        self._tree_recursive(target, "", 3)
+
+    def _tree_recursive(self, path, prefix, max_depth):
+        if max_depth <= 0:
+            return
+        try:
+            items = sorted(path.iterdir(), key=lambda x: (x.is_file(), x.name))
+        except PermissionError:
+            return
+        for i, item in enumerate(items):
+            connector = "└── " if i == len(items) - 1 else "├── "
+            color = "#00E5FF" if item.is_dir() else "#BBBBBB"
+            self._write_line(f"  {prefix}{connector}{item.name}", color)
+            if item.is_dir():
+                extension = "    " if i == len(items) - 1 else "│   "
+                self._tree_recursive(item, prefix + extension, max_depth - 1)
+
+    def _cmd_curl(self, args):
+        if not args:
+            self._write_line("Usage: curl <url>", "#FFC107")
+            return
+        import requests
+        try:
+            url = args[0] if args[0].startswith(("http://", "https://")) else "https://" + args[0]
+            resp = requests.get(url, timeout=10)
+            self._write_line(f"HTTP {resp.status_code} | {len(resp.text)} bytes", "#00E5FF")
+            for line in resp.text.splitlines()[:50]:
+                self._write_line(line, "#BBBBBB")
+            if len(resp.text.splitlines()) > 50:
+                self._write_line("... (truncated)", "#FFC107")
+        except Exception as e:
+            self._write_line(f"curl: {e}", "#E53935")
+
+    def _cmd_ping(self, args):
+        if not args:
+            self._write_line("Usage: ping <host>", "#FFC107")
+            return
+        host = args[0]
+        try:
+            result = subprocess.run(
+                ["ping", "-n", "4", host],
+                capture_output=True, text=True, timeout=15
+            )
+            for line in result.stdout.splitlines():
+                self._write_line(line, "#BBBBBB")
+        except FileNotFoundError:
+            self._write_line(f"ping: command not found", "#E53935")
+        except Exception as e:
+            self._write_line(f"ping: {e}", "#E53935")
+
+    def _cmd_ifconfig(self, args):
+        import psutil
+        addrs = psutil.net_if_addrs()
+        stats = psutil.net_if_stats()
+        for name, addr_list in addrs.items():
+            is_up = stats.get(name)
+            status = "UP" if is_up and is_up.isup else "DOWN"
+            self._write_line(f"{name}: {status}", "#00E5FF")
+            for addr in addr_list:
+                if addr.family.name == "AF_INET":
+                    self._write_line(f"  inet {addr.address}", "#BBBBBB")
+                elif addr.family.name == "AF_INET6":
+                    self._write_line(f"  inet6 {addr.address}", "#BBBBBB")
+
+    def _cmd_nano(self, args):
+        self._write_line("Tip: Use the Notes app for editing files.", "#FFC107")
+
+    def _cmd_vim(self, args):
+        self._write_line("Tip: Use the Notes app for editing files.", "#FFC107")
+
+    def _cmd_exit(self, args):
+        if hasattr(self.window, 'kernel') and hasattr(self.window.kernel, 'process_manager'):
+            self.window.kernel.process_manager.stop_process("Terminal")
+        else:
+            self._write_line("Goodbye!", "#00E5FF")
+
+    def _cmd_about(self, args):
+        lines = [
+            ("══════════════════════════════════════", "#7B61FF"),
+            ("  NovaOS v0.1.0-alpha", "#00E5FF"),
+            ("  AI-Powered Desktop Operating System", "#BBBBBB"),
+            ("", ""),
+            (f"  Python: {platform.python_version()}", "#888888"),
+            (f"  System: {platform.system()} {platform.release()}", "#888888"),
+            (f"  Machine: {platform.machine()}", "#888888"),
+            (f"  Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", "#888888"),
+            ("", ""),
+            ("  Built with CustomTkinter + Python", "#BBBBBB"),
+            ("  Powered by Gemini / Ollama AI", "#BBBBBB"),
+            ("══════════════════════════════════════", "#7B61FF"),
+        ]
+        for text, color in lines:
+            self._write_line(text, color)
+
+    @staticmethod
+    def _human_size(size):
+        for unit in ["B", "KB", "MB", "GB", "TB"]:
+            if size < 1024:
+                return f"{size:.1f}{unit}"
+            size /= 1024
+        return f"{size:.1f}PB"
 
     # =====================================================
     # History Navigation
