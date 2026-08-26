@@ -109,20 +109,38 @@ class NovaSplashScreen(ctk.CTkToplevel):
     def _init_particles(self, w, h):
         import random
         self._particles = []
-        for _ in range(40):
+        colors = ["cyan", "purple", "magenta"]
+        for _ in range(60):
             self._particles.append({
                 "x": random.uniform(0, w),
                 "y": random.uniform(0, h),
-                "vx": random.uniform(-0.3, 0.3),
-                "vy": random.uniform(-0.5, -0.1),
-                "size": random.randint(1, 3),
-                "brightness": random.randint(40, 120),
+                "vx": random.uniform(-0.4, 0.4),
+                "vy": random.uniform(-0.7, -0.1),
+                "size": random.randint(1, 4),
+                "brightness": random.randint(50, 180),
+                "color": random.choice(colors),
+            })
+        # Glowing orbs for splash
+        self._orbs = []
+        for _ in range(4):
+            self._orbs.append({
+                "x": random.uniform(w * 0.1, w * 0.9),
+                "y": random.uniform(h * 0.1, h * 0.9),
+                "r": random.randint(60, 150),
+                "color": random.choice(["#00E5FF", "#7B61FF", "#FF00E5"]),
             })
 
     def _draw_particles(self):
         self.bg_canvas.delete("particles")
         w = self.winfo_screenwidth()
         h = self.winfo_screenheight()
+
+        color_map = {
+            "cyan": "#00E5FF",
+            "purple": "#7B61FF",
+            "magenta": "#FF00E5",
+        }
+
         for p in self._particles:
             p["x"] += p["vx"]
             p["y"] += p["vy"]
@@ -133,12 +151,30 @@ class NovaSplashScreen(ctk.CTkToplevel):
                 p["x"] = w + 10
             elif p["x"] > w + 10:
                 p["x"] = -10
-            b = p["brightness"]
-            color = f"#{b:02x}{int(b*0.9):02x}{int(b*1.15):02x}"
+            color = color_map.get(p.get("color", "cyan"), "#00E5FF")
+            # Trail
+            trail_len = p["size"] * 4
+            self.bg_canvas.create_line(
+                p["x"], p["y"],
+                p["x"] - p["vx"] * trail_len,
+                p["y"] - p["vy"] * trail_len,
+                fill=color, width=1, tags="particles"
+            )
             self.bg_canvas.create_oval(
-                p["x"], p["y"], p["x"] + p["size"], p["y"] + p["size"],
+                p["x"] - p["size"], p["y"] - p["size"],
+                p["x"] + p["size"], p["y"] + p["size"],
                 fill=color, outline="", tags="particles"
             )
+
+        # Draw glowing orbs
+        for orb in getattr(self, "_orbs", []):
+            for ring in range(3, 0, -1):
+                r = orb["r"] * ring * 0.7
+                self.bg_canvas.create_oval(
+                    orb["x"] - r, orb["y"] - r,
+                    orb["x"] + r, orb["y"] + r,
+                    fill="", outline=orb["color"], width=1, tags="particles"
+                )
 
     def _animate(self):
         if self._boot_complete:
