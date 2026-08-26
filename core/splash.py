@@ -1,7 +1,8 @@
 """Animated boot splash screen for NovaOS."""
 
-import customtkinter as ctk
+import random
 import math
+import customtkinter as ctk
 from core.theme import ThemeManager
 from core.sounds import sound_manager
 
@@ -37,27 +38,19 @@ class NovaSplashScreen(ctk.CTkToplevel):
         self.configure(fg_color="#050810")
 
         self._animation_step = 0
-        self._particles = []
         self._message_index = 0
         self._progress = 0.0
         self._boot_complete = False
         self._on_complete = None
+        self._orb_widgets = []
+        self._particle_widgets = []
 
         self._build_ui()
-        self._init_particles(screen_w, screen_h)
+        self._init_orbs(screen_w, screen_h)
 
     def _build_ui(self):
         self.container = ctk.CTkFrame(self, fg_color="transparent")
         self.container.place(relx=0.5, rely=0.5, anchor="center")
-
-        self.bg_canvas = ctk.CTkCanvas(
-            self,
-            width=self.winfo_screenwidth(),
-            height=self.winfo_screenheight(),
-            highlightthickness=0,
-            bg="#050810"
-        )
-        self.bg_canvas.place(x=0, y=0)
 
         self.logo_label = ctk.CTkLabel(
             self.container, text="◈",
@@ -101,93 +94,111 @@ class NovaSplashScreen(ctk.CTkToplevel):
         self.status_label.pack(pady=(5, 0))
 
         self.version_label = ctk.CTkLabel(
-            self, text="v0.1.0-alpha",
+            self, text="v0.1.0-alpha  •  AI-Powered Desktop",
             font=("Segoe UI", 11), text_color="#333333"
         )
         self.version_label.place(relx=0.5, rely=0.95, anchor="center")
 
-    def _init_particles(self, w, h):
-        import random
-        self._particles = []
-        colors = ["cyan", "purple", "magenta"]
-        for _ in range(60):
-            self._particles.append({
-                "x": random.uniform(0, w),
-                "y": random.uniform(0, h),
-                "vx": random.uniform(-0.4, 0.4),
-                "vy": random.uniform(-0.7, -0.1),
-                "size": random.randint(1, 4),
-                "brightness": random.randint(50, 180),
-                "color": random.choice(colors),
-            })
-        # Glowing orbs for splash
-        self._orbs = []
-        for _ in range(4):
-            self._orbs.append({
-                "x": random.uniform(w * 0.1, w * 0.9),
-                "y": random.uniform(h * 0.1, h * 0.9),
-                "r": random.randint(60, 150),
-                "color": random.choice(["#00E5FF", "#7B61FF", "#FF00E5"]),
+    def _init_orbs(self, w, h):
+        """Create floating glowing orb frames."""
+        orb_colors = ["#00E5FF", "#7B61FF", "#FF00E5", "#00FF88"]
+        for _ in range(6):
+            color = random.choice(orb_colors)
+            size = random.randint(60, 160)
+            x = random.randint(0, max(1, w - size))
+            y = random.randint(0, max(1, h - size))
+
+            orb = ctk.CTkFrame(
+                self, width=size, height=size,
+                fg_color=color, corner_radius=size // 2,
+            )
+            orb.place(x=x, y=y)
+            self._orb_widgets.append({
+                "widget": orb,
+                "x": float(x), "y": float(y),
+                "vx": random.uniform(-0.3, 0.3),
+                "vy": random.uniform(-0.3, 0.3),
+                "size": size,
             })
 
-    def _draw_particles(self):
-        self.bg_canvas.delete("particles")
-        w = self.winfo_screenwidth()
-        h = self.winfo_screenheight()
+        # Small particle dots
+        for _ in range(20):
+            color = random.choice(orb_colors)
+            size = random.randint(2, 6)
+            x = random.randint(0, w)
+            y = random.randint(0, h)
 
-        color_map = {
-            "cyan": "#00E5FF",
-            "purple": "#7B61FF",
-            "magenta": "#FF00E5",
-        }
-
-        for p in self._particles:
-            p["x"] += p["vx"]
-            p["y"] += p["vy"]
-            if p["y"] < -10:
-                p["y"] = h + 10
-                p["x"] = p["x"] % w
-            if p["x"] < -10:
-                p["x"] = w + 10
-            elif p["x"] > w + 10:
-                p["x"] = -10
-            color = color_map.get(p.get("color", "cyan"), "#00E5FF")
-            # Trail
-            trail_len = p["size"] * 4
-            self.bg_canvas.create_line(
-                p["x"], p["y"],
-                p["x"] - p["vx"] * trail_len,
-                p["y"] - p["vy"] * trail_len,
-                fill=color, width=1, tags="particles"
+            dot = ctk.CTkFrame(
+                self, width=size, height=size,
+                fg_color=color, corner_radius=size // 2,
             )
-            self.bg_canvas.create_oval(
-                p["x"] - p["size"], p["y"] - p["size"],
-                p["x"] + p["size"], p["y"] + p["size"],
-                fill=color, outline="", tags="particles"
-            )
-
-        # Draw glowing orbs
-        for orb in getattr(self, "_orbs", []):
-            for ring in range(3, 0, -1):
-                r = orb["r"] * ring * 0.7
-                self.bg_canvas.create_oval(
-                    orb["x"] - r, orb["y"] - r,
-                    orb["x"] + r, orb["y"] + r,
-                    fill="", outline=orb["color"], width=1, tags="particles"
-                )
+            dot.place(x=x, y=y)
+            self._particle_widgets.append({
+                "widget": dot,
+                "x": float(x), "y": float(y),
+                "vx": random.uniform(-0.5, 0.5),
+                "vy": random.uniform(-0.8, -0.1),
+                "size": size,
+            })
 
     def _animate(self):
         if self._boot_complete:
             return
         self._animation_step += 1
-        self._draw_particles()
 
+        # Pulse logo
         pulse = 0.7 + 0.3 * math.sin(self._animation_step * 0.08)
         glow_b = int(229 * pulse)
         self.logo_label.configure(
-            text_color=f"#{glow_b:02x}{int(glow_b*0.97):02x}ff"
+            text_color=f"#{min(255, glow_b):02x}{min(255, int(glow_b * 0.97)):02x}ff"
         )
 
+        # Move orbs
+        try:
+            w = self.winfo_screenwidth()
+            h = self.winfo_screenheight()
+            for orb_data in self._orb_widgets:
+                orb_data["x"] += orb_data["vx"]
+                orb_data["y"] += orb_data["vy"]
+                ox = orb_data["x"]
+                oy = orb_data["y"]
+                sz = orb_data["size"]
+
+                if ox < -sz:
+                    orb_data["x"] = w
+                elif ox > w:
+                    orb_data["x"] = -sz
+                if oy < -sz:
+                    orb_data["y"] = h
+                elif oy > h:
+                    orb_data["y"] = -sz
+
+                pulse_s = 0.6 + 0.4 * math.sin(self._animation_step * 0.04 + ox * 0.003)
+                new_sz = max(20, int(sz * pulse_s))
+                orb_data["widget"].place(
+                    x=int(orb_data["x"]), y=int(orb_data["y"]),
+                    width=new_sz, height=new_sz,
+                )
+
+            # Move particles
+            for p_data in self._particle_widgets:
+                p_data["x"] += p_data["vx"]
+                p_data["y"] += p_data["vy"]
+                if p_data["y"] < -10:
+                    p_data["y"] = h + 10
+                    p_data["x"] = random.uniform(0, w)
+                if p_data["x"] < -10:
+                    p_data["x"] = w + 10
+                elif p_data["x"] > w + 10:
+                    p_data["x"] = -10
+                p_data["widget"].place(
+                    x=int(p_data["x"]), y=int(p_data["y"]),
+                    width=p_data["size"], height=p_data["size"],
+                )
+        except Exception:
+            pass
+
+        # Progress bar
         if self._progress < 1.0:
             speed = 0.008 + (self._progress * 0.015)
             self._progress = min(1.0, self._progress + speed)
@@ -232,7 +243,6 @@ class NovaSplashScreen(ctk.CTkToplevel):
         bg = f"#{int(5*alpha):02x}{int(8*alpha):02x}{int(16*alpha):02x}"
         try:
             self.configure(fg_color=bg)
-            self.bg_canvas.configure(bg=bg)
         except Exception:
             pass
 

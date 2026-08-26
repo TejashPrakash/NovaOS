@@ -30,7 +30,10 @@ class NovaOS:
             self.root = ctk.CTk()
 
         self.root.title("NovaOS")
-        self.root.geometry("1600x900")
+        # Full screen
+        screen_w = self.root.winfo_screenwidth()
+        screen_h = self.root.winfo_screenheight()
+        self.root.geometry(f"{screen_w}x{screen_h}+0+0")
         self.root.minsize(1200, 700)
 
         ctk.set_appearance_mode("Dark")
@@ -142,26 +145,7 @@ class NovaOS:
             lambda e: self.launcher.hide()
         )
 
-        # Add AI panel toggle button to desktop
-        def toggle_ai():
-            """Safe toggle function that handles AI availability."""
-            if hasattr(self.kernel, 'ai') and self.kernel.ai and getattr(self.kernel.ai, 'assistant', None):
-                self.desktop.toggle_ai_panel(self.kernel.ai.assistant)
-            else:
-                print("[NovaOS] AI assistant not available")
-
-        ai_toggle = ctk.CTkButton(
-            self.desktop.get_widget_layer(),
-            text="◈ Nova",
-            width=100,
-            height=35,
-            fg_color="#00E5FF",
-            text_color="black",
-            hover_color="#00C8E8",
-            corner_radius=8,
-            command=toggle_ai
-        )
-        ai_toggle.place(x=1400, y=20)
+        # AI toggle is now handled by the collapsible AI widget orb
 
         try:
             from ai.ui.desktop_widget import AIAssistantWidget
@@ -170,7 +154,8 @@ class NovaOS:
                     self.desktop.get_widget_layer(),
                     self.kernel.ai.assistant
                 )
-                self.ai_widget.place(relx=1.0, rely=0.5, anchor="e", x=-20)
+                self.ai_widget.place(relx=1.0, rely=1.0, anchor="se", x=-20, y=-120)
+                self.ai_widget.lift()
         except Exception as e:
             print(f"[NovaOS] AI widget not available: {e}")
 
@@ -191,7 +176,7 @@ class NovaOS:
 
         self.root.protocol(
             "WM_DELETE_WINDOW",
-            lambda: self.kernel.commands.execute(self.kernel, "shutdown")
+            self._shutdown
         )
 
         # ==========================================
@@ -205,6 +190,7 @@ class NovaOS:
             relx=1.0, rely=1.0, anchor="se",
             x=-15, y=-55
         )
+        self.system_tray.lift()
 
         # ==========================================
         # AI Smart Hub (left side)
@@ -214,7 +200,8 @@ class NovaOS:
                 self.desktop.get_widget_layer(),
                 kernel=self.kernel
             )
-            self.smart_hub.place(x=20, rely=0.5, anchor="w")
+            self.smart_hub.place(x=20, y=20)
+            self.smart_hub.lift()
         except Exception as e:
             print(f"[NovaOS] Smart Hub not available: {e}")
 
@@ -245,7 +232,8 @@ class NovaOS:
         def show_ai_context(e=None):
             AIContextMenu(self.root, kernel=self.kernel)
 
-        self.desktop.get_canvas().bind("<Button-3>", show_ai_context)
+        # Bind right-click to root window (catches all desktop right-clicks)
+        self.root.bind("<Button-3>", show_ai_context)
 
         print("[NovaOS] System Ready")
 
@@ -283,6 +271,21 @@ class NovaOS:
         self.root.after(300000, self._check_smart_notifications)
 
     # ==========================================
+
+    def _shutdown(self):
+        """Clean shutdown of NovaOS."""
+        try:
+            self.kernel.shutdown()
+        except Exception:
+            pass
+        try:
+            self.root.quit()
+        except Exception:
+            pass
+        try:
+            self.root.destroy()
+        except Exception:
+            pass
 
     def run(self):
 

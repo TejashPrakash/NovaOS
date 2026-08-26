@@ -1,181 +1,133 @@
 import customtkinter as ctk
+import tkinter as tk
 from ai.ui.panel import AIPanel
 from PIL import Image, ImageTk
 import os
-from widgets.neural_background import NeuralBackground
-from widgets.ambient_lighting import AmbientLighting
 from core.theme import ThemeManager
-from core.ai_background import AIBackground
+from core.ai_background import ensure_wallpaper
+
+
 class Desktop:
+    """NovaOS Desktop — single-layer architecture.
+    All widgets (icons, AI features, tray) live directly on self.frame.
+    Wallpaper is a label at the back. No stacked transparent frames.
+    """
+
     def __init__(self, root):
         self.root = root
         self.background_image = None
-        
-        # -----------------------------
-        # Main Desktop Area
-        # -----------------------------
+        self.theme = ThemeManager()
+        self.ai_panel = None
+        self._wallpaper_path = None
+        self.neural_background = None
+        self.ai_bg = None
+        self.ambient_lighting = None
+
+        # Main Desktop Frame (THE ONE AND ONLY LAYER)
         self.frame = ctk.CTkFrame(
             self.root,
             fg_color="#0D1117",
             corner_radius=0
         )
-        self.frame.pack(
-            fill="both",
-            expand=True
-        )
-        
-        # -----------------------------
-        # Wallpaper Layer
-        # -----------------------------
-        self.wallpaper = ctk.CTkLabel(
-            self.frame,
-            text="",
-            fg_color="transparent"
-        )
-        self.wallpaper.place(
-            relwidth=1,
-            relheight=1
-        )
+        self.frame.pack(fill="both", expand=True)
 
-        # Add neural network background option
-        self.neural_background = None
-        self.theme = ThemeManager()
-        self.ai_bg = None
-        self._setup_default_background()
-        
-        # -----------------------------
-        # Desktop Widgets Layer (on top of AI background)
-        # -----------------------------
-        self.widget_layer = ctk.CTkFrame(
-            self.frame,
-            fg_color="transparent"
+        # Wallpaper Canvas (Tkinter Canvas — reliable image display)
+        self.wallpaper_canvas = tk.Canvas(
+            self.frame, highlightthickness=0, bg="#0D1117"
         )
-        self.widget_layer.place(
-            relwidth=1,
-            relheight=1
-        )
-        self.widget_layer.lift()
-        
-        # -----------------------------
-        # Desktop Icons Layer
-        # -----------------------------
-        self.icon_layer = ctk.CTkFrame(
-            self.frame,
-            fg_color="transparent"
-        )
-        self.icon_layer.place(
-            relwidth=1,
-            relheight=1
-        )
-        self.icon_layer.lift()
+        self.wallpaper_canvas.place(relx=0, rely=0, relwidth=1.0, relheight=1.0)
+        self._bg_photo = None  # prevent GC
 
-        # -----------------------------
-        # Ambient Lighting Layer (optional)
-        # -----------------------------
-        self.ambient_lighting = None
+        # Load wallpaper after window is fully rendered
+        self.frame.after(600, self._load_wallpaper)
+        self.frame.after(1200, self._load_wallpaper)
 
-        self.ai_panel = None
-        
-    def _setup_default_background(self):
-        """Setup vibrant AI background."""
+    def _load_wallpaper(self):
+        """Load and display AI wallpaper on canvas."""
         try:
-            self.ai_bg = AIBackground(self.frame)
-            self.ai_bg.place(relx=0, rely=0, relwidth=1, relheight=1)
-            # Push background below all other layers
-            self.ai_bg.lower(self.wallpaper)
+            self._wallpaper_path = ensure_wallpaper()
+            self.set_background_image(self._wallpaper_path)
         except Exception as e:
-            print(f"[Desktop] AI background failed, using solid: {e}")
-            self.wallpaper.configure(fg_color=self.theme.get_color("background"))
-        
+            print(f"[Desktop] AI wallpaper failed: {e}")
+            import traceback
+            traceback.print_exc()
+
     def set_background_image(self, image_path):
-        """Set background image from file."""
+        """Set background image on canvas."""
         try:
-            if os.path.exists(image_path):
-                image = Image.open(image_path)
-                image = image.resize((2000, 2000), Image.Resampling.LANCZOS)
-                self.background_image = ImageTk.PhotoImage(image)
-                self.wallpaper.configure(image=self.background_image)
+            if not os.path.exists(image_path):
+                return
+            image = Image.open(image_path)
+            w = self.root.winfo_screenwidth()
+            h = self.root.winfo_screenheight()
+            if w < 100:
+                w, h = 1920, 1080
+            image = image.resize((w, h), Image.Resampling.LANCZOS)
+            self._bg_photo = ImageTk.PhotoImage(image)
+            self.wallpaper_canvas.delete("all")
+            self.wallpaper_canvas.create_image(0, 0, anchor="nw", image=self._bg_photo)
         except Exception as e:
             print(f"[Desktop] Error loading background: {e}")
-            
+
     def set_background_color(self, color):
-        """Set solid background color with theme support."""
-        if color == "theme":
-            self.wallpaper.configure(
-                fg_color=self.theme.get_color("background"),
-                image=""
-            )
-        else:
-            self.wallpaper.configure(
-                fg_color=color,
-                image=""
-            )
+        """Set solid background color."""
+        c = self.theme.get_color("background") if color == "theme" else color
+        self.wallpaper_canvas.configure(bg=c)
 
     def enable_neural_network_background(self):
-        """Enable animated neural network background."""
-        if self.ai_bg:
-            try:
-                self.ai_bg.destroy()
-            except Exception:
-                pass
-            self.ai_bg = None
+        from widgets.neural_background import NeuralBackground
         if self.neural_background is None:
-            self.neural_background = NeuralBackground(self.wallpaper)
+            self.neural_background = NeuralBackground(self.frame)
             self.neural_background.place(relwidth=1, relheight=1)
+            self.neural_background.lower(self.wallpaper_canvas)
 
     def disable_neural_network_background(self):
-        """Disable neural network background."""
         if self.neural_background:
             self.neural_background.destroy()
             self.neural_background = None
 
     def enable_ambient_lighting(self):
-        """Enable ambient lighting effects."""
+        from widgets.ambient_lighting import AmbientLighting
         if self.ambient_lighting is None:
-            self.ambient_lighting = AmbientLighting(self.widget_layer)
+            self.ambient_lighting = AmbientLighting(self.frame)
             self.ambient_lighting.place(relwidth=1, relheight=1)
 
     def disable_ambient_lighting(self):
-        """Disable ambient lighting effects."""
         if self.ambient_lighting:
             self.ambient_lighting.destroy()
             self.ambient_lighting = None
-        
-    # ==========================================
-    # Public API
-    # ==========================================
+
+    # Public API — all return self.frame (single layer)
     def get_canvas(self):
         return self.frame
-        
+
     def get_widget_layer(self):
-        return self.widget_layer
-        
+        return self.frame
+
     def get_icon_layer(self):
-        return self.icon_layer
-        
+        return self.frame
+
     def toggle_ai_panel(self, assistant):
-        """Toggle AI panel visibility."""
         if self.ai_panel is None:
-            self.ai_panel = AIPanel(self.get_widget_layer(), assistant)
+            self.ai_panel = AIPanel(self.frame, assistant)
             self.ai_panel.place(relx=0.5, rely=0.5, anchor="center")
+            self.ai_panel.lift()
         else:
             self.ai_panel.destroy()
             self.ai_panel = None
-    
+
     def set_theme(self, theme_name: str):
-        """Apply theme to desktop."""
         self.theme.apply_theme(theme_name)
-        self.set_background_color("theme")
-        
-        # Update existing premium effects if active
+        if self._wallpaper_path and os.path.exists(self._wallpaper_path):
+            self.set_background_image(self._wallpaper_path)
+        else:
+            self.set_background_color("theme")
         if self.neural_background:
             self.disable_neural_network_background()
             self.enable_neural_network_background()
-        
         if self.ambient_lighting:
             self.disable_ambient_lighting()
             self.enable_ambient_lighting()
 
     def get_theme_manager(self):
-        """Get theme manager instance."""
         return self.theme

@@ -1,103 +1,190 @@
-"""AI-powered smart suggestions widget for the NovaOS desktop."""
+"""Collapsible AI smart suggestions widget for the NovaOS desktop.
 
-import time
+Default state: small floating pill (logo + label).
+Expanded state: full suggestion panel with quick actions.
+Click the pill to toggle.
+"""
+
 from datetime import datetime
-
 import customtkinter as ctk
 from core.theme import ThemeManager
 
 
 class SmartSuggestionsWidget(ctk.CTkFrame):
-    """Always-visible AI widget that shows contextual suggestions based on time, usage, and context."""
+    """Collapsible smart hub — pill when collapsed, full panel when expanded."""
+
+    PILL_WIDTH = 160
+    PILL_HEIGHT = 44
+    PANEL_WIDTH = 300
+    PANEL_HEIGHT = 420
 
     def __init__(self, master, kernel=None, **kwargs):
         super().__init__(
             master,
-            width=340,
-            height=480,
+            width=self.PILL_WIDTH,
+            height=self.PILL_HEIGHT,
             fg_color="#0D1117",
-            corner_radius=16,
+            corner_radius=22,
             border_width=1,
-            border_color="#222222",
+            border_color="#1E2A3A",
             **kwargs
         )
         self.kernel = kernel
         self.theme = ThemeManager()
         self.pack_propagate(False)
-        self._build_ui()
-        self._refresh_suggestions()
+        self._expanded = False
+        self._build_pill()
         self._auto_refresh()
 
-    def _build_ui(self):
-        # Header
+    # ------------------------------------------------------------------
+    # Collapsed pill
+    # ------------------------------------------------------------------
+    def _build_pill(self):
+        self._pill_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self._pill_frame.pack(fill="both", expand=True)
+
+        ctk.CTkLabel(
+            self._pill_frame, text="◈",
+            font=("Segoe UI Emoji", 18),
+            text_color="#00E5FF"
+        ).pack(side="left", padx=(12, 4), pady=8)
+
+        ctk.CTkLabel(
+            self._pill_frame, text="Smart Hub",
+            font=("Segoe UI", 12, "bold"),
+            text_color="#AAAAAA"
+        ).pack(side="left", padx=(0, 12), pady=8)
+
+        self.bind("<Button-1>", lambda e: self.toggle())
+        self._pill_frame.bind("<Button-1>", lambda e: self.toggle())
+        for child in self._pill_frame.winfo_children():
+            child.bind("<Button-1>", lambda e: self.toggle())
+
+    # ------------------------------------------------------------------
+    # Toggle expand / collapse
+    # ------------------------------------------------------------------
+    def toggle(self):
+        if self._expanded:
+            self._collapse()
+        else:
+            self._expand()
+
+    def _expand(self):
+        """Expand to full panel."""
+        self._expanded = True
+        self._pill_frame.pack_forget()
+        self.configure(
+            width=self.PANEL_WIDTH,
+            height=self.PANEL_HEIGHT,
+            corner_radius=16,
+            border_color="#00E5FF"
+        )
+        self._build_panel()
+
+    def _collapse(self):
+        """Collapse back to pill."""
+        self._expanded = False
+        # Destroy panel children
+        for w in self.winfo_children():
+            w.destroy()
+        self.configure(
+            width=self.PILL_WIDTH,
+            height=self.PILL_HEIGHT,
+            corner_radius=22,
+            border_color="#1E2A3A"
+        )
+        self._build_pill()
+
+    # ------------------------------------------------------------------
+    # Full panel
+    # ------------------------------------------------------------------
+    def _build_panel(self):
+        # Header with close
         header = ctk.CTkFrame(self, fg_color="transparent")
-        header.pack(fill="x", padx=14, pady=(12, 6))
+        header.pack(fill="x", padx=12, pady=(10, 4))
 
         ctk.CTkLabel(
             header, text="◈ Nova AI",
-            font=("Segoe UI", 15, "bold"),
+            font=("Segoe UI", 14, "bold"),
             text_color="#00E5FF"
         ).pack(side="left")
 
-        ctk.CTkLabel(
-            header, text="Smart Hub",
-            font=("Segoe UI", 11),
-            text_color="#666666"
-        ).pack(side="left", padx=(6, 0))
-
-        # Time-based greeting
-        self.greeting_label = ctk.CTkLabel(
-            self, text="",
-            font=("Segoe UI", 13),
-            text_color="#BBBBBB",
-            wraplength=300
+        close_btn = ctk.CTkButton(
+            header, text="✕", width=28, height=28,
+            fg_color="transparent", text_color="#666666",
+            hover_color="#1C2333", corner_radius=14,
+            font=("Segoe UI", 12),
+            command=self._collapse
         )
-        self.greeting_label.pack(anchor="w", padx=14, pady=(4, 8))
-
-        # Suggestions container
-        self.suggestions_frame = ctk.CTkScrollableFrame(
-            self, fg_color="transparent"
-        )
-        self.suggestions_frame.pack(fill="both", expand=True, padx=10, pady=(0, 10))
-
-        # Quick actions row
-        actions_frame = ctk.CTkFrame(self, fg_color="transparent")
-        actions_frame.pack(fill="x", padx=10, pady=(0, 10))
-
-        quick_actions = [
-            ("📝", "New Note", self._action_new_note),
-            ("📅", "Add Event", self._action_add_event),
-            ("🌤", "Weather", self._action_weather),
-            ("📊", "System", self._action_system),
-        ]
-
-        for icon, label, callback in quick_actions:
-            btn = ctk.CTkButton(
-                actions_frame, text=f"{icon}\n{label}",
-                width=70, height=55,
-                fg_color="#161B22", hover_color="#1C2333",
-                text_color="#BBBBBB", corner_radius=10,
-                border_width=1, border_color="#333333",
-                font=("Segoe UI", 10),
-                command=callback
-            )
-            btn.pack(side="left", padx=3, expand=True, fill="x")
-
-    def _refresh_suggestions(self):
-        """Generate contextual suggestions based on time and state."""
-        for w in self.suggestions_frame.winfo_children():
-            w.destroy()
-
-        hour = datetime.now().hour
-        suggestions = self._get_contextual_suggestions(hour)
+        close_btn.pack(side="right")
 
         # Greeting
+        hour = datetime.now().hour
         greeting = self._get_greeting(hour)
-        self.greeting_label.configure(text=greeting)
+        ctk.CTkLabel(
+            self, text=greeting,
+            font=("Segoe UI", 12),
+            text_color="#999999",
+            wraplength=270
+        ).pack(anchor="w", padx=14, pady=(2, 8))
 
-        # Build suggestion cards
+        # Suggestions
+        suggestions_frame = ctk.CTkScrollableFrame(
+            self, fg_color="transparent"
+        )
+        suggestions_frame.pack(fill="both", expand=True, padx=8, pady=(0, 6))
+
+        suggestions = self._get_suggestions(hour)
         for icon, title, desc, priority in suggestions:
-            self._add_suggestion_card(icon, title, desc, priority)
+            self._add_card(suggestions_frame, icon, title, desc, priority)
+
+        # Quick actions
+        actions = ctk.CTkFrame(self, fg_color="transparent")
+        actions.pack(fill="x", padx=8, pady=(0, 8))
+
+        for icon, label, cb in [
+            ("📝", "Note", self._act("Notes")),
+            ("📅", "Event", self._act("Calendar")),
+            ("🌤", "Weather", self._act("Weather")),
+            ("📊", "System", self._act("System Monitor")),
+        ]:
+            ctk.CTkButton(
+                actions, text=f"{icon}\n{label}",
+                width=60, height=48,
+                fg_color="#161B22", hover_color="#1C2333",
+                text_color="#BBBBBB", corner_radius=8,
+                border_width=1, border_color="#2A2A2A",
+                font=("Segoe UI", 9),
+                command=cb
+            ).pack(side="left", padx=2, expand=True, fill="x")
+
+    def _add_card(self, parent, icon, title, desc, priority):
+        bc = {"high": "#00E5FF", "always": "#7B61FF"}.get(priority, "#222222")
+        card = ctk.CTkFrame(
+            parent, fg_color="#161B22",
+            corner_radius=8, border_width=1, border_color=bc
+        )
+        card.pack(fill="x", pady=3)
+
+        row = ctk.CTkFrame(card, fg_color="transparent")
+        row.pack(fill="x", padx=8, pady=(6, 1))
+        ctk.CTkLabel(row, text=icon, font=("Segoe UI Emoji", 14)).pack(side="left", padx=(0, 4))
+        ctk.CTkLabel(row, text=title, font=("Segoe UI", 11, "bold"), text_color="#FFFFFF").pack(side="left")
+
+        ctk.CTkLabel(
+            card, text=desc,
+            font=("Segoe UI", 10), text_color="#777777",
+            wraplength=250, anchor="w"
+        ).pack(anchor="w", padx=8, pady=(0, 6))
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+    def _act(self, app_name):
+        def _launch():
+            if self.kernel:
+                self.kernel.process_manager.start_process(app_name)
+        return _launch
 
     def _get_greeting(self, hour):
         if hour < 6:
@@ -108,101 +195,31 @@ class SmartSuggestionsWidget(ctk.CTkFrame):
             return "🌤 Good afternoon! Keep it up!"
         elif hour < 21:
             return "🌆 Good evening! Winding down?"
-        else:
-            return "🌙 Night mode. Take a break!"
+        return "🌙 Night mode. Take a break!"
 
-    def _get_contextual_suggestions(self, hour):
-        suggestions = []
-
-        # Time-based suggestions
+    def _get_suggestions(self, hour):
+        s = []
         if 9 <= hour < 12:
-            suggestions.append(("📅", "Check your calendar", "Start your day by reviewing today's events", "high"))
-            suggestions.append(("🌤", "Morning weather", "Check today's forecast before heading out", "medium"))
+            s.append(("📅", "Check calendar", "Review today's events", "high"))
+            s.append(("🌤", "Morning weather", "Check the forecast", "medium"))
         elif 12 <= hour < 14:
-            suggestions.append(("🎵", "Lunch break music", "Open Music Player for some relaxation", "medium"))
-            suggestions.append(("📝", "Quick notes", "Jot down morning meeting notes", "low"))
+            s.append(("🎵", "Lunch music", "Relax with Music Player", "medium"))
+            s.append(("📝", "Quick notes", "Jot down ideas", "low"))
         elif 14 <= hour < 17:
-            suggestions.append(("📊", "System health check", "Monitor CPU and memory usage", "medium"))
-            suggestions.append(("🌐", "Research time", "Use the Browser for afternoon research", "low"))
+            s.append(("📊", "System check", "Monitor CPU and RAM", "medium"))
+            s.append(("🌐", "Research", "Use the Browser", "low"))
         elif 17 <= hour < 21:
-            suggestions.append(("📅", "Plan tomorrow", "Add tomorrow's tasks to Calendar", "high"))
-            suggestions.append(("🎵", "Evening vibes", "Relax with the Music Player", "medium"))
+            s.append(("📅", "Plan tomorrow", "Add tasks to Calendar", "high"))
+            s.append(("🎵", "Evening vibes", "Relax with music", "medium"))
         else:
-            suggestions.append(("📝", "Daily journal", "Write a quick note about today", "medium"))
-            suggestions.append(("🔒", "Lock your screen", "Secure your desktop with Ctrl+Shift+L", "low"))
+            s.append(("📝", "Daily journal", "Write about today", "medium"))
+            s.append(("🔒", "Lock screen", "Ctrl+Shift+L", "low"))
 
-        # Always suggest
-        suggestions.append(("🤖", "Ask Nova anything", "I can help with apps, notes, weather, and more", "always"))
-        suggestions.append(("⚙️", "Customize themes", "Switch between Cyberpunk, Neon, Sunset, or Ocean", "low"))
-
-        return suggestions
-
-    def _add_suggestion_card(self, icon, title, desc, priority):
-        """Add a suggestion card to the scrollable frame."""
-        colors = {
-            "high": "#0D2833",
-            "medium": "#161B22",
-            "low": "#0D1117",
-            "always": "#0D1117"
-        }
-        border_colors = {
-            "high": "#00E5FF",
-            "medium": "#333333",
-            "low": "#222222",
-            "always": "#7B61FF"
-        }
-
-        card = ctk.CTkFrame(
-            self.suggestions_frame,
-            fg_color=colors.get(priority, "#161B22"),
-            corner_radius=10,
-            border_width=1,
-            border_color=border_colors.get(priority, "#333333")
-        )
-        card.pack(fill="x", pady=4)
-
-        header = ctk.CTkFrame(card, fg_color="transparent")
-        header.pack(fill="x", padx=10, pady=(8, 2))
-
-        ctk.CTkLabel(
-            header, text=icon, font=("Segoe UI Emoji", 16)
-        ).pack(side="left", padx=(0, 6))
-
-        ctk.CTkLabel(
-            header, text=title,
-            font=("Segoe UI", 12, "bold"),
-            text_color="#FFFFFF"
-        ).pack(side="left")
-
-        ctk.CTkLabel(
-            card, text=desc,
-            font=("Segoe UI", 11),
-            text_color="#888888",
-            wraplength=280,
-            anchor="w"
-        ).pack(anchor="w", padx=10, pady=(0, 8))
-
-    # ------------------------------------------------------------------ quick actions
-    def _action_new_note(self):
-        if self.kernel:
-            self.kernel.process_manager.start_process("Notes")
-
-    def _action_add_event(self):
-        if self.kernel:
-            self.kernel.process_manager.start_process("Calendar")
-
-    def _action_weather(self):
-        if self.kernel:
-            self.kernel.process_manager.start_process("Weather")
-
-    def _action_system(self):
-        if self.kernel:
-            self.kernel.process_manager.start_process("System Monitor")
+        s.append(("🤖", "Ask Nova anything", "I can help with anything", "always"))
+        return s
 
     def _auto_refresh(self):
-        """Refresh suggestions every 5 minutes."""
         try:
             self.after(300000, self._auto_refresh)
-            self._refresh_suggestions()
         except Exception:
             pass

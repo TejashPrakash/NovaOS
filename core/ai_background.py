@@ -1,227 +1,127 @@
-"""Vibrant AI-themed animated desktop background for NovaOS."""
+"""Vibrant AI-themed desktop background for NovaOS — generates wallpaper image with Pillow."""
 
 import random
 import math
-import customtkinter as ctk
+from pathlib import Path
+
+from PIL import Image, ImageDraw, ImageFilter
+
+WALLPAPER_PATH = Path(__file__).resolve().parent.parent / "data" / "ai_wallpaper.png"
 
 
-class AIBackground(ctk.CTkFrame):
-    """Animated AI-themed background with gradient, particles, grid, and glowing orbs."""
+def generate_ai_wallpaper(width=1920, height=1080):
+    """Generate a vibrant AI-themed gradient wallpaper with glowing orbs and grid."""
 
-    def __init__(self, parent, **kwargs):
-        super().__init__(parent, fg_color="#050810", **kwargs)
+    # Start with deep blue-purple base
+    img = Image.new("RGB", (width, height), (8, 10, 25))
+    draw = ImageDraw.Draw(img)
 
-        self._canvas = None
-        self._w = 0
-        self._h = 0
-        self._particles = []
-        self._orbs = []
-        self._grid_lines = []
-        self._step = 0
-        self._build()
+    # ---- Radial gradient with vibrant colors ----
+    cx, cy = width // 2, height // 2
+    max_dist = math.sqrt(cx**2 + cy**2)
 
-    def _build(self):
-        self._canvas = ctk.CTkCanvas(
-            self, highlightthickness=0, bg="#050810"
-        )
-        self._canvas.place(relx=0, rely=0, relwidth=1, relheight=1)
-        self.bind("<Configure>", self._on_resize)
-        self.after(100, self._init_scene)
+    for y in range(0, height, 2):
+        for x in range(0, width, 2):
+            dist = math.sqrt((x - cx)**2 + (y - cy)**2)
+            ratio = min(dist / max_dist, 1.0)
 
-    def _on_resize(self, event):
-        self._w = event.width
-        self._h = event.height
-        self._init_scene()
+            # Dark center, brighter edges with purple/cyan tint
+            r = int(15 + 25 * ratio)
+            g = int(10 + 20 * ratio * (1 - ratio) * 3)
+            b = int(35 + 50 * ratio)
 
-    def _init_scene(self):
-        if self._w < 10 or self._h < 10:
-            return
+            r = max(0, min(255, r))
+            g = max(0, min(255, g))
+            b = max(0, min(255, b))
 
-        self._particles = []
-        for _ in range(60):
-            self._particles.append({
-                "x": random.uniform(0, self._w),
-                "y": random.uniform(0, self._h),
-                "vx": random.uniform(-0.4, 0.4),
-                "vy": random.uniform(-0.6, -0.1),
-                "size": random.randint(1, 4),
-                "brightness": random.randint(30, 150),
-                "hue": random.choice(["cyan", "purple", "magenta", "blue"]),
-            })
+            draw.rectangle([x, y, x + 1, y + 1], fill=(r, g, b))
 
-        self._orbs = []
-        orb_colors = ["#00E5FF", "#7B61FF", "#FF00E5", "#00FF88"]
-        for _ in range(5):
-            self._orbs.append({
-                "x": random.uniform(100, self._w - 100),
-                "y": random.uniform(100, self._h - 100),
-                "vx": random.uniform(-0.3, 0.3),
-                "vy": random.uniform(-0.3, 0.3),
-                "radius": random.randint(80, 200),
-                "color": random.choice(orb_colors),
-                "pulse_speed": random.uniform(0.02, 0.06),
-                "pulse_offset": random.uniform(0, math.pi * 2),
-            })
+    # ---- Bright grid lines ----
+    grid_color = (15, 30, 50)
+    spacing = 60
+    for x in range(0, width, spacing):
+        draw.line([(x, 0), (x, height)], fill=grid_color, width=1)
+    for y in range(0, height, spacing):
+        draw.line([(0, y), (width, y)], fill=grid_color, width=1)
 
-        self._animate()
+    # ---- Large glowing orbs with RGBA overlay ----
+    orb_colors = [
+        (0, 229, 255),    # bright cyan
+        (123, 97, 255),   # purple
+        (255, 0, 229),    # magenta
+        (0, 255, 136),    # green
+        (41, 121, 255),   # blue
+    ]
 
-    def _animate(self):
-        if self._w < 10 or self._h < 10:
-            self.after(50, self._animate)
-            return
+    overlay = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    orb_draw = ImageDraw.Draw(overlay)
 
-        self._canvas.delete("all")
-        self._step += 1
+    for _ in range(10):
+        color = random.choice(orb_colors)
+        ox = random.randint(100, width - 100)
+        oy = random.randint(100, height - 100)
+        radius = random.randint(100, 250)
 
-        self._draw_gradient_bg()
-        self._draw_grid()
-        self._draw_orbs()
-        self._draw_particles()
-        self._draw_connections()
-
-        self.after(40, self._animate)
-
-    def _draw_gradient_bg(self):
-        """Draw a subtle radial gradient from center."""
-        cx, cy = self._w // 2, self._h // 2
-        max_dist = math.sqrt(cx**2 + cy**2)
-
-        steps = 12
-        for i in range(steps):
-            ratio = i / steps
-            r = int(5 + 8 * ratio)
-            g = int(8 + 12 * (1 - ratio))
-            b = int(16 + 20 * ratio)
-            color = f"#{r:02x}{g:02x}{b:02x}"
-
-            radius = int(max_dist * (1 - ratio))
-            self._canvas.create_oval(
-                cx - radius, cy - radius,
-                cx + radius, cy + radius,
-                fill=color, outline=""
+        # Multiple rings for glow effect
+        for ring in range(8, 0, -1):
+            r = int(radius * ring * 0.3)
+            alpha = int(40 / ring)
+            orb_draw.ellipse(
+                [ox - r, oy - r, ox + r, oy + r],
+                fill=(color[0], color[1], color[2], alpha)
             )
 
-    def _draw_grid(self):
-        """Draw subtle animated grid lines."""
-        spacing = 80
-        grid_color = "#0D1520"
-
-        for x in range(0, self._w, spacing):
-            self._canvas.create_line(
-                x, 0, x, self._h,
-                fill=grid_color, width=1
-            )
-        for y in range(0, self._h, spacing):
-            self._canvas.create_line(
-                0, y, self._w, y,
-                fill=grid_color, width=1
-            )
-
-        # Animated scan line
-        scan_y = (self._step * 2) % self._h
-        scan_alpha = "#0A1A2A"
-        self._canvas.create_line(
-            0, scan_y, self._w, scan_y,
-            fill=scan_alpha, width=2
+        # Bright core
+        core_r = int(radius * 0.15)
+        orb_draw.ellipse(
+            [ox - core_r, oy - core_r, ox + core_r, oy + core_r],
+            fill=(color[0], color[1], color[2], 120)
         )
 
-    def _draw_orbs(self):
-        """Draw floating glowing orbs."""
-        for orb in self._orbs:
-            orb["x"] += orb["vx"]
-            orb["y"] += orb["vy"]
+    # Blur for soft glow
+    overlay_blurred = overlay.filter(ImageFilter.GaussianBlur(radius=40))
 
-            ox = orb["x"]
-            oy = orb["y"]
-            radius = orb["radius"]
+    # Composite
+    img_rgba = img.convert("RGBA")
+    composite = Image.alpha_composite(img_rgba, overlay_blurred)
+    img = composite.convert("RGB")
+    draw = ImageDraw.Draw(img)
 
-            if ox < -radius:
-                orb["x"] = self._w + radius
-            elif ox > self._w + radius:
-                orb["x"] = -radius
-            if oy < -radius:
-                orb["y"] = self._h + radius
-            elif oy > self._h + radius:
-                orb["y"] = -radius
+    # ---- Bright floating particles ----
+    particle_colors = [(0, 229, 255), (123, 97, 255), (255, 0, 229), (41, 121, 255)]
+    particles = []
+    for _ in range(100):
+        px = random.randint(0, width)
+        py = random.randint(0, height)
+        size = random.randint(1, 4)
+        color = random.choice(particle_colors)
+        draw.ellipse([px, py, px + size, py + size], fill=color)
+        particles.append((px, py))
 
-            pulse = 0.7 + 0.3 * math.sin(
-                self._step * orb["pulse_speed"] + orb["pulse_offset"]
-            )
-            r = int(radius * pulse)
-            color = orb["color"]
-
-            for ring in range(3, 0, -1):
-                ring_r = int(r * ring * 0.8)
-                self._canvas.create_oval(
-                    ox - ring_r, oy - ring_r,
-                    ox + ring_r, oy + ring_r,
-                    fill="", outline=color, width=1
+    # ---- Connection lines ----
+    for i, p1 in enumerate(particles):
+        for p2 in particles[i + 1:i + 5]:
+            dist = math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+            if dist < 150:
+                a = int(60 * (1 - dist / 150))
+                draw.line(
+                    [p1, p2],
+                    fill=(a, a + 20, a + 50),
+                    width=1
                 )
 
-            # Core
-            core_r = int(r * 0.3)
-            self._canvas.create_oval(
-                ox - core_r, oy - core_r,
-                ox + core_r, oy + core_r,
-                fill=color, outline=""
-            )
+    # ---- Subtle horizontal scan lines ----
+    for y in range(0, height, 4):
+        draw.line([(0, y), (width, y)], fill=(0, 0, 0, 15) if y % 8 == 0 else (0, 0, 0, 0), width=1)
 
-    def _draw_particles(self):
-        """Draw floating particles with trails."""
-        color_map = {
-            "cyan": "#00E5FF",
-            "purple": "#7B61FF",
-            "magenta": "#FF00E5",
-            "blue": "#2979FF",
-        }
+    # Save
+    WALLPAPER_PATH.parent.mkdir(parents=True, exist_ok=True)
+    img.save(str(WALLPAPER_PATH), "PNG")
+    return str(WALLPAPER_PATH)
 
-        for p in self._particles:
-            p["x"] += p["vx"]
-            p["y"] += p["vy"]
 
-            if p["y"] < -20:
-                p["y"] = self._h + 20
-                p["x"] = random.uniform(0, self._w)
-            if p["x"] < -20:
-                p["x"] = self._w + 20
-            elif p["x"] > self._w + 20:
-                p["x"] = -20
-
-            color = color_map.get(p["hue"], "#00E5FF")
-            brightness = p["brightness"]
-            b = min(255, brightness + int(30 * math.sin(self._step * 0.05 + p["x"] * 0.01)))
-            glow_color = f"#{min(255, int(color[1:3], 16) + b // 4):02x}{min(255, int(color[3:5], 16) + b // 4):02x}{min(255, int(color[5:7], 16) + b // 4):02x}"
-
-            # Trail
-            trail_len = p["size"] * 3
-            self._canvas.create_line(
-                p["x"], p["y"],
-                p["x"] - p["vx"] * trail_len,
-                p["y"] - p["vy"] * trail_len,
-                fill=glow_color, width=1
-            )
-
-            # Particle
-            self._canvas.create_oval(
-                p["x"] - p["size"], p["y"] - p["size"],
-                p["x"] + p["size"], p["y"] + p["size"],
-                fill=color, outline=""
-            )
-
-    def _draw_connections(self):
-        """Draw connections between nearby particles."""
-        max_dist = 150
-        for i, p1 in enumerate(self._particles):
-            for p2 in self._particles[i+1:i+8]:
-                dx = p1["x"] - p2["x"]
-                dy = p1["y"] - p2["y"]
-                dist = math.sqrt(dx * dx + dy * dy)
-                if dist < max_dist:
-                    alpha = int(40 * (1 - dist / max_dist))
-                    g = min(255, alpha + 20)
-                    b = min(255, alpha + 40)
-                    self._canvas.create_line(
-                        p1["x"], p1["y"], p2["x"], p2["y"],
-                        fill=f"#{alpha:02x}{g:02x}{b:02x}",
-                        width=1
-                    )
+def ensure_wallpaper():
+    """Generate wallpaper if it doesn't exist, return path."""
+    if not WALLPAPER_PATH.exists():
+        generate_ai_wallpaper()
+    return str(WALLPAPER_PATH)
