@@ -84,6 +84,10 @@ class ThemeManager:
     def get_color(self, color_name: str) -> str:
         """Get color from current scheme."""
         return getattr(self.color_scheme, color_name, "#FFFFFF")
+
+    def get_current_theme(self) -> str:
+        """Return the name of the active theme."""
+        return self.current_theme
         
     def apply_theme(self, theme_name: str):
         """Apply a specific theme with enhanced color schemes."""

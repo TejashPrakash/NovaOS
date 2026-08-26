@@ -246,8 +246,15 @@ class SystemTray(ctk.CTkFrame):
                 audio.set_volume(value)
 
     def _toggle_effects(self):
+        enabled = self.effects_switch.get()
         if self.kernel and hasattr(self.kernel, 'desktop'):
-            pass  # Effects toggle is handled by NovaOS.toggle_premium_effects
+            desktop = self.kernel.desktop
+            if enabled:
+                desktop.enable_neural_network_background()
+                desktop.enable_ambient_lighting()
+            else:
+                desktop.disable_neural_network_background()
+                desktop.disable_ambient_lighting()
 
     def _lock_screen(self):
         self._close_settings()

@@ -17,7 +17,7 @@ class SettingsApp(NovaApp):
     
     def build(self):
         """Build premium functional settings application."""
-        main_frame = ctk.CTkFrame(self.window.content, fg_color="transparent")
+        main_frame = ctk.CTkFrame(self.content, fg_color="transparent")
         main_frame.pack(fill="both", expand=True, padx=20, pady=20)
         
         header_label = ctk.CTkLabel(
