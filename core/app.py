@@ -9,6 +9,7 @@ from core.dock import Dock
 from core.window_manager import WindowManager
 from core.launcher import Launcher
 from core.start_menu import StartMenu
+from core.system_tray import SystemTray
 
 
 class NovaOS:
@@ -187,6 +188,18 @@ class NovaOS:
         self.root.protocol(
             "WM_DELETE_WINDOW",
             lambda: self.kernel.commands.execute(self.kernel, "shutdown")
+        )
+
+        # ==========================================
+        # System Tray
+        # ==========================================
+        self.system_tray = SystemTray(
+            self.desktop.get_widget_layer(),
+            kernel=self.kernel
+        )
+        self.system_tray.place(
+            relx=1.0, rely=1.0, anchor="se",
+            x=-15, y=-55
         )
 
         print("[NovaOS] System Ready")
