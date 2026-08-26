@@ -85,6 +85,21 @@ class Dock:
         )
         
         self.clock = Clock(self.right_frame)
+
+        # About button
+        self.about_btn = ctk.CTkButton(
+            self.right_frame,
+            text="ℹ",
+            width=30,
+            height=30,
+            corner_radius=15,
+            fg_color="transparent",
+            text_color="#888888",
+            hover_color="#1C2333",
+            font=("Segoe UI", 14),
+            command=self._show_about
+        )
+        self.about_btn.pack(side="left", padx=(8, 0), pady=20)
         
         # ==========================================
         # Running Apps
@@ -150,3 +165,7 @@ class Dock:
                     self.start_menu.show()
                     
             self.launcher.toggle = enhanced_toggle
+
+    def _show_about(self):
+        from core.about import AboutDialog
+        AboutDialog(self.root)
