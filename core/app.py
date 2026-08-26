@@ -10,6 +10,10 @@ from core.window_manager import WindowManager
 from core.launcher import Launcher
 from core.start_menu import StartMenu
 from core.system_tray import SystemTray
+from ai.ui.smart_hub import SmartSuggestionsWidget
+from ai.ui.smart_notifications import SmartNotificationManager
+from ai.ui.ai_search import AISearchDialog
+from ai.ui.ai_context_menu import AIContextMenu
 
 
 class NovaOS:
@@ -202,6 +206,47 @@ class NovaOS:
             x=-15, y=-55
         )
 
+        # ==========================================
+        # AI Smart Hub (left side)
+        # ==========================================
+        try:
+            self.smart_hub = SmartSuggestionsWidget(
+                self.desktop.get_widget_layer(),
+                kernel=self.kernel
+            )
+            self.smart_hub.place(x=20, rely=0.5, anchor="w")
+        except Exception as e:
+            print(f"[NovaOS] Smart Hub not available: {e}")
+
+        # ==========================================
+        # Smart AI Notifications
+        # ==========================================
+        try:
+            self.smart_notifications = SmartNotificationManager(
+                self.desktop, self.kernel
+            )
+            # Check for smart notifications every 5 minutes
+            self.root.after(300000, self._check_smart_notifications)
+            self._check_smart_notifications()
+        except Exception as e:
+            print(f"[NovaOS] Smart notifications not available: {e}")
+
+        # ==========================================
+        # AI Desktop Search (Ctrl+K)
+        # ==========================================
+        def open_ai_search(e=None):
+            AISearchDialog(self.root, kernel=self.kernel)
+
+        self.root.bind_all("<Control-k>", open_ai_search)
+
+        # ==========================================
+        # AI Context Menu on Desktop
+        # ==========================================
+        def show_ai_context(e=None):
+            AIContextMenu(self.root, kernel=self.kernel)
+
+        self.desktop.get_canvas().bind("<Button-3>", show_ai_context)
+
         print("[NovaOS] System Ready")
 
     # ==========================================
@@ -227,6 +272,15 @@ class NovaOS:
         """Apply theme to NovaOS."""
         self.desktop.set_theme(theme_name)
         print(f"[NovaOS] Theme changed to {theme_name}")
+
+    def _check_smart_notifications(self):
+        """Check and display smart notifications."""
+        try:
+            if hasattr(self, 'smart_notifications'):
+                self.smart_notifications.check_and_notify()
+        except Exception:
+            pass
+        self.root.after(300000, self._check_smart_notifications)
 
     # ==========================================
 
