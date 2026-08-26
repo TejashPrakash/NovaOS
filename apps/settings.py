@@ -95,13 +95,12 @@ class SettingsApp(NovaApp):
         theme_combo.set(self.config.theme.title())
         theme_combo.pack(padx=15, pady=(0, 10))
         
-        def apply_theme():
+        def apply_theme(choice=None):
             theme_name = theme_combo.get().lower()
             if hasattr(self.window, "kernel") and hasattr(self.window.kernel, "desktop"):
                 self.window.kernel.set_theme(theme_name)
-            print(f"[Settings] Theme changed to {theme_name}")
-        
-        theme_combo.bind("<<ComboboxSelected>>", lambda _event: apply_theme())
+
+        theme_combo.configure(command=apply_theme)
         
         ctk.CTkLabel(
             appearance_frame,

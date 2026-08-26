@@ -1,6 +1,6 @@
 from ai.skills import apps, notes, system, weather, time_skill, calculator
 from ai.skills import settings, terminal, music, file_manager, browser
-from ai.skills import calendar_skill
+from ai.skills import calendar_skill, code_helper, summarizer
 from ai.skills.base import Skill, SkillError
 
 # Convert all skills to tuples for consistent concatenation
@@ -13,10 +13,12 @@ SKILLS = (
     tuple(calculator.SKILLS) +
     tuple(settings.SKILLS) +
     tuple(terminal.SKILLS) +
-    tuple(music.SKILLS) +
+    tuple(music.SKILLS) + 
     tuple(file_manager.SKILLS) +
     tuple(browser.SKILLS) +
-    tuple(calendar_skill.SKILLS)
+    tuple(calendar_skill.SKILLS) +
+    tuple(code_helper.SKILLS) +
+    tuple(summarizer.SKILLS)
 )
 
 SKILLS_BY_NAME = {skill.name: skill for skill in SKILLS}
