@@ -232,8 +232,8 @@ class NovaOS:
         def show_ai_context(e=None):
             AIContextMenu(self.root, kernel=self.kernel)
 
-        # Bind right-click to root window (catches all desktop right-clicks)
-        self.root.bind("<Button-3>", show_ai_context)
+        # Bind right-click to desktop frame
+        self.desktop.get_canvas().bind("<Button-3>", show_ai_context)
 
         print("[NovaOS] System Ready")
 

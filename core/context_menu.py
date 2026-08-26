@@ -66,8 +66,8 @@ class ContextMenuManager:
         self._setup_desktop_menu()
         
     def _setup_desktop_menu(self):
-        """Setup desktop context menu."""
-        self.desktop.get_canvas().bind("<Button-3>", self._show_desktop_menu)
+        """Desktop right-click handled by AIContextMenu in app.py."""
+        pass
         
     def _show_desktop_menu(self, event):
         """Show desktop context menu."""
