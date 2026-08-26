@@ -46,6 +46,15 @@ class LockScreen(ctk.CTkToplevel):
         container = ctk.CTkFrame(self, fg_color="transparent")
         container.place(relx=0.5, rely=0.45, anchor="center")
 
+        # Glowing logo
+        self.logo_label = ctk.CTkLabel(
+            container, text="◈",
+            font=("Segoe UI Emoji", 56),
+            text_color="#00E5FF"
+        )
+        self.logo_label.pack(pady=(0, 5))
+        self._pulse_logo()
+
         # Clock
         self.time_label = ctk.CTkLabel(
             container, text="00:00",
@@ -124,26 +133,62 @@ class LockScreen(ctk.CTkToplevel):
 
         # Version at bottom
         ctk.CTkLabel(
-            self, text="NovaOS v0.1.0-alpha",
+            self, text="NovaOS v0.1.0-alpha  •  AI-Powered Desktop",
             font=("Segoe UI", 11),
             text_color="#333333"
         ).place(relx=0.5, rely=0.96, anchor="center")
 
     # ------------------------------------------------------------------ gradient
     def _draw_gradient(self, w, h):
-        steps = 20
-        for i in range(steps):
-            ratio = i / steps
-            r = int(5 + 11 * ratio)
-            g = int(8 + 9 * ratio)
-            b = int(16 + 5 * ratio)
+        """Draw vibrant AI-themed gradient with glowing orbs."""
+        import math, random
+        # Dark radial gradient
+        cx, cy = w // 2, h // 2
+        for i in range(15):
+            ratio = i / 15
+            r = int(5 + 10 * ratio)
+            g = int(8 + 15 * (1 - ratio))
+            b = int(16 + 25 * ratio)
             color = f"#{r:02x}{g:02x}{b:02x}"
-            y_start = int(h * i / steps)
-            y_end = int(h * (i + 1) / steps)
-            self.canvas.create_rectangle(
-                0, y_start, w, y_end,
+            radius = int(max(w, h) * (1 - ratio * 0.7))
+            self.canvas.create_oval(
+                cx - radius, cy - radius,
+                cx + radius, cy + radius,
                 fill=color, outline=""
             )
+
+        # Glowing orbs
+        orb_colors = ["#00E5FF", "#7B61FF", "#FF00E5", "#00FF88"]
+        for _ in range(6):
+            ox = random.randint(50, w - 50)
+            oy = random.randint(50, h - 50)
+            color = random.choice(orb_colors)
+            for ring in range(4, 0, -1):
+                r = random.randint(30, 80) * ring
+                self.canvas.create_oval(
+                    ox - r, oy - r, ox + r, oy + r,
+                    fill="", outline=color, width=1
+                )
+
+        # Grid lines
+        for x in range(0, w, 100):
+            self.canvas.create_line(x, 0, x, h, fill="#0A1520", width=1)
+        for y in range(0, h, 100):
+            self.canvas.create_line(0, y, w, y, fill="#0A1520", width=1)
+
+    # ------------------------------------------------------------------ logo pulse
+    def _pulse_logo(self):
+        import math
+        try:
+            t = time.time()
+            pulse = 0.7 + 0.3 * math.sin(t * 2)
+            b = int(229 * pulse)
+            self.logo_label.configure(
+                text_color=f"#{min(255, b):02x}{min(255, int(b * 0.97)):02x}ff"
+            )
+            self.after(50, self._pulse_logo)
+        except Exception:
+            pass
 
     # ------------------------------------------------------------------ clock
     def _tick_clock(self):
