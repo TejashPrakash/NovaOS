@@ -3,6 +3,7 @@
 import time
 import customtkinter as ctk
 from core.theme import ThemeManager
+from core.sounds import sound_manager
 
 
 class LockScreen(ctk.CTkToplevel):
@@ -160,11 +161,13 @@ class LockScreen(ctk.CTkToplevel):
         password = self.password_entry.get().strip()
 
         if password == self.DEFAULT_PASSWORD:
+            sound_manager.play("unlock")
             self._unlock()
         else:
             self._attempts += 1
             remaining = 3 - self._attempts
             if remaining > 0:
+                sound_manager.play("error")
                 self.hint_label.configure(
                     text=f"Wrong password. {remaining} attempts left."
                 )

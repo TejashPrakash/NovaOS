@@ -2,6 +2,7 @@ import customtkinter as ctk
 from core.start_menu import StartMenu
 from widgets.clock import Clock
 from widgets.glass import GlassFrame
+from core.sounds import sound_manager
 
 
 class Dock:
@@ -140,6 +141,7 @@ class Dock:
         del self.running_apps[name]
         
     def open_launcher(self):
+        sound_manager.play("click")
         if self.launcher:
             self.launcher.toggle()
             

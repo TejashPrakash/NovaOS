@@ -3,6 +3,7 @@
 import customtkinter as ctk
 import math
 from core.theme import ThemeManager
+from core.sounds import sound_manager
 
 
 class NovaSplashScreen(ctk.CTkToplevel):
@@ -177,6 +178,7 @@ class NovaSplashScreen(ctk.CTkToplevel):
 
     def _finish_boot(self):
         self._boot_complete = True
+        sound_manager.play("boot")
         self._fade_out(10)
 
     def _fade_out(self, steps):
