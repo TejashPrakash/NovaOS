@@ -5,6 +5,7 @@ import os
 from widgets.neural_background import NeuralBackground
 from widgets.ambient_lighting import AmbientLighting
 from core.theme import ThemeManager
+from core.ai_background import AIBackground
 class Desktop:
     def __init__(self, root):
         self.root = root
@@ -39,6 +40,7 @@ class Desktop:
         # Add neural network background option
         self.neural_background = None
         self.theme = ThemeManager()
+        self.ai_bg = None
         self._setup_default_background()
         
         # -----------------------------
@@ -73,8 +75,14 @@ class Desktop:
         self.ai_panel = None
         
     def _setup_default_background(self):
-        """Setup default gradient background with theme colors."""
-        self.wallpaper.configure(fg_color=self.theme.get_color("background"))
+        """Setup vibrant AI background."""
+        try:
+            self.ai_bg = AIBackground(self.frame)
+            self.ai_bg.place(relx=0, rely=0, relwidth=1, relheight=1)
+            self.ai_bg.lower()
+        except Exception as e:
+            print(f"[Desktop] AI background failed, using solid: {e}")
+            self.wallpaper.configure(fg_color=self.theme.get_color("background"))
         
     def set_background_image(self, image_path):
         """Set background image from file."""
@@ -102,6 +110,12 @@ class Desktop:
 
     def enable_neural_network_background(self):
         """Enable animated neural network background."""
+        if self.ai_bg:
+            try:
+                self.ai_bg.destroy()
+            except Exception:
+                pass
+            self.ai_bg = None
         if self.neural_background is None:
             self.neural_background = NeuralBackground(self.wallpaper)
             self.neural_background.place(relwidth=1, relheight=1)
