@@ -120,21 +120,37 @@ class SystemTray(ctk.CTkFrame):
 
         self._settings_open = True
 
-        self._settings_panel = ctk.CTkToplevel(self)
+        # Create on ROOT, not self — prevents ghost dark space on destroy
+        root = self.winfo_toplevel()
+        self._settings_panel = ctk.CTkToplevel(root)
         self._settings_panel.title("")
         self._settings_panel.geometry("280x320")
         self._settings_panel.configure(fg_color="#0D1117")
         self._settings_panel.overrideredirect(True)
         self._settings_panel.attributes("-topmost", True)
-        self._settings_panel.transient(self.winfo_toplevel())
+        self._settings_panel.transient(root)
 
         # Position above tray
         x = self.winfo_rootx() + self.winfo_width() - 280
         y = self.winfo_rooty() - 330
         self._settings_panel.geometry(f"+{x}+{y}")
 
-        # Bind close on click outside
-        self._settings_panel.bind("<FocusOut>", lambda e: self._close_settings())
+        # Close when clicking outside (use root bind to catch all clicks)
+        def _on_root_click(e):
+            # Ignore clicks inside the panel
+            try:
+                px = self._settings_panel.winfo_rootx()
+                py = self._settings_panel.winfo_rooty()
+                pw = self._settings_panel.winfo_width()
+                ph = self._settings_panel.winfo_height()
+                if px <= e.x_root <= px + pw and py <= e.y_root <= py + ph:
+                    return
+            except Exception:
+                pass
+            self._close_settings()
+
+        root.bind("<Button-1>", _on_root_click, add="+")
+        self._root_click_handler = _on_root_click
 
         # ---- Theme selector ----
         ctk.CTkLabel(
@@ -201,8 +217,10 @@ class SystemTray(ctk.CTkFrame):
         ).pack(side="left")
 
         self.effects_switch = ctk.CTkSwitch(
-            effects_frame, text="", on_color="#00E5FF",
-            off_color="#333333", button_color="#FFFFFF",
+            effects_frame, text="",
+            progress_color="#00E5FF",
+            button_color="#FFFFFF",
+            button_hover_color="#00C8E8",
             command=self._toggle_effects
         )
         self.effects_switch.pack(side="right")
@@ -229,10 +247,21 @@ class SystemTray(ctk.CTkFrame):
         self._settings_open = False
         if self._settings_panel:
             try:
+                root = self.winfo_toplevel()
+                if hasattr(self, '_root_click_handler'):
+                    root.unbind("<Button-1>", self._root_click_handler)
+            except Exception:
+                pass
+            try:
                 self._settings_panel.destroy()
             except Exception:
                 pass
             self._settings_panel = None
+            # Force root to repaint — clears ghost dark space
+            try:
+                self.winfo_toplevel().update_idletasks()
+            except Exception:
+                pass
 
     def _apply_theme(self):
         theme_name = self.theme_var.get()
