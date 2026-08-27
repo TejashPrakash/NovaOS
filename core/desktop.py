@@ -83,8 +83,8 @@ class Desktop:
             # Update canvas size to match
             self.wallpaper_canvas.configure(width=w, height=h)
             self.wallpaper_canvas.create_image(0, 0, anchor="nw", image=self._bg_photo)
-            # Ensure canvas is behind all other widgets
-            self.wallpaper_canvas.lower()
+            # Canvas is already at the bottom (first child created)
+            # No need to call lower() which requires a tag argument
         except Exception as e:
             print(f"[Desktop] Error loading background: {e}")
 
