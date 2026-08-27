@@ -135,8 +135,8 @@ class SmartSuggestionsWidget(ctk.CTkFrame):
         suggestions_frame.pack(fill="both", expand=True, padx=8, pady=(0, 6))
 
         suggestions = self._get_suggestions(hour)
-        for icon, title, desc, priority in suggestions:
-            self._add_card(suggestions_frame, icon, title, desc, priority)
+        for icon, title, desc, priority, cb in suggestions:
+            self._add_card(suggestions_frame, icon, title, desc, priority, cb)
 
         # Quick actions
         actions = ctk.CTkFrame(self, fg_color="transparent")
@@ -158,7 +158,7 @@ class SmartSuggestionsWidget(ctk.CTkFrame):
                 command=cb
             ).pack(side="left", padx=2, expand=True, fill="x")
 
-    def _add_card(self, parent, icon, title, desc, priority):
+    def _add_card(self, parent, icon, title, desc, priority, callback=None):
         bc = {"high": "#00E5FF", "always": "#7B61FF"}.get(priority, "#222222")
         card = ctk.CTkFrame(
             parent, fg_color="#161B22",
@@ -171,11 +171,19 @@ class SmartSuggestionsWidget(ctk.CTkFrame):
         ctk.CTkLabel(row, text=icon, font=("Segoe UI Emoji", 14)).pack(side="left", padx=(0, 4))
         ctk.CTkLabel(row, text=title, font=("Segoe UI", 11, "bold"), text_color="#FFFFFF").pack(side="left")
 
-        ctk.CTkLabel(
+        desc_label = ctk.CTkLabel(
             card, text=desc,
             font=("Segoe UI", 10), text_color="#777777",
             wraplength=250, anchor="w"
-        ).pack(anchor="w", padx=8, pady=(0, 6))
+        )
+        desc_label.pack(anchor="w", padx=8, pady=(0, 6))
+
+        # Make the entire card clickable
+        if callback:
+            for widget in (card, row, desc_label):
+                widget.bind("<Button-1>", lambda e: callback())
+                widget.bind("<Enter>", lambda e: card.configure(border_color="#00E5FF"))
+                widget.bind("<Leave>", lambda e: card.configure(border_color=bc))
 
     # ------------------------------------------------------------------
     # Helpers
@@ -185,6 +193,16 @@ class SmartSuggestionsWidget(ctk.CTkFrame):
             if self.kernel:
                 self.kernel.process_manager.start_process(app_name)
         return _launch
+
+    def _lock_screen(self):
+        """Lock the screen."""
+        from core.lock_screen import LockScreen
+        LockScreen(on_unlock=lambda: None)
+
+    def _open_ai(self):
+        """Open the AI assistant panel."""
+        if self.kernel and hasattr(self.kernel, 'desktop'):
+            self.kernel.desktop.toggle_ai_panel(self.kernel.ai.assistant if hasattr(self.kernel, 'ai') and self.kernel.ai else None)
 
     def _get_greeting(self, hour):
         if hour < 6:
@@ -198,24 +216,25 @@ class SmartSuggestionsWidget(ctk.CTkFrame):
         return "🌙 Night mode. Take a break!"
 
     def _get_suggestions(self, hour):
+        """Return list of (icon, title, desc, priority, callback)."""
         s = []
         if 9 <= hour < 12:
-            s.append(("📅", "Check calendar", "Review today's events", "high"))
-            s.append(("🌤", "Morning weather", "Check the forecast", "medium"))
+            s.append(("📅", "Check calendar", "Review today's events", "high", self._act("Calendar")))
+            s.append(("🌤", "Morning weather", "Check the forecast", "medium", self._act("Weather")))
         elif 12 <= hour < 14:
-            s.append(("🎵", "Lunch music", "Relax with Music Player", "medium"))
-            s.append(("📝", "Quick notes", "Jot down ideas", "low"))
+            s.append(("🎵", "Lunch music", "Relax with Music Player", "medium", self._act("Music Player")))
+            s.append(("📝", "Quick notes", "Jot down ideas", "low", self._act("Notes")))
         elif 14 <= hour < 17:
-            s.append(("📊", "System check", "Monitor CPU and RAM", "medium"))
-            s.append(("🌐", "Research", "Use the Browser", "low"))
+            s.append(("📊", "System check", "Monitor CPU and RAM", "medium", self._act("System Monitor")))
+            s.append(("🌐", "Research", "Use the Browser", "low", self._act("Browser")))
         elif 17 <= hour < 21:
-            s.append(("📅", "Plan tomorrow", "Add tasks to Calendar", "high"))
-            s.append(("🎵", "Evening vibes", "Relax with music", "medium"))
+            s.append(("📅", "Plan tomorrow", "Add tasks to Calendar", "high", self._act("Calendar")))
+            s.append(("🎵", "Evening vibes", "Relax with music", "medium", self._act("Music Player")))
         else:
-            s.append(("📝", "Daily journal", "Write about today", "medium"))
-            s.append(("🔒", "Lock screen", "Ctrl+Shift+L", "low"))
+            s.append(("📝", "Daily journal", "Write about today", "medium", self._act("Notes")))
+            s.append(("🔒", "Lock screen", "Ctrl+Shift+L", "low", self._lock_screen))
 
-        s.append(("🤖", "Ask Nova anything", "I can help with anything", "always"))
+        s.append(("🤖", "Ask Nova anything", "I can help with anything", "always", self._open_ai))
         return s
 
     def _auto_refresh(self):
