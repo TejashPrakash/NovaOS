@@ -10,7 +10,7 @@ from core.ai_background import ensure_wallpaper
 class Desktop:
     """NovaOS Desktop — single-layer architecture.
     All widgets (icons, AI features, tray) live directly on self.frame.
-    Wallpaper is a label at the back. No stacked transparent frames.
+    Wallpaper is a Canvas behind everything on the frame.
     """
 
     def __init__(self, root):
@@ -39,14 +39,26 @@ class Desktop:
         self._bg_photo = None  # prevent GC
 
         # Load wallpaper after window is fully rendered
-        self.frame.after(600, self._load_wallpaper)
-        self.frame.after(1200, self._load_wallpaper)
+        # Use Configure event for reliable sizing
+        self.frame.bind("<Configure>", self._on_frame_configure)
+        self._wallpaper_loaded = False
+        self.frame.after(800, self._load_wallpaper)
+        self.frame.after(1500, self._load_wallpaper)
+        self.frame.after(3000, self._load_wallpaper)
+
+    def _on_frame_configure(self, event=None):
+        """Re-load wallpaper when frame resizes."""
+        if self._wallpaper_loaded and self._wallpaper_path:
+            self.set_background_image(self._wallpaper_path)
 
     def _load_wallpaper(self):
         """Load and display AI wallpaper on canvas."""
+        if self._wallpaper_loaded:
+            return
         try:
             self._wallpaper_path = ensure_wallpaper()
             self.set_background_image(self._wallpaper_path)
+            self._wallpaper_loaded = True
         except Exception as e:
             print(f"[Desktop] AI wallpaper failed: {e}")
             import traceback
@@ -58,14 +70,21 @@ class Desktop:
             if not os.path.exists(image_path):
                 return
             image = Image.open(image_path)
-            w = self.root.winfo_screenwidth()
-            h = self.root.winfo_screenheight()
+            # Use frame dimensions (more reliable than screen during init)
+            fw = self.frame.winfo_width()
+            fh = self.frame.winfo_height()
+            w = fw if fw > 100 else self.root.winfo_screenwidth()
+            h = fh if fh > 100 else self.root.winfo_screenheight()
             if w < 100:
                 w, h = 1920, 1080
             image = image.resize((w, h), Image.Resampling.LANCZOS)
             self._bg_photo = ImageTk.PhotoImage(image)
             self.wallpaper_canvas.delete("all")
+            # Update canvas size to match
+            self.wallpaper_canvas.configure(width=w, height=h)
             self.wallpaper_canvas.create_image(0, 0, anchor="nw", image=self._bg_photo)
+            # Ensure canvas is behind all other widgets
+            self.wallpaper_canvas.lower()
         except Exception as e:
             print(f"[Desktop] Error loading background: {e}")
 
