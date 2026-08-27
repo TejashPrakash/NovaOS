@@ -121,3 +121,36 @@ class ThemeManager:
                 accent="#00FF99",
                 accent_hover="#00FFBB"
             )
+        elif theme_name == "midnight":
+            self.color_scheme = ColorScheme(
+                primary="#5C6BC0",
+                primary_hover="#7986CB",
+                secondary="#42A5F5",
+                secondary_hover="#64B5F6",
+                accent="#AB47BC",
+                accent_hover="#BA68C8",
+                background="#0D1117",
+                surface="#161B22",
+            )
+        elif theme_name == "forest":
+            self.color_scheme = ColorScheme(
+                primary="#00E676",
+                primary_hover="#69F0AE",
+                secondary="#76FF03",
+                secondary_hover="#B2FF59",
+                accent="#FFD600",
+                accent_hover="#FFEA00",
+                background="#0A1A0F",
+                surface="#122A1A",
+            )
+        elif theme_name == "arctic":
+            self.color_scheme = ColorScheme(
+                primary="#80DEEA",
+                primary_hover="#A7ECF0",
+                secondary="#B2EBF2",
+                secondary_hover="#E0F7FA",
+                accent="#FFFFFF",
+                accent_hover="#F5F5F5",
+                background="#0A1929",
+                surface="#132F4C",
+            )

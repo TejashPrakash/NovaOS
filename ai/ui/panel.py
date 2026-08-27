@@ -36,7 +36,17 @@ class AIPanel(ctk.CTkFrame):
             font=("Segoe UI", 18, "bold"),
             text_color="#00E5FF"
         )
-        title.pack(pady=15)
+        title.pack(side="left", pady=15, padx=15)
+
+        # Close button
+        close_btn = ctk.CTkButton(
+            self.header, text="✕", width=30, height=30,
+            fg_color="transparent", text_color="#666666",
+            hover_color="#C62828", corner_radius=15,
+            font=("Segoe UI", 14, "bold"),
+            command=self._close
+        )
+        close_btn.pack(side="right", padx=10, pady=15)
 
         # Chat area
         self.chat_frame = ctk.CTkFrame(
@@ -86,6 +96,13 @@ class AIPanel(ctk.CTkFrame):
             command=self._handle_input
         )
         self.send_button.pack(side="right")
+
+    def _close(self):
+        """Close this panel."""
+        try:
+            self.destroy()
+        except Exception:
+            pass
 
     def _handle_input(self, event=None):
         """Handle user input."""
