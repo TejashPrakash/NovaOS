@@ -102,10 +102,10 @@ class DesktopIconsManager:
                 lambda a=app_name: self._launch_app(a)
             )
             
-            # Position in grid (top-left, 3 columns, below where Smart Hub would be)
+            # Position in grid (top-left, 3 columns, below Smart Hub pill at y=20)
             row = i // 3
             col = i % 3
-            icon_widget.place(x=30 + col * 110, y=30 + row * 120)
+            icon_widget.place(x=30 + col * 110, y=80 + row * 120)
             self.icons.append(icon_widget)
             
     def _launch_app(self, app_name):
