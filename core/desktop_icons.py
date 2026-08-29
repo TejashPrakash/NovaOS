@@ -70,14 +70,23 @@ class DesktopIcon(ctk.CTkFrame):
 
 
 class DesktopIconsManager:
-    """Manage desktop icons."""
-    
+    """Manage desktop icons — responsive grid positioned on the RIGHT side of the desktop."""
+
+    ICON_WIDTH = 95
+    ICON_HEIGHT = 115
+    COLS = 4
+    PADDING_X = 30
+    PADDING_Y = 90  # below Smart Hub
+    MARGIN_RIGHT = 30
+
     def __init__(self, desktop, window_manager):
         self.desktop = desktop
         self.window_manager = window_manager
         self.icons = []
         self._setup_default_icons()
-        
+        # Reposition when the desktop resizes
+        self.desktop.frame.bind("<Configure>", lambda e: self._reposition())
+
     def _setup_default_icons(self):
         """Setup default desktop icons."""
         default_apps = [
@@ -91,23 +100,42 @@ class DesktopIconsManager:
             ("📊", "System Monitor"),
             ("🎵", "Music Player"),
             ("👁", "Viewer"),
+            ("📋", "Task Manager"),
             ("⚙️", "Settings"),
         ]
-        
-        for i, (icon, app_name) in enumerate(default_apps):
+
+        for icon, app_name in default_apps:
             icon_widget = DesktopIcon(
                 self.desktop.get_icon_layer(),
                 icon,
                 app_name,
                 lambda a=app_name: self._launch_app(a)
             )
-            
-            # Position in grid (top-left, 3 columns, below Smart Hub pill at y=20)
-            row = i // 3
-            col = i % 3
-            icon_widget.place(x=30 + col * 110, y=80 + row * 120)
             self.icons.append(icon_widget)
-            
+
+        # Initial placement
+        self._reposition()
+
+    def _reposition(self):
+        """Reposition icons in a responsive grid on the RIGHT side of the desktop."""
+        try:
+            fw = self.desktop.frame.winfo_width()
+            if fw < 200:
+                return
+            cols = self.COLS
+            total_w = cols * self.ICON_WIDTH + (cols - 1) * 8
+            start_x = fw - total_w - self.MARGIN_RIGHT
+            start_y = self.PADDING_Y
+
+            for i, icon in enumerate(self.icons):
+                row = i // cols
+                col = i % cols
+                x = start_x + col * (self.ICON_WIDTH + 8)
+                y = start_y + row * self.ICON_HEIGHT
+                icon.place(x=x, y=y)
+        except Exception:
+            pass
+
     def _launch_app(self, app_name):
         """Launch application from desktop icon."""
         self.window_manager.kernel.process_manager.start_process(app_name)

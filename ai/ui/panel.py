@@ -7,7 +7,7 @@ from ai.assistant import Assistant
 class AIPanel(ctk.CTkFrame):
     """Glassmorphism AI Panel for NovaOS desktop."""
 
-    def __init__(self, master, assistant: Assistant, **kwargs):
+    def __init__(self, master, assistant: Assistant, on_close=None, **kwargs):
         super().__init__(
             master,
             width=400,
@@ -17,6 +17,7 @@ class AIPanel(ctk.CTkFrame):
             **kwargs
         )
         self.assistant = assistant
+        self._on_close_callback = on_close
         self._setup_ui()
 
     def _setup_ui(self):
@@ -100,6 +101,8 @@ class AIPanel(ctk.CTkFrame):
     def _close(self):
         """Close this panel."""
         try:
+            if self._on_close_callback:
+                self._on_close_callback()
             self.destroy()
         except Exception:
             pass

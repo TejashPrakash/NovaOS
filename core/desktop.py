@@ -46,6 +46,11 @@ class Desktop:
         self.frame.after(1500, self._load_wallpaper)
         self.frame.after(3000, self._load_wallpaper)
 
+        # Desktop widgets — clock and weather floating on desktop
+        self._desktop_clock = None
+        self._desktop_weather = None
+        self.frame.after(1000, self._setup_desktop_widgets)
+
     def _on_frame_configure(self, event=None):
         """Re-load wallpaper when frame resizes."""
         if self._wallpaper_loaded and self._wallpaper_path:
@@ -128,13 +133,16 @@ class Desktop:
         return self.frame
 
     def toggle_ai_panel(self, assistant):
-        if self.ai_panel is None:
-            self.ai_panel = AIPanel(self.frame, assistant)
+        if self.ai_panel is None or not self.ai_panel.winfo_exists():
+            self.ai_panel = AIPanel(self.frame, assistant, on_close=self._on_ai_panel_close)
             self.ai_panel.place(relx=0.5, rely=0.5, anchor="center")
             self.ai_panel.lift()
         else:
             self.ai_panel.destroy()
             self.ai_panel = None
+
+    def _on_ai_panel_close(self):
+        self.ai_panel = None
 
     def set_theme(self, theme_name: str):
         self.theme.apply_theme(theme_name)
@@ -148,6 +156,24 @@ class Desktop:
         if self.ambient_lighting:
             self.disable_ambient_lighting()
             self.enable_ambient_lighting()
+
+    def _setup_desktop_widgets(self):
+        """Place floating clock and weather widgets on the desktop."""
+        try:
+            from widgets.desktop_clock import DesktopClock
+            self._desktop_clock = DesktopClock(self.frame)
+            self._desktop_clock.place(x=20, y=70)
+            self._desktop_clock.lift()
+        except Exception as e:
+            print(f"[Desktop] Clock widget failed: {e}")
+
+        try:
+            from widgets.desktop_weather import DesktopWeather
+            self._desktop_weather = DesktopWeather(self.frame)
+            self._desktop_weather.place(x=20, y=190)
+            self._desktop_weather.lift()
+        except Exception as e:
+            print(f"[Desktop] Weather widget failed: {e}")
 
     def get_theme_manager(self):
         return self.theme
