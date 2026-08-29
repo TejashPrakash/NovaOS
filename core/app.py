@@ -274,6 +274,23 @@ class NovaOS:
 
     def _shutdown(self):
         """Clean shutdown of NovaOS."""
+        # Stop Playwright Chromium browser if running
+        try:
+            if hasattr(self, 'kernel') and self.kernel:
+                wm = self.kernel.get_service("window_manager")
+                if wm and hasattr(wm, 'windows'):
+                    for window in wm.windows:
+                        app = getattr(window, 'app', None)
+                        if app:
+                            for attr in ('chromium_engine', 'engine'):
+                                eng = getattr(app, attr, None)
+                                if eng and hasattr(eng, 'stop'):
+                                    try:
+                                        eng.stop()
+                                    except Exception:
+                                        pass
+        except Exception:
+            pass
         try:
             self.kernel.shutdown()
         except Exception:

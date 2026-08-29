@@ -85,7 +85,7 @@ class SettingsApp(NovaApp):
         
         theme_combo = ctk.CTkComboBox(
             appearance_frame,
-            values=["Cyberpunk", "Neon", "Sunset", "Ocean"],
+            values=["Cyberpunk", "Neon", "Sunset", "Ocean", "Midnight", "Forest", "Arctic"],
             width=200,
             fg_color=self.theme.get_color("surface"),
             text_color=self.theme.get_color("text_primary"),

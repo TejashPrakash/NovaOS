@@ -372,7 +372,7 @@ class TerminalApp(NovaApp):
             self._write_line("Usage: theme <cyberpunk|neon|sunset|ocean>", "#FFC107")
             return
         theme = args[0].lower()
-        valid = ["cyberpunk", "neon", "sunset", "ocean"]
+        valid = ["cyberpunk", "neon", "sunset", "ocean", "midnight", "forest", "arctic"]
         if theme not in valid:
             self._write_line(f"Unknown theme: {theme}. Options: {', '.join(valid)}", "#E53935")
             return
