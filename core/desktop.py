@@ -98,7 +98,8 @@ class Desktop:
         if self.neural_background is None:
             self.neural_background = NeuralBackground(self.frame)
             self.neural_background.place(relwidth=1, relheight=1)
-            self.neural_background.lower(self.wallpaper_canvas)
+            # Lower neural_background behind wallpaper in the parent frame's z-order
+            self.frame.lower(self.neural_background)
 
     def disable_neural_network_background(self):
         if self.neural_background:

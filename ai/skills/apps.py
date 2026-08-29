@@ -5,23 +5,46 @@ from ai.skills.base import Skill, SkillError, string_parameters
 
 
 def open_app(kernel, app_name: str = "") -> str:
-
+    """Open an app. Thread-safe: schedules tkinter calls on the main thread."""
     if not app_name:
         raise SkillError("open_app needs an app_name")
 
-    if not kernel.commands.execute(kernel, "open_app", app_name):
-        raise SkillError(f"NovaOS has no application called {app_name!r}")
+    # Schedule on main thread to avoid tkinter crash
+    def _do_open():
+        try:
+            kernel.commands.execute(kernel, "open_app", app_name)
+        except Exception:
+            pass
+
+    root = None
+    if hasattr(kernel, 'desktop') and kernel.desktop and hasattr(kernel.desktop, 'root'):
+        root = kernel.desktop.root
+    if root:
+        root.after(0, _do_open)
+    else:
+        kernel.commands.execute(kernel, "open_app", app_name)
 
     return f"Opened {app_name}."
 
 
 def close_app(kernel, app_name: str = "") -> str:
-
+    """Close an app. Thread-safe: schedules tkinter calls on the main thread."""
     if not app_name:
         raise SkillError("close_app needs an app_name")
 
-    if not kernel.commands.execute(kernel, "close_app", app_name):
-        return f"{app_name} was not running."
+    def _do_close():
+        try:
+            kernel.commands.execute(kernel, "close_app", app_name)
+        except Exception:
+            pass
+
+    root = None
+    if hasattr(kernel, 'desktop') and kernel.desktop and hasattr(kernel.desktop, 'root'):
+        root = kernel.desktop.root
+    if root:
+        root.after(0, _do_close)
+    else:
+        kernel.commands.execute(kernel, "close_app", app_name)
 
     return f"Closed {app_name}."
 

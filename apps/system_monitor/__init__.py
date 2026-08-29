@@ -61,8 +61,9 @@ class SystemMonitorApp(NovaApp):
         )
         self.cpu_detail.pack(anchor="w", padx=15, pady=(2, 10))
 
-        # ---------- CPU History Canvas ----------
-        self.cpu_canvas = ctk.CTkCanvas(
+        # ---------- CPU History Canvas (use tkinter Canvas, not CTkCanvas) ----------
+        import tkinter as tk
+        self.cpu_canvas = tk.Canvas(
             cpu_frame, height=60, highlightthickness=0,
             bg="#0D1117"
         )

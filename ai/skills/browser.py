@@ -1,29 +1,71 @@
+from urllib.parse import quote_plus
 from ai.skills.base import Skill, string_parameters, SkillError
 from ai.providers import Tool
 
 
 def open_url(kernel, url: str) -> str:
-    """Open a URL in the browser."""
+    """Open a URL in the browser.
+
+    Thread-safe: all tkinter calls are scheduled on the main thread
+    via root.after() because AI skills run in a background thread.
+    """
     try:
         if not url.startswith(('http://', 'https://')):
             url = 'https://' + url
 
-        # Try to open in existing browser tab
+        # Get root window for thread-safe scheduling
+        root = None
+        if hasattr(kernel, 'desktop') and kernel.desktop:
+            root = getattr(kernel.desktop, 'root', None)
+
         process_manager = kernel.get_service("process_manager")
         if process_manager:
             process = process_manager.get_process("Browser")
             if process and process.instance:
                 app = process.instance
-                if hasattr(app, 'current_tab') and app.current_tab:
-                    app.controller.navigate(app.current_tab, url)
-                    app.toolbar.set_url(url)
-                    app.show_browser()
-                    app.update_current_tab(url, url)
-                    app.update_navigation()
-                    return f"Opened {url} in browser"
 
-        # No browser open — launch it
-        process_manager.start_process("Browser")
+                def _navigate():
+                    """Navigate the browser to the URL (runs on main thread)."""
+                    try:
+                        if hasattr(app, 'current_tab') and app.current_tab:
+                            app.controller.navigate(app.current_tab, url)
+                            app.toolbar.set_url(url)
+                            app.show_browser()
+                            app.update_current_tab(url, url)
+                            app.update_navigation()
+                    except Exception as e:
+                        print(f"[Browser] Navigate error: {e}")
+
+                if root:
+                    root.after(0, _navigate)
+                else:
+                    _navigate()
+                return f"Opened {url} in browser"
+
+        # No browser open — launch it, then navigate
+        def _launch_and_navigate():
+            try:
+                process = process_manager.start_process("Browser")
+                if process and process.instance:
+                    app = process.instance
+                    # Wait a moment for the browser to initialize
+                    def _do_nav():
+                        try:
+                            if hasattr(app, 'current_tab') and app.current_tab:
+                                app.controller.navigate(app.current_tab, url)
+                                app.toolbar.set_url(url)
+                                app.show_browser()
+                                app.update_current_tab(url, url)
+                                app.update_navigation()
+                        except Exception as e:
+                            print(f"[Browser] Post-launch navigate error: {e}")
+                    if root:
+                        root.after(500, _do_nav)
+            except Exception as e:
+                print(f"[Browser] Launch error: {e}")
+
+        if root:
+            root.after(0, _launch_and_navigate)
         return f"Browser opened. Navigating to {url}"
     except SkillError:
         raise
@@ -34,7 +76,7 @@ def open_url(kernel, url: str) -> str:
 def search_web(kernel, query: str) -> str:
     """Search the web with a query."""
     try:
-        search_url = f"https://www.google.com/search?q={query}"
+        search_url = f"https://www.google.com/search?q={quote_plus(query)}"
         return open_url(kernel, search_url)
     except Exception as e:
         raise SkillError(f"Could not search web: {e}")
