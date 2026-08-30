@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from core.theme import ThemeManager
+from tkinter import messagebox
 from sdk.app import NovaApp
 
 from apps.notes.controller.notes_controller import NotesController
@@ -132,8 +133,11 @@ class NotesApp(NovaApp):
     # =====================================================
 
     def delete_note(self):
-
         if self.selected_note is None:
+            return
+
+        title = self.selected_note.get("title", "Untitled")
+        if not messagebox.askyesno("Delete Note", f"Delete '{title}'?\nThis cannot be undone."):
             return
 
         self.controller.delete_note(
@@ -141,9 +145,7 @@ class NotesApp(NovaApp):
         )
 
         self.selected_note = None
-
         self.editor.clear()
-
         self.refresh_notes()
 
     def _ai_assist(self):
