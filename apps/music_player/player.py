@@ -95,7 +95,7 @@ class MusicPlayerApp(NovaApp):
             width=500, height=14,
             button_color="#00E5FF", button_hover_color="#00C8E8",
             progress_color="#00E5FF", fg_color="#333333",
-            command=self._on_seek_start
+            command=self._on_seek
         )
         self.progress_slider.pack(fill="x", padx=15, pady=(0, 4))
         self.progress_slider.set(0)
@@ -391,9 +391,18 @@ class MusicPlayerApp(NovaApp):
             pygame.mixer.music.set_volume(value)
 
     # -------------------------------------------------------------- seek
-    def _on_seek_start(self, value):
-        """Handle slider drag (simplified — pygame seek is limited)."""
-        pass
+    def _on_seek(self, value):
+        """Seek to position in track based on slider value (0.0–1.0)."""
+        if not self._is_playing or self._track_length <= 0 or not HAS_PYGAME:
+            return
+        try:
+            target_pos = float(value) * self._track_length
+            pygame.mixer.music.play(start=target_pos)
+            pygame.mixer.music.set_volume(self._volume)
+            if self._is_paused:
+                pygame.mixer.music.pause()
+        except Exception:
+            pass
 
     # -------------------------------------------------------------- progress
     def _start_progress_updates(self):

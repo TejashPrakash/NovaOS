@@ -224,6 +224,7 @@ class ViewerApp(NovaApp):
             self.text_display.configure(state="normal")
             self.text_display.delete("1.0", "end")
             self.text_display.insert("1.0", text)
+            self._apply_syntax_highlighting(Path(path).suffix.lower())
             self.text_display.configure(state="disabled")
             self.text_display.pack(fill="both", expand=True, padx=5, pady=5)
 
@@ -233,6 +234,90 @@ class ViewerApp(NovaApp):
         except Exception as e:
             self._show_placeholder()
             self.info_bar.configure(text=f"Error loading text: {e}")
+
+    def _apply_syntax_highlighting(self, ext):
+        """Apply syntax highlighting to the text display."""
+        import re
+
+        # Configure tags
+        self.text_display.tag_config("keyword", foreground="#FF79C6")
+        self.text_display.tag_config("string", foreground="#F1FA8C")
+        self.text_display.tag_config("comment", foreground="#6272A4")
+        self.text_display.tag_config("number", foreground="#BD93F9")
+        self.text_display.tag_config("function", foreground="#50FA7B")
+
+        # Language-specific patterns
+        keywords = []
+        if ext in {".py", ".pyw"}:
+            keywords = ["import", "from", "def", "class", "return", "if", "elif", "else",
+                       "for", "while", "try", "except", "finally", "with", "as", "in",
+                       "not", "and", "or", "is", "None", "True", "False", "print",
+                       "lambda", "yield", "raise", "pass", "break", "continue"]
+        elif ext in {".js", ".ts", ".jsx", ".tsx"}:
+            keywords = ["const", "let", "var", "function", "return", "if", "else",
+                       "for", "while", "class", "import", "export", "default", "new",
+                       "this", "true", "false", "null", "undefined", "async", "await",
+                       "try", "catch", "finally", "throw", "switch", "case", "break"]
+        elif ext in {".html", ".htm"}:
+            keywords = ["html", "head", "body", "div", "span", "script", "style",
+                       "link", "meta", "title", "table", "form", "input", "button"]
+        elif ext in {".css", ".scss"}:
+            keywords = ["color", "background", "margin", "padding", "border", "font",
+                       "display", "position", "width", "height", "flex", "grid"]
+        elif ext in {".json",}:
+            keywords = ["true", "false", "null"]
+        elif ext in {".rs",}:
+            keywords = ["fn", "let", "mut", "pub", "struct", "enum", "impl", "use",
+                       "mod", "if", "else", "match", "loop", "while", "for", "return",
+                       "self", "Self", "true", "false", "Some", "None", "Ok", "Err"]
+        elif ext in {".go",}:
+            keywords = ["func", "package", "import", "var", "const", "type", "struct",
+                       "interface", "if", "else", "for", "range", "return", "fmt",
+                       "nil", "true", "false", "map", "chan", "go", "defer"]
+        elif ext in {".java",}:
+            keywords = ["public", "private", "protected", "class", "interface", "extends",
+                       "implements", "new", "this", "super", "return", "if", "else",
+                       "for", "while", "try", "catch", "finally", "void", "int", "String",
+                       "true", "false", "null", "static", "final"]
+
+        if not keywords:
+            return  # No highlighting for this language
+
+        try:
+            content = self.text_display.get("1.0", "end")
+
+            # Keywords
+            for kw in keywords:
+                for match in re.finditer(r'\b' + re.escape(kw) + r'\b', content):
+                    start = f"1.0+{match.start()}c"
+                    end = f"1.0+{match.end()}c"
+                    self.text_display.tag_add("keyword", start, end)
+
+            # Strings (single and double quoted)
+            for match in re.finditer(r'("[^"\\]*(?:\\.[^"\\]*)*"|' + r"'[^'\\]*(?:\\.[^'\\]*)*')", content):
+                start = f"1.0+{match.start()}c"
+                end = f"1.0+{match.end()}c"
+                self.text_display.tag_add("string", start, end)
+
+            # Comments (// and #)
+            for match in re.finditer(r'(//.*$|#.*$)', content, re.MULTILINE):
+                start = f"1.0+{match.start()}c"
+                end = f"1.0+{match.end()}c"
+                self.text_display.tag_add("comment", start, end)
+
+            # Numbers
+            for match in re.finditer(r'\b\d+\.?\d*\b', content):
+                start = f"1.0+{match.start()}c"
+                end = f"1.0+{match.end()}c"
+                self.text_display.tag_add("number", start, end)
+
+            # Function calls
+            for match in re.finditer(r'\b([a-zA-Z_]\w*)\s*(?=\()', content):
+                start = f"1.0+{match.start()}c"
+                end = f"1.0+{match.end()}c"
+                self.text_display.tag_add("function", start, end)
+        except Exception:
+            pass  # Silently skip highlighting errors
 
     # ------------------------------------------------------------------ zoom
     def _zoom_in(self):
