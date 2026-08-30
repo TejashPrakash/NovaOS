@@ -18,7 +18,7 @@ class SmartSuggestionsWidget(ctk.CTkFrame):
     PANEL_WIDTH = 300
     PANEL_HEIGHT = 420
 
-    def __init__(self, master, kernel=None, **kwargs):
+    def __init__(self, master, kernel=None, on_toggle=None, **kwargs):
         super().__init__(
             master,
             width=self.PILL_WIDTH,
@@ -33,6 +33,7 @@ class SmartSuggestionsWidget(ctk.CTkFrame):
         self.theme = ThemeManager()
         self.pack_propagate(False)
         self._expanded = False
+        self._on_toggle = on_toggle
         self._build_pill()
         self._auto_refresh()
 
@@ -80,6 +81,8 @@ class SmartSuggestionsWidget(ctk.CTkFrame):
             border_color="#00E5FF"
         )
         self._build_panel()
+        if self._on_toggle:
+            self._on_toggle(True)
 
     def _collapse(self):
         """Collapse back to pill."""
@@ -94,6 +97,8 @@ class SmartSuggestionsWidget(ctk.CTkFrame):
             border_color="#1E2A3A"
         )
         self._build_pill()
+        if self._on_toggle:
+            self._on_toggle(False)
 
     # ------------------------------------------------------------------
     # Full panel
