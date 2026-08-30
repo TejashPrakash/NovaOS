@@ -76,7 +76,7 @@ class DesktopIconsManager:
     ICON_HEIGHT = 115
     COLS = 4
     PADDING_X = 30
-    PADDING_Y = 90  # below Smart Hub
+    PADDING_Y = 180  # below AI orb and Smart Hub area
     MARGIN_RIGHT = 30
 
     def __init__(self, desktop, window_manager):

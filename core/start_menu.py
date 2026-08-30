@@ -140,8 +140,56 @@ class StartMenu(GlassFrame):
         self.hide()
     
     def _show_power_options(self):
-        """Show power options."""
-        print("Power options: Shutdown, Restart, Sleep")
+        """Show power options dialog."""
+        dialog = ctk.CTkToplevel(self)
+        dialog.title("Power Options")
+        dialog.geometry("320x250")
+        dialog.configure(fg_color="#0D1117")
+        dialog.attributes("-topmost", True)
+        dialog.transient(self)
+        dialog.grab_set()
+
+        ctk.CTkLabel(
+            dialog, text="⏻  Power Options",
+            font=("Segoe UI", 18, "bold"), text_color="#FFFFFF"
+        ).pack(pady=(20, 15))
+
+        def do_shutdown():
+            dialog.destroy()
+            self.hide()
+            if self.window_manager and self.window_manager.kernel:
+                self.window_manager.kernel.shutdown()
+
+        def do_restart():
+            dialog.destroy()
+            self.hide()
+            import subprocess, sys
+            subprocess.Popen([sys.executable, "main.py"])
+            if self.window_manager and self.window_manager.kernel:
+                self.window_manager.kernel.shutdown()
+
+        def do_lock():
+            dialog.destroy()
+            self.hide()
+            from core.lock_screen import LockScreen
+            LockScreen(on_unlock=lambda: None)
+
+        def do_cancel():
+            dialog.destroy()
+
+        btns = [
+            ("⏻  Shutdown", "#E53935", "#C62828", do_shutdown),
+            ("↻  Restart", "#FF9800", "#F57C00", do_restart),
+            ("🔒  Lock Screen", "#00E5FF", "#00B8D4", do_lock),
+            ("✕  Cancel", "#333333", "#444444", do_cancel),
+        ]
+        for text, fg, hover, cmd in btns:
+            ctk.CTkButton(
+                dialog, text=text, height=38, corner_radius=8,
+                fg_color=fg, text_color="white" if fg != "#00E5FF" else "black",
+                hover_color=hover, font=("Segoe UI", 13, "bold"),
+                command=cmd
+            ).pack(fill="x", padx=25, pady=4)
     
     def show(self):
         """Show start menu."""

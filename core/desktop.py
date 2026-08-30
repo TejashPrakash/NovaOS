@@ -168,16 +168,17 @@ class Desktop:
             print(f"[Desktop] Weather widget failed: {e}")
 
     def on_smart_hub_toggle(self, expanded):
-        """Move weather widget down when Smart Hub expands."""
+        """Hide weather when Smart Hub expands, show when it collapses."""
         if not self._desktop_weather:
             return
         try:
             if expanded:
-                # Smart Hub panel is 420px tall — move weather below it
-                self._desktop_weather.place(x=20, y=440)
+                # Completely remove weather from layout so it cannot block anything
+                self._desktop_weather.place_forget()
             else:
-                # Smart Hub pill is 44px — weather right below
-                self._desktop_weather.place(x=20, y=self._weather_y)
+                # Restore weather to its original position
+                self._desktop_weather.place(x=20, y=70)
+                self._desktop_weather.lift()
         except Exception:
             pass
 

@@ -279,9 +279,23 @@ class DemoMode(ctk.CTkToplevel):
             self._show_step(self.current_step - 1)
 
     def _close(self):
-        # Close any demo-opened apps
-        if self.kernel:
-            self.kernel.process_manager.start_process("Settings")  # dummy to clear
+        # Close all demo-opened apps
+        if self.kernel and hasattr(self.kernel, 'window_manager'):
+            wm = self.kernel.window_manager
+            demo_apps = [
+                "Browser", "Notes", "Calculator", "Files",
+                "Terminal", "Music Player", "Weather",
+                "System Monitor", "Task Manager", "Calendar",
+                "Settings", "Viewer",
+            ]
+            for app_name in demo_apps:
+                try:
+                    for win in list(wm.windows):
+                        title = win.title_label.cget("text") if hasattr(win, 'title_label') else ""
+                        if app_name.lower() in title.lower():
+                            wm.close_window(win)
+                except Exception:
+                    pass
         try:
             self.destroy()
         except Exception:

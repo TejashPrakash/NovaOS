@@ -43,11 +43,11 @@ class NotificationSystem:
             border_color="#00E5FF"
         )
         
-        # Position at top-right
+        # Position at top-center (avoids AI orb at top-right and Smart Hub at top-left)
         self.current_notification.place(
-            relx=0.98,
+            relx=0.5,
             rely=0.05,
-            anchor="ne"
+            anchor="n"
         )
         
         # Content

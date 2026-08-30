@@ -167,7 +167,7 @@ class SystemTray(ctk.CTkFrame):
             text_color="#BBBBBB"
         ).pack(side="left")
 
-        theme_names = ["cyberpunk", "midnight", "ocean", "forest", "sunset", "arctic"]
+        theme_names = ["cyberpunk", "midnight", "ocean", "forest", "sunset", "arctic", "neon"]
         self.theme_var = ctk.StringVar(value=self.theme.get_current_theme() if hasattr(self.theme, 'get_current_theme') else "cyberpunk")
 
         for name in theme_names:

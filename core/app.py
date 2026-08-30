@@ -156,8 +156,8 @@ class NovaOS:
                     self.desktop.get_widget_layer(),
                     self.kernel.ai.assistant
                 )
-                # Right-center: avoids dock (bottom), system tray (bottom-right), icons (top-right)
-                self.ai_widget.place(relx=1.0, rely=0.55, anchor="e", x=-20)
+                # Top-right: above desktop icons, avoids dock and system tray
+                self.ai_widget.place(relx=1.0, rely=0.0, anchor="ne", x=-20, y=20)
                 self.ai_widget.lift()
         except Exception as e:
             print(f"[NovaOS] AI widget not available: {e}")
@@ -204,7 +204,7 @@ class NovaOS:
         )
         self.system_tray.place(
             relx=1.0, rely=1.0, anchor="se",
-            x=-15, y=-55
+            x=-15, y=-110
         )
         self.system_tray.lift()
 
@@ -215,7 +215,8 @@ class NovaOS:
             self.smart_hub = SmartSuggestionsWidget(
                 self.desktop.get_widget_layer(),
                 kernel=self.kernel,
-                on_toggle=self.desktop.on_smart_hub_toggle
+                on_toggle=self.desktop.on_smart_hub_toggle,
+                start_menu_ref=self.start_menu
             )
             self.smart_hub.place(x=20, y=20)
             self.smart_hub.lift()
