@@ -1,6 +1,6 @@
 # 🖥️ NovaOS — AI-Powered Desktop Operating System
 
-**An intelligent desktop operating system built with Python, featuring a fully integrated AI assistant, 11 built-in applications, and a premium glassmorphism UI.**
+**An intelligent desktop operating system built with Python, featuring a fully integrated AI assistant, 12 built-in applications, and a premium glassmorphism UI.**
 
 NovaOS is a unique AI-first desktop environment that goes beyond traditional operating systems by embedding artificial intelligence into every aspect of the user experience — from natural language commands to intelligent suggestions, voice interaction, and AI-powered applications.
 
@@ -26,7 +26,7 @@ NovaOS is a unique AI-first desktop environment that goes beyond traditional ope
 - **AI Wallpaper** — Auto-generated gradient wallpapers
 - **Desktop Clock** — Large floating clock with date and day
 - **Weather Widget** — Live weather data on the desktop
-- **Desktop Icons** — Responsive grid, all 11 apps visible
+- **Desktop Icons** — Responsive grid, all 12 apps visible
 - **Virtual Desktops** — 4 switchable workspaces (Ctrl+1/2/3/4)
 
 ### 🪟 Window Management
@@ -163,7 +163,7 @@ NovaOS/
 │   ├── skills/             # 34 AI skills
 │   ├── providers/          # Gemini, Ollama, Voice
 │   └── ui/                 # Smart Hub, AI Panel, Search, Notifications
-├── apps/                   # 11 built-in applications
+├── apps/                   # 12 built-in applications
 │   ├── browser/            # Chromium browser (Playwright)
 │   ├── notes/              # Note-taking app
 │   ├── calculator/         # Calculator
@@ -174,6 +174,7 @@ NovaOS/
 │   ├── system_monitor/     # System monitor
 │   ├── calendar_app/       # Calendar
 │   ├── viewer/             # File viewer
+│   ├── task_manager/       # Process manager
 │   └── settings.py         # Settings app
 ├── widgets/                # Reusable UI widgets
 ├── services/               # AI, audio, wallpaper services
@@ -187,42 +188,64 @@ NovaOS/
 
 NovaOS includes a built-in interactive demo that showcases all features — perfect for college admission presentations.
 
-### How to Use
-1. Launch NovaOS: `python main.py`
-2. Unlock the lock screen (password: `nova`)
-3. Press **Ctrl+D** or click the **▶ Demo** button in the dock
-4. Watch as NovaOS walks through all 12 apps, AI features, themes, and desktop capabilities
+### Quick Try (30 seconds)
+```bash
+git clone https://github.com/yourusername/NovaOS.git
+cd NovaOS
+pip install -r requirements.txt
+python main.py
+```
+Then unlock (password: `nova`) and press **Ctrl+D** for the demo.
 
-### Demo Walkthrough (15 Steps)
-| Step | Feature Demonstrated |
-|------|---------------------|
-| 1 | Smart Hub — AI-powered suggestions |
-| 2 | AI Desktop Search (Ctrl+K) |
-| 3 | Browser — opens Google, performs search |
-| 4 | Notes — create and save a note |
-| 5 | Calculator — perform calculations |
-| 6 | Weather — live weather data |
-| 7 | System Monitor — live CPU/RAM graphs |
-| 8 | Terminal — run commands |
-| 9 | Calendar — create an event |
-| 10 | Music Player — play/pause controls |
-| 11 | Settings — theme switching demo |
-| 12 | Virtual Desktops — switch workspaces |
-| 13 | AI Assistant — ask a question |
-| 14 | Theme showcase — cycle through all 7 themes |
-| 15 | Task Manager — view running processes |
+### How to Launch the Demo
+| Method | How |
+|--------|-----|
+| **Keyboard** | Press `Ctrl+D` anywhere in NovaOS |
+| **Dock** | Click the **▶** purple button in the dock |
+| **Start Menu** | The demo is accessible from the dock controls |
 
-Each step includes a timed transition with explanatory notifications. The demo runs autonomously — no interaction required.
+### What the Demo Shows (15 Steps)
+| Step | Feature | What Happens |
+|------|---------|-------------|
+| 1 | 🖥️ Welcome | Introduction to NovaOS |
+| 2 | 🤖 AI Assistant | AI panel opens, shows 34 skills |
+| 3 | 🌐 Browser | Chromium browser opens, loads a page |
+| 4 | 📝 Notes | Note-taking app with AI assist |
+| 5 | 📁 Files | File manager with operations |
+| 6 | >_ Terminal | 30+ commands demonstrated |
+| 7 | 🎵 Music Player | Playback controls shown |
+| 8 | 🌤 Weather | Live weather data displayed |
+| 9 | 📊 System Monitor | Real-time CPU/RAM graphs |
+| 10 | 📋 Task Manager | Process management |
+| 11 | 📅 Calendar & 🧮 Calculator | Event management and calculations |
+| 12 | 🎨 7 Themes | All themes cycled through |
+| 13 | 🖥️ Virtual Desktops | 4 workspaces demonstrated |
+| 14 | 🤖 AI-Powered Desktop | Smart Hub, Search, Notifications |
+| 15 | ✨ Thank You | Summary and project stats |
+
+### Navigation
+- **Next**: Click `Next →` or press `→` arrow key
+- **Previous**: Click `← Previous` or press `←` arrow key
+- **Skip**: Click `Skip Demo ✕` or press `Escape`
 
 ### For Presentations
 - The demo takes approximately **3-4 minutes** to complete
 - All apps open and close with smooth animations
 - AI features demonstrate real-time responses
 - Themes cycle to show visual variety
+- **No interaction required** — runs fully autonomously
+- Press `Escape` at any time to stop the demo
 
 ## 🎨 Screenshots
 
-> *Screenshots coming soon — run `python main.py` to see NovaOS in action!*
+> *Run `python main.py` to see NovaOS in action!* The demo mode (`Ctrl+D`) showcases all features automatically.
+
+### What You'll See
+- **Lock Screen** — Glassmorphism design with clock, glowing logo, and password field
+- **Desktop** — AI-generated wallpaper with floating widgets and responsive icon grid
+- **Apps** — 12 fully functional applications with premium UI
+- **AI Features** — Smart Hub, AI Search (`Ctrl+K`), voice interaction
+- **7 Themes** — Cyberpunk, Midnight, Ocean, Forest, Sunset, Arctic, Neon
 
 ---
 
