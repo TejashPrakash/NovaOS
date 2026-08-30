@@ -37,7 +37,7 @@ class SettingsApp(NovaApp):
         frame = self._section("🎨  Appearance")
         row = self._option_row(frame)
         ctk.CTkLabel(row, text="Theme:", font=("Segoe UI", 12), text_color="#BBBBBB").pack(side="left")
-        themes = ["cyberpunk", "midnight", "ocean", "forest", "sunset", "arctic"]
+        themes = ["cyberpunk", "midnight", "ocean", "forest", "sunset", "arctic", "neon"]
         self.theme_var = ctk.StringVar(value="cyberpunk")
         ctk.CTkComboBox(row, values=themes, variable=self.theme_var, width=160, height=32,
             fg_color="#161B22", text_color="#FFFFFF", button_color="#00E5FF",

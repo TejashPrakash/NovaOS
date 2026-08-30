@@ -204,7 +204,6 @@ class ChromiumBrowserEngine:
         self.widget.pack(fill="both", expand=True)
 
         # Bind mouse events
-        self.widget.bind("<Button-1>", self._on_click)
         self.widget.bind("<Button-2>", lambda e: None)
         self.widget.bind("<Button-3>", lambda e: None)
 
