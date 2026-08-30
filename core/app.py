@@ -10,6 +10,7 @@ from core.window_manager import WindowManager
 from core.launcher import Launcher
 from core.start_menu import StartMenu
 from core.system_tray import SystemTray
+from core.demo_mode import DemoMode
 from ai.ui.smart_hub import SmartSuggestionsWidget
 from ai.ui.smart_notifications import SmartNotificationManager
 from ai.ui.ai_search import AISearchDialog
@@ -122,6 +123,7 @@ class NovaOS:
         )
 
         self.dock.set_launcher(self.launcher)
+        self.dock.set_kernel(self.kernel)
 
         # ==========================================
         # Start Menu
@@ -154,7 +156,8 @@ class NovaOS:
                     self.desktop.get_widget_layer(),
                     self.kernel.ai.assistant
                 )
-                self.ai_widget.place(relx=1.0, rely=1.0, anchor="se", x=-20, y=-120)
+                # Right-center: avoids dock (bottom), system tray (bottom-right), icons (top-right)
+                self.ai_widget.place(relx=1.0, rely=0.55, anchor="e", x=-20)
                 self.ai_widget.lift()
         except Exception as e:
             print(f"[NovaOS] AI widget not available: {e}")
@@ -173,6 +176,19 @@ class NovaOS:
             "<Control-Shift-L>",
             lambda e: lock_screen()
         )
+
+        # Demo mode shortcut (Ctrl+D)
+        def open_demo(e=None):
+            DemoMode(self.root, kernel=self.kernel)
+
+        self.root.bind_all("<Control-d>", open_demo)
+
+        # Keyboard shortcuts overlay (Ctrl+/)
+        def open_shortcuts(e=None):
+            from core.shortcuts_overlay import ShortcutsOverlay
+            ShortcutsOverlay(self.root)
+
+        self.root.bind_all("<Control-slash>", open_shortcuts)
 
         self.root.protocol(
             "WM_DELETE_WINDOW",
@@ -198,7 +214,8 @@ class NovaOS:
         try:
             self.smart_hub = SmartSuggestionsWidget(
                 self.desktop.get_widget_layer(),
-                kernel=self.kernel
+                kernel=self.kernel,
+                on_toggle=self.desktop.on_smart_hub_toggle
             )
             self.smart_hub.place(x=20, y=20)
             self.smart_hub.lift()
@@ -219,6 +236,15 @@ class NovaOS:
             print(f"[NovaOS] Smart notifications not available: {e}")
 
         # ==========================================
+        # Virtual Desktops (inline in dock)
+        # ==========================================
+        try:
+            self.dock.virtual_desktops.kernel = self.kernel
+            self.virtual_desktops = self.dock.virtual_desktops
+        except Exception as e:
+            print(f"[NovaOS] Virtual desktops not available: {e}")
+
+        # ==========================================
         # AI Desktop Search (Ctrl+K)
         # ==========================================
         def open_ai_search(e=None):
@@ -235,7 +261,21 @@ class NovaOS:
         # Bind right-click to root so it catches ALL desktop clicks
         self.root.bind("<Button-3>", show_ai_context)
 
+        # Keyboard shortcuts
+        self.root.bind_all("<Control-1>", lambda e: self._switch_workspace(0))
+        self.root.bind_all("<Control-2>", lambda e: self._switch_workspace(1))
+        self.root.bind_all("<Control-3>", lambda e: self._switch_workspace(2))
+        self.root.bind_all("<Control-4>", lambda e: self._switch_workspace(3))
+
         print("[NovaOS] System Ready")
+
+    def _switch_workspace(self, index):
+        """Switch to a virtual desktop workspace."""
+        try:
+            if hasattr(self, 'virtual_desktops'):
+                self.virtual_desktops.switch_to(index)
+        except Exception:
+            pass
 
     # ==========================================
     # Premium Effects

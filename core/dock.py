@@ -14,7 +14,7 @@ class Dock:
         # ==========================================
         self.frame = GlassFrame(
             self.root,
-            width=700,
+            width=780,
             height=70,
             blur_amount=20,
             opacity=0.9,
@@ -58,6 +58,21 @@ class Dock:
         self.launcher_btn.pack(
             pady=12
         )
+
+        # Demo button
+        self.demo_btn = ctk.CTkButton(
+            self.left_frame,
+            text="▶",
+            width=30,
+            height=30,
+            corner_radius=15,
+            fg_color="#7B61FF",
+            hover_color="#9B81FF",
+            font=("Segoe UI", 12, "bold"),
+            command=self._open_demo,
+            text_color="white"
+        )
+        self.demo_btn.pack(pady=(2, 0))
         
         # ==========================================
         # Center (Running Apps)
@@ -86,6 +101,14 @@ class Dock:
         )
         
         self.clock = Clock(self.right_frame)
+
+        # Virtual Desktop Switcher (inline in dock)
+        from core.virtual_desktops import VirtualDesktopSwitcher
+        self.virtual_desktops = VirtualDesktopSwitcher(
+            self.right_frame,
+            kernel=None
+        )
+        self.virtual_desktops.pack(side="left", padx=(4, 0))
 
         # About button
         self.about_btn = ctk.CTkButton(
@@ -167,6 +190,19 @@ class Dock:
                     self.start_menu.show()
                     
             self.launcher.toggle = enhanced_toggle
+
+    def _open_demo(self):
+        """Launch the interactive demo mode."""
+        try:
+            from core.demo_mode import DemoMode
+            kernel = getattr(self, '_kernel', None)
+            DemoMode(self.root, kernel=kernel)
+        except Exception as e:
+            print(f"[Dock] Demo mode error: {e}")
+
+    def set_kernel(self, kernel):
+        """Store kernel reference for demo mode."""
+        self._kernel = kernel
 
     def _show_about(self):
         from core.about import AboutDialog

@@ -17,12 +17,19 @@ class NovaSplashScreen(ctk.CTkToplevel):
         "Mounting virtual filesystem...",
         "Loading desktop environment...",
         "Initializing window manager...",
-        "Loading AI skills...",
+        "Loading 34 AI skills...",
         "Starting voice provider...",
         "Loading user preferences...",
         "Applying cyberpunk theme...",
         "Starting process manager...",
         "Booting NovaOS..."
+    ]
+
+    FEATURES = [
+        "🤖 34 AI Skills  •  🌐 Chromium Browser  •  🎨 7 Themes",
+        "📁 File Operations  •  🖥 Virtual Desktops  •  🎵 Music Player",
+        "📊 System Monitor  •  📋 Task Manager  •  🌤 Weather Live",
+        "📝 Smart Notes  •  📅 Calendar Events  •  >_ Terminal 30+ Commands",
     ]
 
     def __init__(self):
@@ -98,6 +105,14 @@ class NovaSplashScreen(ctk.CTkToplevel):
             font=("Segoe UI", 11), text_color="#333333"
         )
         self.version_label.place(relx=0.5, rely=0.95, anchor="center")
+
+        # Feature highlights at bottom
+        self.feature_label = ctk.CTkLabel(
+            self, text="",
+            font=("Segoe UI", 12), text_color="#444444"
+        )
+        self.feature_label.place(relx=0.5, rely=0.88, anchor="center")
+        self._feature_index = 0
 
     def _init_orbs(self, w, h):
         """Create floating glowing orb frames."""
@@ -198,6 +213,11 @@ class NovaSplashScreen(ctk.CTkToplevel):
         except Exception:
             pass
 
+        # Cycle feature highlights
+        if self._animation_step % 120 == 0 and self.FEATURES:
+            self._feature_index = (self._feature_index + 1) % len(self.FEATURES)
+            self.feature_label.configure(text=self.FEATURES[self._feature_index])
+
         # Progress bar
         if self._progress < 1.0:
             speed = 0.008 + (self._progress * 0.015)
@@ -221,6 +241,8 @@ class NovaSplashScreen(ctk.CTkToplevel):
 
     def start_boot(self, callback):
         self._on_complete = callback
+        if self.FEATURES:
+            self.feature_label.configure(text=self.FEATURES[0])
         self._animate()
 
     def _finish_boot(self):

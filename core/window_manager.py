@@ -533,6 +533,13 @@ class WindowManager:
             window.focus_window
         )
 
+        # Register window with virtual desktops
+        try:
+            if hasattr(self, 'dock') and hasattr(self.dock, 'virtual_desktops'):
+                self.dock.virtual_desktops.register_window(id(window))
+        except Exception:
+            pass
+
         return window
 
     # =====================================================
@@ -546,6 +553,13 @@ class WindowManager:
         self.dock.remove_app(
             window.title
         )
+
+        # Unregister from virtual desktops
+        try:
+            if hasattr(self, 'dock') and hasattr(self.dock, 'virtual_desktops'):
+                self.dock.virtual_desktops.unregister_window(id(window))
+        except Exception:
+            pass
 
         window.destroy()
 
