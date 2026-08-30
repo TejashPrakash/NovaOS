@@ -19,15 +19,27 @@ class BrowserHomepage(ctk.CTkFrame):
         self.bookmarks_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.bookmarks_frame.pack(pady=10)
 
-    def load_bookmarks(self, bookmarks, callback):
+    def load_bookmarks(self, bookmarks, on_open, on_delete=None):
         for widget in self.bookmarks_frame.winfo_children():
             widget.destroy()
 
         for bookmark in bookmarks:
+            row = ctk.CTkFrame(self.bookmarks_frame, fg_color="transparent")
+            row.pack(side="left", padx=4, pady=2)
+
             button = ctk.CTkButton(
-                self.bookmarks_frame,
+                row,
                 text=bookmark["title"],
-                width=130,
-                command=lambda b=bookmark: callback(b)
+                width=110,
+                command=lambda b=bookmark: on_open(b)
             )
-            button.pack(side="left", padx=6)
+            button.pack(side="left")
+
+            if on_delete:
+                del_btn = ctk.CTkButton(
+                    row, text="✕", width=24, height=24, corner_radius=12,
+                    fg_color="transparent", text_color="#FF5252",
+                    hover_color="#331111", font=("Segoe UI", 10),
+                    command=lambda b=bookmark: on_delete(b)
+                )
+                del_btn.pack(side="left", padx=(2, 0))

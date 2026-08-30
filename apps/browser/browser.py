@@ -131,7 +131,7 @@ class BrowserApp(NovaApp):
         # Homepage
         self.homepage = BrowserHomepage(self.content)
         self.homepage.pack(fill="both", expand=True, padx=8, pady=8)
-        self.homepage.load_bookmarks(self.bookmarks.get_all(), self.open_bookmark)
+        self.homepage.load_bookmarks(self.bookmarks.get_all(), self.open_bookmark, self._delete_bookmark)
 
         # Statusbar
         self.statusbar = BrowserStatusBar(self.content)
@@ -228,8 +228,13 @@ class BrowserApp(NovaApp):
             self.statusbar.set_status("Navigate to a page before bookmarking")
             return
         self.bookmarks.add(self.current_tab.title, self.current_tab.url)
-        self.homepage.load_bookmarks(self.bookmarks.get_all(), self.open_bookmark)
+        self.homepage.load_bookmarks(self.bookmarks.get_all(), self.open_bookmark, self._delete_bookmark)
         self.statusbar.set_status("Bookmark saved")
+
+    def _delete_bookmark(self, bookmark):
+        self.bookmarks.remove(bookmark["url"])
+        self.homepage.load_bookmarks(self.bookmarks.get_all(), self.open_bookmark, self._delete_bookmark)
+        self.statusbar.set_status(f"Removed bookmark: {bookmark['title']}")
 
     def search(self):
         query = self.homepage.search.get()
