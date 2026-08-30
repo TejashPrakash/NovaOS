@@ -128,6 +128,7 @@ class Launcher:
             ("📊", "System Monitor"),
             ("🎵", "Music Player"),
             ("👁", "Viewer"),
+            ("📋", "Task Manager"),
             ("⚙", "Settings")
         ]
 

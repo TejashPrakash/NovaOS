@@ -70,6 +70,7 @@ class StartMenu(GlassFrame):
             ("📊", "System Monitor"),
             ("🎵", "Music Player"),
             ("👁", "Viewer"),
+            ("📋", "Task Manager"),
             ("⚙️", "Settings")
         ]
         

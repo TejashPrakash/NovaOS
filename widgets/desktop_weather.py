@@ -1,9 +1,8 @@
-"""Compact weather widget for the NovaOS desktop."""
+"""Weather widget for the NovaOS desktop — auto-detects location via IP."""
 
 import customtkinter as ctk
 import requests
 from core.config import CONFIG
-from core.theme import ThemeManager
 
 
 class DesktopWeather(ctk.CTkFrame):
@@ -18,7 +17,6 @@ class DesktopWeather(ctk.CTkFrame):
             border_color="#1A2332",
             **kwargs
         )
-        self.theme = ThemeManager()
         self.configure(width=220, height=140)
         self.pack_propagate(False)
 
@@ -41,7 +39,7 @@ class DesktopWeather(ctk.CTkFrame):
 
         # City
         self.city_label = ctk.CTkLabel(
-            self, text="",
+            self, text="Detecting...",
             font=("Segoe UI", 11),
             text_color="#888888"
         )
@@ -71,10 +69,36 @@ class DesktopWeather(ctk.CTkFrame):
         )
         self.wind_label.pack(side="left", padx=(12, 0))
 
+        self._detected_city = None
         self._fetch_weather()
 
+    def _detect_city(self):
+        """Detect city from IP geolocation."""
+        try:
+            resp = requests.get("https://ipapi.co/json/", timeout=5)
+            if resp.status_code == 200:
+                data = resp.json()
+                city = data.get("city")
+                if city:
+                    self._detected_city = city
+                    return city
+        except Exception:
+            pass
+        # Fallback: try another service
+        try:
+            resp = requests.get("http://ip-api.com/json/", timeout=5)
+            if resp.status_code == 200:
+                data = resp.json()
+                city = data.get("city")
+                if city:
+                    self._detected_city = city
+                    return city
+        except Exception:
+            pass
+        return None
+
     def _fetch_weather(self):
-        """Fetch weather data."""
+        """Fetch weather data for detected city."""
         if not CONFIG.is_weather_available():
             self.temp_label.configure(text="--°")
             self.city_label.configure(text="No API key")
@@ -82,9 +106,18 @@ class DesktopWeather(ctk.CTkFrame):
             self.after(60000, self._fetch_weather)
             return
 
+        # Detect city if not yet detected
+        if not self._detected_city:
+            city = self._detect_city()
+            if not city:
+                self.city_label.configure(text="Location unavailable")
+                self.desc_label.configure(text="Check internet connection")
+                self.after(120000, self._fetch_weather)
+                return
+        else:
+            city = self._detected_city
+
         try:
-            # Use geolocation-free endpoint with a default city
-            city = "London"
             url = (
                 f"https://api.openweathermap.org/data/2.5/weather"
                 f"?q={city}&appid={CONFIG.openweather_api_key}&units=metric"
@@ -110,7 +143,6 @@ class DesktopWeather(ctk.CTkFrame):
         humidity = data["main"]["humidity"]
         wind = data["wind"]["speed"]
 
-        # Pick icon
         desc_lower = desc.lower()
         if "cloud" in desc_lower:
             icon = "☁️"

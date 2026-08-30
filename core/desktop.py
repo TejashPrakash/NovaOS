@@ -46,8 +46,7 @@ class Desktop:
         self.frame.after(1500, self._load_wallpaper)
         self.frame.after(3000, self._load_wallpaper)
 
-        # Desktop widgets — clock and weather floating on desktop
-        self._desktop_clock = None
+        # Desktop widget — weather only (clock is in the dock)
         self._desktop_weather = None
         self.frame.after(1000, self._setup_desktop_widgets)
 
@@ -158,22 +157,29 @@ class Desktop:
             self.enable_ambient_lighting()
 
     def _setup_desktop_widgets(self):
-        """Place floating clock and weather widgets on the desktop."""
-        try:
-            from widgets.desktop_clock import DesktopClock
-            self._desktop_clock = DesktopClock(self.frame)
-            self._desktop_clock.place(x=20, y=70)
-            self._desktop_clock.lift()
-        except Exception as e:
-            print(f"[Desktop] Clock widget failed: {e}")
-
+        """Place floating weather widget on the desktop."""
         try:
             from widgets.desktop_weather import DesktopWeather
             self._desktop_weather = DesktopWeather(self.frame)
-            self._desktop_weather.place(x=20, y=190)
+            self._desktop_weather.place(x=20, y=70)
             self._desktop_weather.lift()
+            self._weather_y = 70
         except Exception as e:
             print(f"[Desktop] Weather widget failed: {e}")
+
+    def on_smart_hub_toggle(self, expanded):
+        """Move weather widget down when Smart Hub expands."""
+        if not self._desktop_weather:
+            return
+        try:
+            if expanded:
+                # Smart Hub panel is 420px tall — move weather below it
+                self._desktop_weather.place(x=20, y=440)
+            else:
+                # Smart Hub pill is 44px — weather right below
+                self._desktop_weather.place(x=20, y=self._weather_y)
+        except Exception:
+            pass
 
     def get_theme_manager(self):
         return self.theme
