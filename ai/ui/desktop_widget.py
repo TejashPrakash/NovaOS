@@ -43,17 +43,25 @@ class AIAssistantWidget(ctk.CTkFrame):
         )
         self._orb_label.pack(expand=True)
 
-        self.bind("<Button-1>", lambda e: self.toggle())
-        self._orb_label.bind("<Button-1>", lambda e: self.toggle())
+        self.bind("<Button-1>", self._on_orb_click)
+        self._orb_label.bind("<Button-1>", self._on_orb_click)
+
+    def _on_orb_click(self, event=None):
+        """Handle orb click — prevent event propagation to parent."""
+        self.toggle()
+        if event:
+            return "break"
 
     # ------------------------------------------------------------------
     # Toggle
     # ------------------------------------------------------------------
-    def toggle(self):
+    def toggle(self, event=None):
         if self._expanded:
             self._collapse()
         else:
             self._expand()
+        if event:
+            return "break"
 
     def _expand(self):
         self._expanded = True

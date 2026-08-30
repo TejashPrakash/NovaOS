@@ -106,8 +106,8 @@ class SmartNotificationManager:
             border_color="#00E5FF"
         )
 
-        # Position at top-right
-        frame.place(relx=0.98, rely=0.05, anchor="ne")
+        # Position at top-center (avoids AI orb at top-right)
+        frame.place(relx=0.5, rely=0.05, anchor="n")
 
         content = ctk.CTkFrame(frame, fg_color="transparent")
         content.pack(fill="both", expand=True, padx=14, pady=10)

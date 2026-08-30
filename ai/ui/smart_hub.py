@@ -18,7 +18,7 @@ class SmartSuggestionsWidget(ctk.CTkFrame):
     PANEL_WIDTH = 300
     PANEL_HEIGHT = 420
 
-    def __init__(self, master, kernel=None, on_toggle=None, **kwargs):
+    def __init__(self, master, kernel=None, on_toggle=None, start_menu_ref=None, **kwargs):
         super().__init__(
             master,
             width=self.PILL_WIDTH,
@@ -30,6 +30,7 @@ class SmartSuggestionsWidget(ctk.CTkFrame):
             **kwargs
         )
         self.kernel = kernel
+        self.start_menu_ref = start_menu_ref
         self.theme = ThemeManager()
         self.pack_propagate(False)
         self._expanded = False
@@ -56,19 +57,27 @@ class SmartSuggestionsWidget(ctk.CTkFrame):
             text_color="#AAAAAA"
         ).pack(side="left", padx=(0, 12), pady=8)
 
-        self.bind("<Button-1>", lambda e: self.toggle())
-        self._pill_frame.bind("<Button-1>", lambda e: self.toggle())
+        self.bind("<Button-1>", self._on_pill_click)
+        self._pill_frame.bind("<Button-1>", self._on_pill_click)
         for child in self._pill_frame.winfo_children():
-            child.bind("<Button-1>", lambda e: self.toggle())
+            child.bind("<Button-1>", self._on_pill_click)
+
+    def _on_pill_click(self, event=None):
+        """Handle pill click — prevent event propagation."""
+        self.toggle()
+        if event:
+            return "break"
 
     # ------------------------------------------------------------------
     # Toggle expand / collapse
     # ------------------------------------------------------------------
-    def toggle(self):
+    def toggle(self, event=None):
         if self._expanded:
             self._collapse()
         else:
             self._expand()
+        if event:
+            return "break"
 
     def _expand(self):
         """Expand to full panel."""
@@ -81,6 +90,13 @@ class SmartSuggestionsWidget(ctk.CTkFrame):
             border_color="#00E5FF"
         )
         self._build_panel()
+        # Close start menu if open
+        if self.start_menu_ref:
+            try:
+                if self.start_menu_ref.winfo_ismapped():
+                    self.start_menu_ref.hide()
+            except Exception:
+                pass
         if self._on_toggle:
             self._on_toggle(True)
 

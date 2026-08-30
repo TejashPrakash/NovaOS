@@ -210,7 +210,7 @@ class AISearchDialog(ctk.CTkToplevel):
         except Exception:
             pass
 
-    def _execute(self):
+    def _execute(self, event=None):
         """Execute the search query as an AI command."""
         query = self.search_entry.get().strip()
         if not query:
