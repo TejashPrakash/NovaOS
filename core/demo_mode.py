@@ -85,7 +85,7 @@ class DemoMode(ctk.CTkToplevel):
         },
         {
             "title": "✨  Thank You!",
-            "desc": "NovaOS — Where AI meets the Desktop\n\n98 Python modules • 12 apps • 34 AI skills\n7 themes • Virtual desktops • Full terminal\nChromium browser • Music player • And more.\n\nBuilt as a college admission project.\n\n🚀  Run: python main.py",
+            "desc": "NovaOS — Where AI meets the Desktop\n\n119 Python modules • 12 apps • 34 AI skills\n7 themes • Virtual desktops • Full terminal\nChromium browser • Music player • And more.\n\nBuilt as a college admission project.\n\n🚀  Run: python main.py",
             "action": None,
         },
     ]
