@@ -6,90 +6,32 @@ NovaOS is a unique AI-first desktop environment that goes beyond traditional ope
 
 ---
 
-## 🎬 Live Demo Experience
+## 🎬 Live Interactive Demo
 
-### 👉 Try NovaOS in Your Browser (No Installation Required)
-Click the button below to see a **visual walkthrough** of NovaOS features:
+### 👉 **Try the Interactive Demo Now (No Installation Required!)**
 
-[![Try NovaOS Demo](https://img.shields.io/badge/🎮%20Interactive%20Demo-Play%20Now-blueviolet?style=for-the-badge&logo=youtube)](https://github.com/TejashPrakash/NovaOS/wiki/Interactive-Demo)
+[![🎮 Play Interactive Demo](https://img.shields.io/badge/🎮%20Play%20Interactive%20Demo-Click%20Here-blueviolet?style=for-the-badge&logo=github)](https://raw.githack.com/TejashPrakash/NovaOS/main/docs/demo.html)
 
-Or watch a **quick 2-minute feature overview**:
+**Features:**
+- 🖱️ Click through 12 interactive steps
+- ⌨️ Use arrow keys to navigate (← → arrows, ESC to skip)
+- 📊 View project stats, themes, shortcuts, and more
+- 🚀 Direct link to clone and run locally
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    NovaOS Feature Tour                      │
-│                                                             │
-│  1️⃣  LOCK SCREEN                                           │
-│     🔐 Glassmorphism design with glowing logo             │
-│     ⏰ Live clock display                                  │
-│     🛡️  3-attempt password lockout                         │
-│     Default password: nova                                │
-│                                                             │
-│  2️⃣  DESKTOP ENVIRONMENT                                   │
-│     🎨 Premium glassmorphism UI with 7 themes             │
-│     🌊 Animated neural background                         │
-│     🕐 Floating widgets (clock, weather, AI panel)         │
-│     📱 Responsive icon grid (12 apps)                      │
-│                                                             │
-│  3️⃣  AI ASSISTANT                                          │
-│     🤖 34 AI Skills for OS control                         │
-│     🔍 Natural language desktop search (Ctrl+K)           │
-│     💬 AI panel with conversation history                 │
-│     🎤 Voice interaction support                          │
-│                                                             │
-│  4️⃣  WINDOW MANAGEMENT                                     │
-│     🖱️  Drag, resize, snap, tile windows                  │
-│     🔄 Auto-tiling 2-column grid layout                   │
-│     💾 Window positions saved between sessions            │
-│     📌 Tab support for multi-tab windows                  │
-│                                                             │
-│  5️⃣  12 BUILT-IN APPS                                     │
-│     🌐 Browser | 📝 Notes | 🧮 Calculator                 │
-│     📁 Files  | >_ Terminal | 🌤 Weather                  │
-│     📅 Calendar | 📊 Monitor | 🎵 Music                    │
-│     👁️  Viewer | 📋 Tasks | ⚙️  Settings                    │
-│                                                             │
-│  6️⃣  THEMES & CUSTOMIZATION                                │
-│     🎨 Cyberpunk | 🌙 Midnight | 🌊 Ocean                 │
-│     🌲 Forest | 🌅 Sunset | ❄️  Arctic | 💡 Neon           │
-│     💫 Premium effects toggle                             │
-│     🖼️  AI-generated wallpapers                            │
-│                                                             │
-│  7️⃣  VIRTUAL DESKTOPS                                      │
-│     🖥️  4 switchable workspaces                           │
-│     ⌨️  Ctrl+1/2/3/4 to switch                            │
-│     📌 Organize apps across spaces                        │
-│                                                             │
-│  8️⃣  SMART AI FEATURES                                     │
-│     💡 Smart Hub with context-aware suggestions           │
-│     🔔 AI-generated smart notifications                   │
-│     📊 Real-time system monitoring                        │
-│     🎯 Right-click AI context menu                        │
-│                                                             │
-│  9️⃣  DEMO MODE (Perfect for Presentations)                │
-│     ▶️  Press Ctrl+D for 15-step guided tour              │
-│     ⏱️  3-4 minute automated walkthrough                   │
-│     🎯 Showcases every major feature                      │
-│     ✨ No interaction required - fully autonomous         │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+---
+
+## 🚀 Quick Start - Run Locally in 30 Seconds
+
+```bash
+# Clone and run
+git clone https://github.com/TejashPrakash/NovaOS.git
+cd NovaOS
+pip install -r requirements.txt
+python -m playwright install chromium
+python main.py
 ```
 
-### ⌨️ Quick Feature Hotkeys Cheat Sheet
-
-```
-┌────────────────────────────────────────────┐
-│         KEYBOARD SHORTCUTS                  │
-├────────────────────────────────────────────┤
-│ Ctrl+Space      → Toggle AI Launcher        │
-│ Ctrl+K          → AI Desktop Search         │
-│ Ctrl+Shift+L    → Lock Screen               │
-│ Ctrl+D          → Start Demo Mode           │
-│ Ctrl+1/2/3/4    → Switch Virtual Desktop    │
-│ Ctrl+/          → Show Shortcuts Overlay    │
-│ Right-Click     → AI Context Menu           │
-└────────────────────────────────────────────┘
-```
+**Then:** Unlock with password `nova` → Press **Ctrl+D** for the 15-step in-app demo! 🎮
 
 ---
 
@@ -165,42 +107,23 @@ Or watch a **quick 2-minute feature overview**:
 
 ---
 
-## 🚀 Installation
+## 📊 Project Statistics
 
-### Prerequisites
-- Python 3.10 or higher
-- pip (Python package manager)
-- Windows 10/11 (primary target)
-
-### Quick Start
-
-```bash
-# Clone the repository
-git clone https://github.com/TejashPrakash/NovaOS.git
-cd NovaOS
-
-# Create a virtual environment (recommended)
-python -m venv venv
-venv\Scripts\activate      # Windows
-# source venv/bin/activate  # macOS/Linux
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Install Playwright browser engine (for the built-in browser)
-python -m playwright install chromium
-
-# Set up API keys (optional — for AI features)
-copy .env.example .env
-# Edit .env and add your API keys
-
-# Run NovaOS
-python main.py
 ```
-
-### Default Lock Screen Password
-```
-nova
+┌─────────────────────────────────────┐
+│      NovaOS by the Numbers           │
+├─────────────────────────────────────┤
+│ 📝 Total Lines of Code    ~15,000+   │
+│ 🤖 AI Skills              34         │
+│ 🎨 Built-in Apps          12         │
+│ 🎨 Themes                 7          │
+│ 🖥️  Virtual Desktops      4          │
+│ ⌨️  Keyboard Shortcuts    20+         │
+│ 📚 Dependencies            14         │
+│ 🔨 Development Time       6+ weeks    │
+│ 💼 Purpose                College Admission Project
+│ 🏆 Showcases              AI, OS Design, Software Engineering
+└─────────────────────────────────────┘
 ```
 
 ---
@@ -266,7 +189,8 @@ NovaOS/
 ├── widgets/                # Reusable UI widgets
 ├── services/               # AI, audio, wallpaper services
 ├── commands/               # Shell-like command system
-└── sdk/                    # App framework and event bus
+├── sdk/                    # App framework and event bus
+└── docs/demo.html          # Interactive demo webpage
 ```
 
 ---
@@ -275,11 +199,9 @@ NovaOS/
 
 NovaOS includes a built-in interactive demo that showcases all features — **perfect for college admission presentations**.
 
-### Quick Try (30 seconds)
+### In-App Demo (Ctrl+D)
 ```bash
-git clone https://github.com/TejashPrakash/NovaOS.git
-cd NovaOS
-pip install -r requirements.txt
+# After running the application
 python main.py
 ```
 Then unlock (password: `nova`) and press **Ctrl+D** for the demo.
@@ -322,27 +244,6 @@ Then unlock (password: `nova`) and press **Ctrl+D** for the demo.
 - Themes cycle to show visual variety
 - **No interaction required** — runs fully autonomously
 - Press `Escape` at any time to stop the demo
-
----
-
-## 📊 Project Statistics
-
-```
-┌─────────────────────────────────────┐
-│      NovaOS by the Numbers           │
-├─────────────────────────────────────┤
-│ 📝 Total Lines of Code    ~15,000+   │
-│ 🤖 AI Skills              34         │
-│ 🎨 Built-in Apps          12         │
-│ 🎨 Themes                 7          │
-│ 🖥️  Virtual Desktops      4          │
-│ ⌨️  Keyboard Shortcuts    20+         │
-│ 📚 Dependencies            14         │
-│ 🔨 Development Time       6+ weeks    │
-│ 💼 Purpose                College Admission Project
-│ 🏆 Showcases              AI, OS Design, Software Engineering
-└─────────────────────────────────────┘
-```
 
 ---
 
@@ -459,7 +360,8 @@ Built as a college admission project showcasing:
 
 For admission officers or anyone interested in the project:
 - 📧 Review the code and architecture
-- 🎮 Try the demo mode (`Ctrl+D`) for a complete feature walkthrough
+- 🎮 Try the interactive demo above (no installation needed!)
+- 🎮 Try the in-app demo mode (`Ctrl+D`) for a complete feature walkthrough
 - 🐛 Check the GitHub issues for known features and improvements
 - 💬 Feel free to reach out with questions about the design decisions
 
