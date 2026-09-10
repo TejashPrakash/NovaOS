@@ -2,7 +2,36 @@
 
 **An intelligent desktop operating system built with Python, featuring a fully integrated AI assistant, 12 built-in applications, and a premium glassmorphism UI.**
 
-NovaOS is a unique AI-first desktop environment that goes beyond traditional operating systems by embedding artificial intelligence into every aspect of the user experience — from natural language commands to intelligent suggestions, voice interaction, and AI-powered applications.
+NovaOS is a unique AI-first desktop environment that goes beyond traditional operating systems by embedding artificial intelligence into every aspect of the user experience — from natural language control to context-aware suggestions.
+
+---
+
+## 🎬 Live Interactive Demo
+
+### 👉 **Try the Interactive Demo Now (No Installation Required!)**
+
+[![🎮 Play Interactive Demo](https://img.shields.io/badge/🎮%20Play%20Interactive%20Demo-Click%20Here-blueviolet?style=for-the-badge&logo=github)](https://raw.githack.com/TejashPrakash/NovaOS/main/docs/demo.html)
+
+**Features:**
+- 🖱️ Click through 12 interactive steps
+- ⌨️ Use arrow keys to navigate (← → arrows, ESC to skip)
+- 📊 View project stats, themes, shortcuts, and more
+- 🚀 Direct link to clone and run locally
+
+---
+
+## 🚀 Quick Start - Run Locally in 30 Seconds
+
+```bash
+# Clone and run
+git clone https://github.com/TejashPrakash/NovaOS.git
+cd NovaOS
+pip install -r requirements.txt
+python -m playwright install chromium
+python main.py
+```
+
+**Then:** Unlock with password `nova` → Press **Ctrl+D** for the 15-step in-app demo! 🎮
 
 ---
 
@@ -78,42 +107,23 @@ NovaOS is a unique AI-first desktop environment that goes beyond traditional ope
 
 ---
 
-## 🚀 Installation
+## 📊 Project Statistics
 
-### Prerequisites
-- Python 3.10 or higher
-- pip (Python package manager)
-- Windows 10/11 (primary target)
-
-### Quick Start
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/NovaOS.git
-cd NovaOS
-
-# Create a virtual environment (recommended)
-python -m venv venv
-venv\Scripts\activate      # Windows
-# source venv/bin/activate  # macOS/Linux
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Install Playwright browser engine (for the built-in browser)
-python -m playwright install chromium
-
-# Set up API keys (optional — for AI features)
-copy .env.example .env
-# Edit .env and add your API keys
-
-# Run NovaOS
-python main.py
 ```
-
-### Default Lock Screen Password
-```
-nova
+┌─────────────────────────────────────┐
+│      NovaOS by the Numbers           │
+├─────────────────────────────────────┤
+│ 📝 Total Lines of Code    ~15,000+   │
+│ 🤖 AI Skills              34         │
+│ 🎨 Built-in Apps          12         │
+│ 🎨 Themes                 7          │
+│ 🖥️  Virtual Desktops      4          │
+│ ⌨️  Keyboard Shortcuts    20+         │
+│ 📚 Dependencies            14         │
+│ 🔨 Development Time       6+ weeks    │
+│ 💼 Purpose                College Admission Project
+│ 🏆 Showcases              AI, OS Design, Software Engineering
+└─────────────────────────────────────┘
 ```
 
 ---
@@ -179,20 +189,19 @@ NovaOS/
 ├── widgets/                # Reusable UI widgets
 ├── services/               # AI, audio, wallpaper services
 ├── commands/               # Shell-like command system
-└── sdk/                    # App framework and event bus
+├── sdk/                    # App framework and event bus
+└── docs/demo.html          # Interactive demo webpage
 ```
 
 ---
 
-## 🎮 Demo Mode
+## 🎮 Demo Mode — Interactive Feature Showcase
 
-NovaOS includes a built-in interactive demo that showcases all features — perfect for college admission presentations.
+NovaOS includes a built-in interactive demo that showcases all features — **perfect for college admission presentations**.
 
-### Quick Try (30 seconds)
+### In-App Demo (Ctrl+D)
 ```bash
-git clone https://github.com/yourusername/NovaOS.git
-cd NovaOS
-pip install -r requirements.txt
+# After running the application
 python main.py
 ```
 Then unlock (password: `nova`) and press **Ctrl+D** for the demo.
@@ -236,30 +245,91 @@ Then unlock (password: `nova`) and press **Ctrl+D** for the demo.
 - **No interaction required** — runs fully autonomously
 - Press `Escape` at any time to stop the demo
 
-## 🎨 Screenshots
+---
 
-> *Run `python main.py` to see NovaOS in action!* The demo mode (`Ctrl+D`) showcases all features automatically.
+## 🎨 Screenshots & Visual Guide
 
-### What You'll See
+> **Run `python main.py` to see NovaOS in action!** The demo mode (`Ctrl+D`) showcases all features automatically.
+
+### What You'll Experience
+
 - **Lock Screen** — Glassmorphism design with clock, glowing logo, and password field
+- **Boot Animation** — Smooth splash screen transition
 - **Desktop** — AI-generated wallpaper with floating widgets and responsive icon grid
-- **Apps** — 12 fully functional applications with premium UI
-- **AI Features** — Smart Hub, AI Search (`Ctrl+K`), voice interaction
-- **7 Themes** — Cyberpunk, Midnight, Ocean, Forest, Sunset, Arctic, Neon
+- **Apps** — 12 fully functional applications with premium UI and smooth animations
+- **AI Features** — Smart Hub suggestions, AI Search, voice interaction, notifications
+- **7 Themes** — Cyberpunk (neon glow), Midnight (dark blue), Ocean (aqua), Forest (green), Sunset (warm), Arctic (cool white), Neon (vibrant)
+- **Window Management** — Drag, resize, snap, tile with visual feedback
+- **System Integration** — Real-time CPU/RAM/Network monitoring in system tray
+
+---
+
+## 💻 System Requirements
+
+| Component | Requirement |
+|-----------|-------------|
+| **OS** | Windows 10/11 |
+| **Python** | 3.10 or higher |
+| **RAM** | 4GB minimum (8GB recommended) |
+| **Storage** | 500MB for installation + dependencies |
+| **Display** | 1920x1080 or higher |
+| **Browser Engine** | Chromium (auto-installed with Playwright) |
 
 ---
 
 ## 🛠️ Built With
 
 - **Python 3.10+**
-- **CustomTkinter** — Modern tkinter UI framework
-- **Pillow** — Image processing for wallpapers
-- **psutil** — System monitoring
-- **Playwright** — Chromium browser engine
-- **pygame** — Audio playback
-- **pyttsx3** — Text-to-speech
-- **Google Gemini** — Cloud AI
-- **python-dotenv** — Environment configuration
+- **CustomTkinter** — Modern tkinter UI framework with glassmorphism effects
+- **Pillow** — Image processing for wallpapers and effects
+- **psutil** — System monitoring and process management
+- **Playwright** — Chromium browser engine for built-in browser
+- **pygame** — Audio playback for music player
+- **pyttsx3** — Text-to-speech for voice interaction
+- **Google Gemini API** — Cloud AI for smart features
+- **Ollama** — Local AI fallback option
+- **python-dotenv** — Environment configuration management
+
+---
+
+## 🔧 Development & Contributing
+
+This project was built as a comprehensive college admission portfolio piece demonstrating:
+
+- **Operating System Design** — Kernel, window management, process handling
+- **AI Integration** — Natural language processing, skill routing, multi-provider support
+- **UI/UX Design** — Glassmorphism effects, theme system, responsive layouts
+- **Software Architecture** — Service registry, event bus, modular app framework
+- **System Programming** — Process monitoring, file management, device interaction
+
+### Project Structure Overview
+
+```
+Core Systems (25% of code)
+├── Kernel & Service Registry
+├── Window Manager & Layout Engine
+├── Theme Engine & UI Effects
+├── Desktop & Widget System
+└── Dock & Navigation
+
+AI System (30% of code)
+├── 34 Skills (router, voice, notifications)
+├── Dual AI Providers (Gemini, Ollama)
+├── Memory & Context Management
+└── UI Components (Smart Hub, Search, Panels)
+
+Applications (25% of code)
+├── 12 Full-Featured Apps
+├── Shared SDK & Event Bus
+├── Command System (Terminal)
+└── File/Process Management
+
+Polish & Effects (20% of code)
+├── Animations & Transitions
+├── Themes & Customization
+├── Demo Mode Orchestration
+└── Boot Sequence & Splash
+```
 
 ---
 
@@ -271,6 +341,32 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 ## 🙏 Acknowledgments
 
-Built as a college admission project showcasing AI integration, operating system design, and software engineering skills.
+Built as a college admission project showcasing:
+- Advanced AI integration techniques
+- Modern operating system design principles
+- Professional Python software engineering
+- UI/UX design with glassmorphism effects
+- Full-stack application development
+
+**Special Thanks To:**
+- CustomTkinter community for UI framework
+- Playwright for browser automation
+- Google Gemini for cloud AI
+- Ollama for local AI capabilities
+
+---
+
+## 📞 Questions or Feedback?
+
+For admission officers or anyone interested in the project:
+- 📧 Review the code and architecture
+- 🎮 Try the interactive demo above (no installation needed!)
+- 🎮 Try the in-app demo mode (`Ctrl+D`) for a complete feature walkthrough
+- 🐛 Check the GitHub issues for known features and improvements
+- 💬 Feel free to reach out with questions about the design decisions
+
+---
 
 **NovaOS** — *Where AI meets the Desktop* ✨
+
+*Built with passion for innovation and demonstrating professional-grade software engineering skills.*
